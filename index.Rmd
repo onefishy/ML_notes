@@ -1,6 +1,6 @@
 --- 
 title: "Notes for CS181: Machine Learning"
-author: "Yihui Xie"
+author: "Weiwei Pan"
 date: "`r Sys.Date()`"
 site: bookdown::bookdown_site
 output: bookdown::gitbook
@@ -11,9 +11,6 @@ link-citations: yes
 github-repo: rstudio/bookdown-demo
 description: "This is a set of note for CS181: Machine Learning (Spring 2023)"
 ---
-
-# Notes for CS181: Machine Learning
-## Spring 2023
 
 This is a set of notes from the Spring 2023 iteration of CS181: Machine Learning
 
