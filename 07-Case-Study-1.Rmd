@@ -1,0 +1,198 @@
+# Case Study: Responsibly Using Logistic Regression
+![](https://i.imgur.com/xDR9VQd.png)
+
+**Motto:** Being a machine learning researcher/practitioner is like being a doctor not like constructing a house according to blueprint. That is, you are using theory to ***diagnose problems*** and ***suggest treatment***, you are executing actions based on a blueprint.
+
+**Motto for Resolving Choice Paralysis:** Non-action is the action of upholding the status quo!
+
+## Case Study: Machine Learning Model for Loan Approval
+
+Suppose that you have been asked by the International Bank of Z to use see if it's possible to use ML to automate their loan approval process in order to reduce the cost of retaining a large staff of expert loan officers.
+
+They give you a training dataset consisting of 10,000 loan applications considered between 2002 and 2010 at the International Bank of Z. 
+
+In this training set you have the following information: 
+   >`x_1` representing gender: 0 for male, 1 for female
+   >`x_2` represents income
+   >`x_3` represents personal debt 
+   >`x_4` represents the loan amount
+   >`x_5` represents credit score
+   > `y` represents whether or not the loan was approved
+
+You do a 70/15/15 split of the historical data you have into training, validation and test.
+
+You fit a **logistic regression model** to predict whether a loan application should be approved. 
+
+Suppose that you found the following parameters by maximizing the joint log-likelihood of your training data using your own implementation of gradient descent:
+   $$
+   p(y=1 | \mathbf{x}) = \sigma(-1 + 3 x_1 + 1.5 x_2 - 1.75 x_3 + 0.6 x_4 - 0.01 x_5).
+   $$
+For a new loan application, you approve if $p(y=1 | \mathbf{x}) \geq 0.5$ and deny if $p(y=1 | \mathbf{x}) < 0.5$.
+   
+You computed the following metrics:
+
+
+
+| Metric | Train | Validation |
+| -------- | -------- | -------- |
+| Accuracy     | 49%    | 51%     |
+| AUC     | 0.51     | 0.52     |
+| Log-likelihood     | -307.760577547     | -407.547760577     |
+
+
+### The Big Vague Question 
+Is this a good model? Do I present it to my clients tomorrow as a solution to their problem? If so, how will I convince them that this ML model is going to solve their business problem?
+
+### The Concrete and Rigorous Process of Post-Inference Analysis of Machine Learning Models 
+
+1. **(Inference)** Did I do inference correctly?
+    a. Did I write down the correct objective function and did I implement it correctly?
+     > You chose to maximize the log-likelihood since that's pretty standard but you know that MLE has potential drawbacks. You check your `numpy` implementation of the objective function and it looks correct. 
+     > 
+     > You move on and will come back to check more carefully if you don't find other issues.
+
+    b. Did I optimize my objective function correctly?
+     > You checked that your gradient descent was implemented correctly and that your loss function was decreasing during gradient descent.
+     > 
+     > You move on and will come back to check more carefully if you don't find other issues.
+    
+2. **(Bias-Variance Trade-off)** Did I choose the wrong model class?
+   a. Am I underfitting (i.e. my model's prediction on new data will have high error because it has high bias)?
+     > You check for underfitting by reducing the potential bias in your model. You try a polynomial feature map $\phi$ of degree 3 and get:
+     > \begin{aligned}
+   p(y=1 | \mathbf{x}) = \sigma(&-50 + 4 x_1 + 17 x_2 + 0.0001 x_3 + 0.2 x_4 + 9 x_5\\
+   &- 0.0012 x^2_1 + 0.15 x^2_2 + 0.2226 x^2_3 - 0.26 x^2_4 + x^2_5\\
+   &+ 1.2 x^3_1 - 1.0001 x_2 - 0.34 x^3_3 + 0.5 x^3_4 +  x^3_5)\\
+       \end{aligned}
+     > Now your metrics look like:
+     > | Metric | Train | Validation |
+    >| -------- | -------- | -------- |
+    >| Accuracy     | 98%    | 85%     |
+    >| AUC     | 0.8     | 0.7     |
+    >| Log-likelihood     | -1.2349e-9     |         -7.547760577     |
+   
+   b. Am I overfitting (i.e. my model's prediction on new data will have high error because it has high variance)?
+    > It looks like adding your polynomial feature map caused overfitting! Your generalization error will be high due to high model variance. For now, you try to reduce the variance of your model by increasing the potential bias of your model -- by (1) using only degree 2 polynomials and by (2) adding $\ell_1$ regularization:
+    >  \begin{aligned}
+   p(y=1 | \mathbf{x}) = \sigma(&-0.5 + 2.1 x_1 + 0.0001 x_3 + 0.2 x_4 + 0.15 x^2_2 + 0.063x^2_5)
+       \end{aligned}
+     > Now your metrics look like:
+     > | Metric | Train | Validation |
+    >| -------- | -------- | -------- |
+    >| Accuracy     | 89%    | 86%     |
+    >| AUC     | 0.79     | 0.81     |
+    >| Log-likelihood     | -4.9812e-3     |         -5.21774e-3     |
+     >
+     > Since your train validation metrics look similar and similarly high-ish, you believe you've manage your bias-variance trade-off well.
+     > 
+     > You move on and will come back to check more carefully if you need to.
+
+3. **(Choose Meaningful Evaluation Metrics)** Of the metrics that I know how to compute, which metrics should I use to evaluate my model?
+   a. Do my metrics agree? Is it ok if they disagree?
+     > In this case, accuracy is higher than AUC -- is this a deal breaker?! 
+     > Not necessarily. Recall from that AUC is defined as the area under the ROC curve. Roughly, the AUC is measuring how well your model does over *all possible* classification thresholds. In contrast, the accuracy is measuring how well your model does for the threshold 0.5.
+     > As long as you are making good decisions using the threshold 0.5, you may not need to worry about the AUC.
+     > 
+     > You move on and will come back to check more carefully if you need to.
+     > 
+   b. Which of my chosen metrics should I prioritize?
+     > If your client is just interested in making accurate decisions using your model, maybe prioritizing accuracy at a threshold of 0.5 is fine for this down-stream task.
+     > 
+     > You move on and will come back to check more carefully if you need to.
+
+4. **(Task-Sensitive Evaluation)** But *really*, how should I choose to evaluate my model?
+  a. What are my real-life goals? Do any of my metrics correspond to any real-life performance goals?
+     > In this case, your client most likely wants to avoid approving bad loans. This means that they care want the model to predict $y=0$ when the loan would have been rejected by a human expert. Does a high accuracy mean that we've achieved this goal?
+     >
+     > You check the balance of the two classes in your loan data and see that about 75% of the loans were approved -- there is *class imbalance*.
+     >
+     > You then check the training confusion matrix and see: 
+    >
+    >|   | Predicted 0| Predicted 1 |
+    >| -------- | -------- | -------- |
+    >| y=0    |  1488   | 262    |
+    >| y=1    | 578     | 4672     |
+    > 
+    > Luckily, despite the class imbalance, your model does equally well on both classes!
+
+     
+   b. Have I interpreted my model? Does the interpretation make sense in the context of the problem? Have I made use of all available application domain knowledge?
+   
+   > So far, your model seem to be doing well on your numeric metrics, does it mean that it's right for the right reasons? Let's interpre the model and see how it makes decisions:
+   > \begin{aligned}
+   p(y=1 | \mathbf{x}) = \sigma(&-0.5 + 2.1 x_1 + 0.0001 x_3 + 0.2 x_4 + 0.15 x^2_2 + 0.063x^2_5)
+       \end{aligned}
+   > You note several things right away: (1) it seems like "gender", $x_1$, has the biggest impact on probability of approval (2) the loan amount and debt positively impact the probability of approval! Do these model properties make sense?
+   > 
+   > You worry that the coefficients cannot be reliably interpreted because the covariates are measured at different scales. So you check and are relieved to see that the data has been standardized and all take value between -1 and 1. This gives you some confidence that your interpretation of coefficients are not obviously wrong
+   > 
+   > It seems counter-intuitive in your model that the more loans you take out and the more debt you have, the more likely your loan will be approved. Maybe there's a bug in your optimization or coding?! Not necessarily! If you consult a domain expert, they will tell you that often times loan amount is correlated with income, as is debt amount (this is why people look at income to debt ratio). That is, co-linearity amongst your covariates might explain the counter-intuitive coefficients. You compute the Pearson corrlation between $x_3$ and $x_2$, then $x_4$ and $x_2$; you find that both loan amount and debt are slightly correlated with income in the data.
+   > 
+   > You move on and will come back to check more carefully if you need to.
+   > 
+   c. What are your uncertainties and where are they?
+   > You bootstrap your training data 100 times and estimate confidence intervals on the coefficients of your logisic regression and get the following means and 95% confidence intervals:
+   > \begin{aligned}
+    &w_0 \text{(bias term)}: 0.5 \pm 1.2\\
+    &w_1 \text{(for $x_1$)}: 0.05 \pm 1.9,\\
+    &w_2\text{(for $x^2_2$)}: 0.1 \pm 2.12, \\
+    &w_3\text{(for $x_3$)}: 0.108 \pm 1.3, \\
+    &w_4\text{(for $x_4$)}: 0.08 \pm 0.9, \\
+    &w_5\text{(for $x^2_5$)}: 0.25 \pm 1.34
+   > \end{aligned}
+   > As the confidence intervals of the coefficients overlap a lot, it's not reasonable for us to be certain about our model interpretation -- e.g. that "gender" has the greatest impact on loan approval probability.
+   
+
+5. **(Model Critique)** Revisit every design decision -- did I make the wrong decision?
+   a. Did I choose the right data set? Are there forseeable issues with my data set?
+   > You worry that outliers, mistakes, missingness and other odd features of the data might be biasing your model. You should check the quality of your data by looking at data summaries (mean, median, variance, range and percentage missing for each covariate) and visualizations (scatter plots of your data, choosing a couple of covariates at a time).
+   > 
+   > You also sanity-check that the data summaries match your expectation of what are reasonable values. You notice that the data dictionary says $x_1$ represents gender (i.e. related to lived-experiences) but the values encode "male" and "female" (i.e. related to biological invariants). You wonder if the bank mislabled this covariate (i.e. $x_1$ should represent sex rather than gender). 
+   > 
+   > You also noticed that the "gender" covariate is coded as a binary, this would cause non-binary applicants to be misclassified (misclassification potentially introduces noise).
+   > 
+   b. Did I choose the right model type and right model class?
+   > You struggled a bit interpreting logistic regression with polynomial features. Would KNN or decision tree be easier to interpret (*Hint:* the model decision process might be easier to explain but validating your interpretation would be harder, as there are fewer exposed assumptions)? 
+   > 
+   c. Did I choose the right loss function and the right optimization procedure?
+   > You wonder if you should have maximized likelihood if what you really wanted to check was accuracy. What happens if you try to optimize for accuracy directly (*Hint:* you'll have problems differentiating)?
+
+6. **(Model Deployment)** Should I use this model? If so how?
+   a. Did your model pass all your checks above?
+   > Running through the above, you've already flagged a potential issue: while accurate, your model (as it stands) cannot be reliably interpreted.
+   > 
+   > Is this a problem?
+   > 
+   > You realize that your client International Bank of Z is based in the EU, and thus under [The General Data Protection Regulation](https://www.consilium.europa.eu/en/policies/data-protection/data-protection-regulation/), the bank may be legally required to provide an explanation for each loan decision as well as a recommendation for recourse in case the loan is rejected. In this case, it is critical that we can provide a reliable interpretation of the model's decision making process.
+   > 
+   > You also flagged that the "gender" covariate might actually be containing sex information rather than gender, the binary encoding of this covariate also causes potential misclassification of non-binary applicants.
+   > 
+   > Is this a problem?
+   > 
+   > Incorrect encoding and mislabeling introduces noise into the data, potentially making the tasks of modeling and model interpretation much harder!
+   > 
+   b. Is your dataset legally obtained for the purposes of building predictive models?
+   > You realize that you need to check with the bank whether or not the loan applicants had given legal consent for their data to be used by a 3rd-party body for analysis!
+   > 
+   > Just because the bank has the right to analyze historical loan application data it does not necessarily mean that the bank is authorized to released the data to 3rd-parties!
+   > 
+   c. How will your model be used in decision making once deployed? Is it legal to use your model as intended?
+   > As described in your project spec, the bank wants to rely on your model to make loan decisions, replacing human loan officers for most loan applications.
+   > 
+   > As it stands, it may not be legal for your model to make loan decisions or to even inform loan decisions in the US! Laws like the Equal Credit Opportunity Act prohibits basing loan decisions, for example, on sex. Given your interpretation, sex has the biggest impact on the classification probability of your logistic regression!
+   > 
+   > To complicate matters, the terms “gender” and “sex” can have very specific legal definitions – that may not align with defintions in medical or sociological contexts! For example, the language of the Equal Credit Opportunity Act is written in terms of “sex”, however, this term is not defined in the ECOA. The Consumer Financial Protection Bureau interprets (in their operating philosophy) this term to include both sexual orientation and gender identity.
+   > 
+   d. Is your model serving the needs of your users? Is your model harming the public good (e.g. who is your affected community and how are they being impacted)? Is your model causing disparate impact?
+   > In this case, the users of our model are bank employees, but the most significant affected community is that of loan applicants. It can very well be the case that the bank might be perfectly happy with your model but loan applicants will not be -- for example, if your model systemmatically denies loan applications from a specific subpopulation.
+   > Given that you only have sex information but no other demographic covariates, you can check if your model is equally accurate for male applicants as it is for female applicants:
+   \begin{aligned}
+    &\texttt{male}: 89\% \text{ test accuracy}\;
+    &\texttt{female}: 85\% \text{ test accuracy}
+   \end{aligned}
+   > While the test accuracy for male applicants is slightly higher, the two groups are comparable.
+   > 
+   > Does this mean that your model will not cause disparate impact? No!
+   > 
+   > Just because that your model is accurate in predicting a human loan officer's decision, it does not make your model fair! In fact, you check the observed loan approval rates in your data set and find that over 80% of loans from female applicants were rejected while over 60% of male applicants were approved. This is very much disparate impact! If your model captured this decision process perfectly, you would be automating and perpetuating this disparate impact!
+   
