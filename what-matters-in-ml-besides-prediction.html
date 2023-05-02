@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>Chapter 5 What Matters in ML Besides Prediction? | Notes for CS181: Machine Learning</title>
+  <meta name="description" content="This is a set of note for CS181: Machine Learning (Spring 2023)" />
+  <meta name="generator" content="bookdown 0.33 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="Chapter 5 What Matters in ML Besides Prediction? | Notes for CS181: Machine Learning" />
+  <meta property="og:type" content="book" />
+  
+  <meta property="og:description" content="This is a set of note for CS181: Machine Learning (Spring 2023)" />
+  <meta name="github-repo" content="rstudio/bookdown-demo" />
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Chapter 5 What Matters in ML Besides Prediction? | Notes for CS181: Machine Learning" />
+  
+  <meta name="twitter:description" content="This is a set of note for CS181: Machine Learning (Spring 2023)" />
+  
+
+<meta name="author" content="Yihui Xie" />
+
+
+<meta name="date" content="2023-05-02" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="what-are-probablistic-and-non-probablistic-regression.html"/>
+<link rel="next" href="what-is-logistic-regression.html"/>
+<script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+<link href="libs/anchor-sections-1.1.0/anchor-sections.css" rel="stylesheet" />
+<link href="libs/anchor-sections-1.1.0/anchor-sections-hash.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.1.0/anchor-sections.js"></script>
+
+
+
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li><a href="./">A Minimal Book Example</a></li>
+
+<li class="divider"></li>
+<li class="chapter" data-level="1" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i><b>1</b> Notes for CS181: Machine Learning</a>
+<ul>
+<li class="chapter" data-level="1.1" data-path="index.html"><a href="index.html#spring-2023"><i class="fa fa-check"></i><b>1.1</b> Spring 2023</a></li>
+</ul></li>
+<li class="chapter" data-level="2" data-path="intro.html"><a href="intro.html"><i class="fa fa-check"></i><b>2</b> What is CS181?</a>
+<ul>
+<li class="chapter" data-level="2.1" data-path="intro.html"><a href="intro.html#why-is-ai-a-big-deal"><i class="fa fa-check"></i><b>2.1</b> Why Is AI a Big Deal?</a>
+<ul>
+<li class="chapter" data-level="2.1.1" data-path="intro.html"><a href="intro.html#but-is-accuracy-enough"><i class="fa fa-check"></i><b>2.1.1</b> But Is Accuracy Enough?</a></li>
+<li class="chapter" data-level="2.1.2" data-path="intro.html"><a href="intro.html#what-happens-when-machine-learning-models-are-catastrophically-wrong"><i class="fa fa-check"></i><b>2.1.2</b> What Happens When Machine Learning Models are Catastrophically Wrong?</a></li>
+<li class="chapter" data-level="2.1.3" data-path="intro.html"><a href="intro.html#are-machine-models-right-for-the-right-reasons"><i class="fa fa-check"></i><b>2.1.3</b> Are Machine Models Right for the Right Reasons?</a></li>
+<li class="chapter" data-level="2.1.4" data-path="intro.html"><a href="intro.html#what-is-the-role-of-the-human-decision-maker"><i class="fa fa-check"></i><b>2.1.4</b> What is the Role of the Human Decision Maker?</a></li>
+<li class="chapter" data-level="2.1.5" data-path="intro.html"><a href="intro.html#what-are-the-broader-impacts-of-tech"><i class="fa fa-check"></i><b>2.1.5</b> What are the Broader Impacts of Tech?</a></li>
+</ul></li>
+<li class="chapter" data-level="2.2" data-path="intro.html"><a href="intro.html#machine-learning-is-much-more-than-accuracy"><i class="fa fa-check"></i><b>2.2</b> Machine Learning is Much More Than Accuracy</a></li>
+<li class="chapter" data-level="2.3" data-path="intro.html"><a href="intro.html#what-is-cs181"><i class="fa fa-check"></i><b>2.3</b> What is CS181?</a></li>
+<li class="chapter" data-level="2.4" data-path="intro.html"><a href="intro.html#what-we-are-offering-you"><i class="fa fa-check"></i><b>2.4</b> What We are Offering You</a></li>
+<li class="chapter" data-level="2.5" data-path="intro.html"><a href="intro.html#what-we-are-asking-from-you"><i class="fa fa-check"></i><b>2.5</b> What We are Asking From You</a></li>
+<li class="chapter" data-level="2.6" data-path="intro.html"><a href="intro.html#grading-evaluation"><i class="fa fa-check"></i><b>2.6</b> Grading &amp; Evaluation</a></li>
+</ul></li>
+<li class="chapter" data-level="3" data-path="what-is-regression.html"><a href="what-is-regression.html"><i class="fa fa-check"></i><b>3</b> What is Regression?</a>
+<ul>
+<li class="chapter" data-level="3.1" data-path="what-is-regression.html"><a href="what-is-regression.html#what-is-machine-learning"><i class="fa fa-check"></i><b>3.1</b> What is Machine Learning?</a></li>
+<li class="chapter" data-level="3.2" data-path="what-is-regression.html"><a href="what-is-regression.html#what-is-regression-1"><i class="fa fa-check"></i><b>3.2</b> What is Regression?</a></li>
+<li class="chapter" data-level="3.3" data-path="what-is-regression.html"><a href="what-is-regression.html#almost-everything-is-linear-regression"><i class="fa fa-check"></i><b>3.3</b> (Almost) Everything is Linear Regression</a></li>
+<li class="chapter" data-level="3.4" data-path="what-is-regression.html"><a href="what-is-regression.html#what-is-model-evaluation"><i class="fa fa-check"></i><b>3.4</b> What is Model Evaluation?</a></li>
+<li class="chapter" data-level="3.5" data-path="what-is-regression.html"><a href="what-is-regression.html#what-is-model-critique"><i class="fa fa-check"></i><b>3.5</b> What is Model Critique?</a></li>
+<li class="chapter" data-level="3.6" data-path="what-is-regression.html"><a href="what-is-regression.html#limitations-and-connections"><i class="fa fa-check"></i><b>3.6</b> Limitations and Connections</a></li>
+</ul></li>
+<li class="chapter" data-level="4" data-path="what-are-probablistic-and-non-probablistic-regression.html"><a href="what-are-probablistic-and-non-probablistic-regression.html"><i class="fa fa-check"></i><b>4</b> What are Probablistic and Non-Probablistic Regression?</a>
+<ul>
+<li class="chapter" data-level="4.1" data-path="what-are-probablistic-and-non-probablistic-regression.html"><a href="what-are-probablistic-and-non-probablistic-regression.html#what-is-probabilistic-regression"><i class="fa fa-check"></i><b>4.1</b> What is Probabilistic Regression?</a></li>
+<li class="chapter" data-level="4.2" data-path="what-are-probablistic-and-non-probablistic-regression.html"><a href="what-are-probablistic-and-non-probablistic-regression.html#almost-everything-is-linear-regression-1"><i class="fa fa-check"></i><b>4.2</b> (Almost) Everything is Linear Regression</a></li>
+<li class="chapter" data-level="4.3" data-path="what-are-probablistic-and-non-probablistic-regression.html"><a href="what-are-probablistic-and-non-probablistic-regression.html#the-cube-a-model-comparison-paradigm"><i class="fa fa-check"></i><b>4.3</b> The Cube: A Model Comparison Paradigm</a></li>
+</ul></li>
+<li class="chapter" data-level="5" data-path="what-matters-in-ml-besides-prediction.html"><a href="what-matters-in-ml-besides-prediction.html"><i class="fa fa-check"></i><b>5</b> What Matters in ML Besides Prediction?</a>
+<ul>
+<li class="chapter" data-level="5.1" data-path="what-matters-in-ml-besides-prediction.html"><a href="what-matters-in-ml-besides-prediction.html#what-is-machine-learning-revisited"><i class="fa fa-check"></i><b>5.1</b> What is Machine Learning? Revisited</a></li>
+<li class="chapter" data-level="5.2" data-path="what-matters-in-ml-besides-prediction.html"><a href="what-matters-in-ml-besides-prediction.html#what-are-we-uncertain-about"><i class="fa fa-check"></i><b>5.2</b> What Are We Uncertain About?</a></li>
+<li class="chapter" data-level="5.3" data-path="what-matters-in-ml-besides-prediction.html"><a href="what-matters-in-ml-besides-prediction.html#where-is-uncertainty-coming-from"><i class="fa fa-check"></i><b>5.3</b> Where is Uncertainty Coming From?</a></li>
+<li class="chapter" data-level="5.4" data-path="what-matters-in-ml-besides-prediction.html"><a href="what-matters-in-ml-besides-prediction.html#how-do-we-compute-uncertainty"><i class="fa fa-check"></i><b>5.4</b> How Do We Compute Uncertainty?</a></li>
+<li class="chapter" data-level="5.5" data-path="what-matters-in-ml-besides-prediction.html"><a href="what-matters-in-ml-besides-prediction.html#mathematizing-uncertainty-starting-with-bias-and-variance"><i class="fa fa-check"></i><b>5.5</b> Mathematizing Uncertainty: Starting with Bias and Variance</a></li>
+<li class="chapter" data-level="5.6" data-path="what-matters-in-ml-besides-prediction.html"><a href="what-matters-in-ml-besides-prediction.html#the-bias-variance-trade-off-in-machine-learning"><i class="fa fa-check"></i><b>5.6</b> The Bias-Variance Trade-off in Machine Learning</a>
+<ul>
+<li class="chapter" data-level="5.6.1" data-path="what-matters-in-ml-besides-prediction.html"><a href="what-matters-in-ml-besides-prediction.html#examples-of-the-bias-variance-trade-off"><i class="fa fa-check"></i><b>5.6.1</b> Examples of the Bias-Variance Trade-off</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="6" data-path="what-is-logistic-regression.html"><a href="what-is-logistic-regression.html"><i class="fa fa-check"></i><b>6</b> What is Logistic Regression?</a>
+<ul>
+<li class="chapter" data-level="6.1" data-path="what-is-logistic-regression.html"><a href="what-is-logistic-regression.html#logistic-regression-and-soft-classification"><i class="fa fa-check"></i><b>6.1</b> Logistic Regression and Soft-Classification</a></li>
+<li class="chapter" data-level="6.2" data-path="what-is-logistic-regression.html"><a href="what-is-logistic-regression.html#logistic-regression-and-bernoulli-likelihood"><i class="fa fa-check"></i><b>6.2</b> Logistic Regression and Bernoulli Likelihood</a></li>
+<li class="chapter" data-level="6.3" data-path="what-is-logistic-regression.html"><a href="what-is-logistic-regression.html#how-to-perform-maximum-likelihood-inference-for-logistic-regression"><i class="fa fa-check"></i><b>6.3</b> How to Perform Maximum Likelihood Inference for Logistic Regression</a></li>
+<li class="chapter" data-level="6.4" data-path="what-is-logistic-regression.html"><a href="what-is-logistic-regression.html#how-not-to-evaluate-classifiers"><i class="fa fa-check"></i><b>6.4</b> How (Not) to Evaluate Classifiers</a></li>
+<li class="chapter" data-level="6.5" data-path="what-is-logistic-regression.html"><a href="what-is-logistic-regression.html#how-to-interpret-logistic-regression"><i class="fa fa-check"></i><b>6.5</b> How to Interpret Logistic Regression</a></li>
+</ul></li>
+<li class="chapter" data-level="7" data-path="how-do-we-responsibly-use-conditional-models.html"><a href="how-do-we-responsibly-use-conditional-models.html"><i class="fa fa-check"></i><b>7</b> How Do We Responsibly Use Conditional Models?</a>
+<ul>
+<li class="chapter" data-level="7.1" data-path="how-do-we-responsibly-use-conditional-models.html"><a href="how-do-we-responsibly-use-conditional-models.html#everything-weve-done-so-far-in-probabilistic-ml"><i class="fa fa-check"></i><b>7.1</b> Everything We’ve Done So Far in Probabilistic ML</a></li>
+</ul></li>
+<li class="divider"></li>
+<li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
+
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Notes for CS181: Machine Learning</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="what-matters-in-ml-besides-prediction" class="section level1 hasAnchor" number="5">
+<h1><span class="header-section-number">Chapter 5</span> What Matters in ML Besides Prediction?<a href="what-matters-in-ml-besides-prediction.html#what-matters-in-ml-besides-prediction" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<p><img src="https://i.imgur.com/xDR9VQd.png" /></p>
+<div id="what-is-machine-learning-revisited" class="section level2 hasAnchor" number="5.1">
+<h2><span class="header-section-number">5.1</span> What is Machine Learning? Revisited<a href="what-matters-in-ml-besides-prediction.html#what-is-machine-learning-revisited" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>In Lecture #2 we defined machine learning as learning the parameters of function (or of a distribution, if we are being probabilistic) that best fits with observed data. This definition needs refinement! In reality, finding parameters is just sub-goal of a much more complex goal:</p>
+<p><img src="https://i.imgur.com/ecU0DQS.png" /></p>
+<p><strong>What does “doing Machine Learning” look like?</strong> The short answer: it looks like making and justifying a sequence of <strong><em>choices</em></strong>, while making our assumptions and biases as explicit as possible:</p>
+<ol style="list-style-type: decimal">
+<li><p><em>Choosing</em> a training data set <span class="math inline">\(\mathcal{D}\)</span>.
+<strong>Question:</strong> What assumptions do we make when we make this choice?</p></li>
+<li><p><em>Choosing</em> a model for the trend in the data <span class="math inline">\(f\)</span> or for the distribution of the data (trend and noise), i.e. the likelihood, <span class="math inline">\(p(y \vert f, \theta)\)</span>
+<strong>Question:</strong> What assumptions do we make when we make this choice?</p></li>
+<li><p><em>Choosing</em> a loss function – i.e. a way to measure the fit of <span class="math inline">\(f\)</span> (and potentially <span class="math inline">\(\theta\)</span>)
+<strong>Question:</strong> What assumptions do we make when we make this choice?</p></li>
+<li><p><em>Choosing</em> a way to optimize the loss function
+<strong>Question:</strong> What assumptions do we make when we make this choice?</p></li>
+<li><p><em>Choosing</em> a way to evaluate the model we learned – we may choose to evaluate the model using a different metric than the loss function!
+<strong>Question:</strong> What assumptions do we make when we make this choice?</p></li>
+</ol>
+<p><strong>What does a Machine Learning product look like?</strong> The short answer: it looks like a technical artifact as well as a recommended policy to guide the appropriate, ethical and responsible usage of it (and potentially much more!).</p>
+<p><img src="https://i.imgur.com/Wa7xvGm.png" /></p>
+<p>For example, see <a href="https://arxiv.org/pdf/1810.03993.pdf">Model Cards for Model Reporting</a></p>
+</div>
+<div id="what-are-we-uncertain-about" class="section level2 hasAnchor" number="5.2">
+<h2><span class="header-section-number">5.2</span> What Are We Uncertain About?<a href="what-matters-in-ml-besides-prediction.html#what-are-we-uncertain-about" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>If we really work with the idea that everything in machine learning is a choice, including the training data, this means that we could have chosen a different training data set. For example: if we collected our training data from patients in one hospital, we can ask what would have happened if we collected data from a different hospital?</p>
+<p>Generally speaking, data sets collected at different times, from different locations or from different populations will be slightly (or significantly) different. Thus, the functions <span class="math inline">\(f\)</span> we learn on these datasets will differ and these different functions will produce different predictions for the same test point!</p>
+<p>So, we should be uncertain about:
+1. <strong>(Math)</strong> the function <span class="math inline">\(f\)</span> we learned (e.g. the parameters <span class="math inline">\(\mathbf{w}\)</span> for <span class="math inline">\(f\)</span> or the function <span class="math inline">\(f\)</span> itself when our model is non-parametric)
+2. <strong>(Application)</strong> our interpretation of <span class="math inline">\(f\)</span>
+3. <strong>(Math)</strong> our prediction <span class="math inline">\(\hat{y}\)</span> for a new point <span class="math inline">\(\mathbf{x}\)</span>
+4. <strong>(Application)</strong> our recommendation for how to make decisions based on our model</p>
+<p><strong>Question:</strong> Why do we care about uncertainty?</p>
+</div>
+<div id="where-is-uncertainty-coming-from" class="section level2 hasAnchor" number="5.3">
+<h2><span class="header-section-number">5.3</span> Where is Uncertainty Coming From?<a href="what-matters-in-ml-besides-prediction.html#where-is-uncertainty-coming-from" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>Generally speaking:
+1. uncertainty in <span class="math inline">\(f\)</span> comes from us not having enough data to uniquely determine a function <span class="math inline">\(f\)</span>, this could be because of a combination of the below
+- <span class="math inline">\(f\)</span> is a complex model (e.g. lots of parameters) compared to the number of training data points (the model is under determined)
+- the data is very noisy and there are very few observations (so that the trend isn’t clear)
+2. uncertainty in our prediction <span class="math inline">\(\hat{y}\)</span> comes from a combination of the above:
+- uncertainty in <span class="math inline">\(f\)</span> – if we aren’t sure about <span class="math inline">\(f\)</span> we can’t be sure about <span class="math inline">\(\hat{y}\)</span>
+- noise in data – even if we are 100% certain that we have the right <span class="math inline">\(f\)</span>, we can still be uncertain about the prediction <span class="math inline">\(\hat{y}\)</span> due to observation noise</p>
+<p><strong>Question:</strong> Why do we care about what’s causing uncertainty?</p>
+</div>
+<div id="how-do-we-compute-uncertainty" class="section level2 hasAnchor" number="5.4">
+<h2><span class="header-section-number">5.4</span> How Do We Compute Uncertainty?<a href="what-matters-in-ml-besides-prediction.html#how-do-we-compute-uncertainty" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>If we make some strong assumptions about <span class="math inline">\(f\)</span>, as well as the distribution of the data, we can analytically compute the uncertainty in <span class="math inline">\(f\)</span> as well as the uncertainty in <span class="math inline">\(\hat{y}\)</span>.</p>
+<p>Realistically, we often empirically estimate the uncertainty in <span class="math inline">\(f\)</span> and <span class="math inline">\(\hat{y}\)</span> through simulating drawing new training data sets by resampling our existing data – this is called <em>bootstrapping</em>.</p>
+<p>For the different bootstrap training data sets, we learn different functions <span class="math inline">\(f\)</span> and make different predictions <span class="math inline">\(\hat{y}\)</span>. The empirical variance of learnt parameters <span class="math inline">\(\mathbf{w}\)</span> of <span class="math inline">\(f\)</span> gives us an estimate of the <em>confidence interval</em> of our estimate of <span class="math inline">\(\mathbf{w}\)</span>.
+The empirical variance of our prediction <span class="math inline">\(\hat{y}\)</span> gives us an estimate of the <em>predictive interval</em>.</p>
+</div>
+<div id="mathematizing-uncertainty-starting-with-bias-and-variance" class="section level2 hasAnchor" number="5.5">
+<h2><span class="header-section-number">5.5</span> Mathematizing Uncertainty: Starting with Bias and Variance<a href="what-matters-in-ml-besides-prediction.html#mathematizing-uncertainty-starting-with-bias-and-variance" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>So far we’ve been describing uncertainty purely in intuitive terms. In order to quantify and analyze uncertainty, we need mathematical formalism!</p>
+<p>One way to formalize our uncertainty over our prediction is to reason about why our prediction might be wrong. We do so by defining and decomposing the <em>generalization error</em> of our model.</p>
+<span class="math display">\[\begin{aligned}
+\underbrace{\mathbb{E}_{(\mathbf{x}, y), \mathcal{D}}\left[ (y- f_\mathbf{w}(\mathbf{x}))^2\right]}_{\text{Generalization Error}} =&amp; \mathbb{E}_{\mathbf{x}}\underbrace{\mathrm{Var}[y|\mathbf{x}]}_{\text{Observation Noise}}\\
+&amp; + \mathbb{E}_{\mathbf{x}}[(\underbrace{\mathbb{E}_{y|\mathbf{x}}[y|\mathbf{x}]}_{\text{Average true $y$}\\ \text{over noisy observations}} - \underbrace{\mathbb{E}_\mathcal{D}[f_\mathbf{w}(\mathbf{x})]}_{\text{Average prediction}\\\text{over all possible training sets}})^2]\\
+&amp;+\mathbb{E}_{\mathbf{x}} \underbrace{\mathrm{Var}[f_\mathbf{w}(\mathbf{x})]}_{\text{Variance of Model}}\\
+&amp;= \text{Observation Noise} + \text{Model Bias} + \text{Model Variance}
+\end{aligned}\]</span>
+<p>From the math, we see that we have three reasons to be uncertain about our model predictions:
+1. <strong>the observation noise</strong> – even if we are 100% certain that we have the right model, our prediction can still be wrong due to noise
+2. <strong>model bias</strong> – we could have been wildly wrong in our guess of the form of the model (e.g. assuming linear function when modeling quadratic data)
+3. <strong>model variance</strong> – the number of data points is insufficient to uniquely determine the model</p>
+</div>
+<div id="the-bias-variance-trade-off-in-machine-learning" class="section level2 hasAnchor" number="5.6">
+<h2><span class="header-section-number">5.6</span> The Bias-Variance Trade-off in Machine Learning<a href="what-matters-in-ml-besides-prediction.html#the-bias-variance-trade-off-in-machine-learning" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>One reason we want to work with the formalism of the generalization error is that by decomposing the generalization error, we see how we can reduce our uncertainty in our predictions.</p>
+<p>Immediately, we see that there is nothing we can do to reduce generalization error arising from observation noise – this error is <strong><em>irreducible</em></strong>.</p>
+<p>We can, however, choose our model so we have some control over model bias and model variance – these errors are <strong><em>reducible</em></strong>.</p>
+<p>Unfortunately, generally speaking, when we reduce model bias by making our models more complex, the complexity increases model variance (and vice versa):</p>
+<p><img src="https://i.imgur.com/lUDZq5r.jpg" /></p>
+<div id="examples-of-the-bias-variance-trade-off" class="section level3 hasAnchor" number="5.6.1">
+<h3><span class="header-section-number">5.6.1</span> Examples of the Bias-Variance Trade-off<a href="what-matters-in-ml-besides-prediction.html#examples-of-the-bias-variance-trade-off" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>Many modification we perform on machine models are frequently just ways to manage the Bias-Variance Trade-off.</p>
+<ol style="list-style-type: decimal">
+<li><strong>Regularization:</strong> adding a penalty term to the MSE loss introduces bias (reduces the ability of the model to fit the data), in order to reduce variance (by biasing the optimization towards simpler models)</li>
+<li><strong>Ensembling:</strong> creating a large set of very different complex models (low bias but high variance), and then reducing the variance by average the model predictions</li>
+<li><strong>Boosting:</strong> iteratively making a simple base model (high bias but low variance) more complex and thereby reducing the bias without significantly increasing the variance</li>
+</ol>
+
+</div>
+</div>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="what-are-probablistic-and-non-probablistic-regression.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="what-is-logistic-regression.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+"sharing": {
+"github": false,
+"facebook": true,
+"twitter": true,
+"linkedin": false,
+"weibo": false,
+"instapaper": false,
+"vk": false,
+"whatsapp": false,
+"all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
+},
+"fontsettings": {
+"theme": "white",
+"family": "sans",
+"size": 2
+},
+"edit": {
+"link": "https://github.com/rstudio/bookdown-demo/edit/master/04-What-Matters-in_ML.Rmd",
+"text": "Edit"
+},
+"history": {
+"link": null,
+"text": null
+},
+"view": {
+"link": null,
+"text": null
+},
+"download": ["bookdown-demo.pdf", "bookdown-demo.epub"],
+"search": {
+"engine": "fuse",
+"options": null
+},
+"toc": {
+"collapse": "subsection"
+}
+});
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "true";
+    if (src === "" || src === "true") src = "https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.9/latest.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:")
+      if (/^https?:/.test(src))
+        src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+</body>
+
+</html>

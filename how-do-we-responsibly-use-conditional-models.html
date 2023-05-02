@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>Chapter 7 How Do We Responsibly Use Conditional Models? | Notes for CS181: Machine Learning</title>
+  <meta name="description" content="This is a set of note for CS181: Machine Learning (Spring 2023)" />
+  <meta name="generator" content="bookdown 0.33 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="Chapter 7 How Do We Responsibly Use Conditional Models? | Notes for CS181: Machine Learning" />
+  <meta property="og:type" content="book" />
+  
+  <meta property="og:description" content="This is a set of note for CS181: Machine Learning (Spring 2023)" />
+  <meta name="github-repo" content="rstudio/bookdown-demo" />
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Chapter 7 How Do We Responsibly Use Conditional Models? | Notes for CS181: Machine Learning" />
+  
+  <meta name="twitter:description" content="This is a set of note for CS181: Machine Learning (Spring 2023)" />
+  
+
+<meta name="author" content="Yihui Xie" />
+
+
+<meta name="date" content="2023-05-02" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="what-is-logistic-regression.html"/>
+
+<script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+<link href="libs/anchor-sections-1.1.0/anchor-sections.css" rel="stylesheet" />
+<link href="libs/anchor-sections-1.1.0/anchor-sections-hash.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.1.0/anchor-sections.js"></script>
+
+
+
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li><a href="./">A Minimal Book Example</a></li>
+
+<li class="divider"></li>
+<li class="chapter" data-level="1" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i><b>1</b> Notes for CS181: Machine Learning</a>
+<ul>
+<li class="chapter" data-level="1.1" data-path="index.html"><a href="index.html#spring-2023"><i class="fa fa-check"></i><b>1.1</b> Spring 2023</a></li>
+</ul></li>
+<li class="chapter" data-level="2" data-path="intro.html"><a href="intro.html"><i class="fa fa-check"></i><b>2</b> What is CS181?</a>
+<ul>
+<li class="chapter" data-level="2.1" data-path="intro.html"><a href="intro.html#why-is-ai-a-big-deal"><i class="fa fa-check"></i><b>2.1</b> Why Is AI a Big Deal?</a>
+<ul>
+<li class="chapter" data-level="2.1.1" data-path="intro.html"><a href="intro.html#but-is-accuracy-enough"><i class="fa fa-check"></i><b>2.1.1</b> But Is Accuracy Enough?</a></li>
+<li class="chapter" data-level="2.1.2" data-path="intro.html"><a href="intro.html#what-happens-when-machine-learning-models-are-catastrophically-wrong"><i class="fa fa-check"></i><b>2.1.2</b> What Happens When Machine Learning Models are Catastrophically Wrong?</a></li>
+<li class="chapter" data-level="2.1.3" data-path="intro.html"><a href="intro.html#are-machine-models-right-for-the-right-reasons"><i class="fa fa-check"></i><b>2.1.3</b> Are Machine Models Right for the Right Reasons?</a></li>
+<li class="chapter" data-level="2.1.4" data-path="intro.html"><a href="intro.html#what-is-the-role-of-the-human-decision-maker"><i class="fa fa-check"></i><b>2.1.4</b> What is the Role of the Human Decision Maker?</a></li>
+<li class="chapter" data-level="2.1.5" data-path="intro.html"><a href="intro.html#what-are-the-broader-impacts-of-tech"><i class="fa fa-check"></i><b>2.1.5</b> What are the Broader Impacts of Tech?</a></li>
+</ul></li>
+<li class="chapter" data-level="2.2" data-path="intro.html"><a href="intro.html#machine-learning-is-much-more-than-accuracy"><i class="fa fa-check"></i><b>2.2</b> Machine Learning is Much More Than Accuracy</a></li>
+<li class="chapter" data-level="2.3" data-path="intro.html"><a href="intro.html#what-is-cs181"><i class="fa fa-check"></i><b>2.3</b> What is CS181?</a></li>
+<li class="chapter" data-level="2.4" data-path="intro.html"><a href="intro.html#what-we-are-offering-you"><i class="fa fa-check"></i><b>2.4</b> What We are Offering You</a></li>
+<li class="chapter" data-level="2.5" data-path="intro.html"><a href="intro.html#what-we-are-asking-from-you"><i class="fa fa-check"></i><b>2.5</b> What We are Asking From You</a></li>
+<li class="chapter" data-level="2.6" data-path="intro.html"><a href="intro.html#grading-evaluation"><i class="fa fa-check"></i><b>2.6</b> Grading &amp; Evaluation</a></li>
+</ul></li>
+<li class="chapter" data-level="3" data-path="what-is-regression.html"><a href="what-is-regression.html"><i class="fa fa-check"></i><b>3</b> What is Regression?</a>
+<ul>
+<li class="chapter" data-level="3.1" data-path="what-is-regression.html"><a href="what-is-regression.html#what-is-machine-learning"><i class="fa fa-check"></i><b>3.1</b> What is Machine Learning?</a></li>
+<li class="chapter" data-level="3.2" data-path="what-is-regression.html"><a href="what-is-regression.html#what-is-regression-1"><i class="fa fa-check"></i><b>3.2</b> What is Regression?</a></li>
+<li class="chapter" data-level="3.3" data-path="what-is-regression.html"><a href="what-is-regression.html#almost-everything-is-linear-regression"><i class="fa fa-check"></i><b>3.3</b> (Almost) Everything is Linear Regression</a></li>
+<li class="chapter" data-level="3.4" data-path="what-is-regression.html"><a href="what-is-regression.html#what-is-model-evaluation"><i class="fa fa-check"></i><b>3.4</b> What is Model Evaluation?</a></li>
+<li class="chapter" data-level="3.5" data-path="what-is-regression.html"><a href="what-is-regression.html#what-is-model-critique"><i class="fa fa-check"></i><b>3.5</b> What is Model Critique?</a></li>
+<li class="chapter" data-level="3.6" data-path="what-is-regression.html"><a href="what-is-regression.html#limitations-and-connections"><i class="fa fa-check"></i><b>3.6</b> Limitations and Connections</a></li>
+</ul></li>
+<li class="chapter" data-level="4" data-path="what-are-probablistic-and-non-probablistic-regression.html"><a href="what-are-probablistic-and-non-probablistic-regression.html"><i class="fa fa-check"></i><b>4</b> What are Probablistic and Non-Probablistic Regression?</a>
+<ul>
+<li class="chapter" data-level="4.1" data-path="what-are-probablistic-and-non-probablistic-regression.html"><a href="what-are-probablistic-and-non-probablistic-regression.html#what-is-probabilistic-regression"><i class="fa fa-check"></i><b>4.1</b> What is Probabilistic Regression?</a></li>
+<li class="chapter" data-level="4.2" data-path="what-are-probablistic-and-non-probablistic-regression.html"><a href="what-are-probablistic-and-non-probablistic-regression.html#almost-everything-is-linear-regression-1"><i class="fa fa-check"></i><b>4.2</b> (Almost) Everything is Linear Regression</a></li>
+<li class="chapter" data-level="4.3" data-path="what-are-probablistic-and-non-probablistic-regression.html"><a href="what-are-probablistic-and-non-probablistic-regression.html#the-cube-a-model-comparison-paradigm"><i class="fa fa-check"></i><b>4.3</b> The Cube: A Model Comparison Paradigm</a></li>
+</ul></li>
+<li class="chapter" data-level="5" data-path="what-matters-in-ml-besides-prediction.html"><a href="what-matters-in-ml-besides-prediction.html"><i class="fa fa-check"></i><b>5</b> What Matters in ML Besides Prediction?</a>
+<ul>
+<li class="chapter" data-level="5.1" data-path="what-matters-in-ml-besides-prediction.html"><a href="what-matters-in-ml-besides-prediction.html#what-is-machine-learning-revisited"><i class="fa fa-check"></i><b>5.1</b> What is Machine Learning? Revisited</a></li>
+<li class="chapter" data-level="5.2" data-path="what-matters-in-ml-besides-prediction.html"><a href="what-matters-in-ml-besides-prediction.html#what-are-we-uncertain-about"><i class="fa fa-check"></i><b>5.2</b> What Are We Uncertain About?</a></li>
+<li class="chapter" data-level="5.3" data-path="what-matters-in-ml-besides-prediction.html"><a href="what-matters-in-ml-besides-prediction.html#where-is-uncertainty-coming-from"><i class="fa fa-check"></i><b>5.3</b> Where is Uncertainty Coming From?</a></li>
+<li class="chapter" data-level="5.4" data-path="what-matters-in-ml-besides-prediction.html"><a href="what-matters-in-ml-besides-prediction.html#how-do-we-compute-uncertainty"><i class="fa fa-check"></i><b>5.4</b> How Do We Compute Uncertainty?</a></li>
+<li class="chapter" data-level="5.5" data-path="what-matters-in-ml-besides-prediction.html"><a href="what-matters-in-ml-besides-prediction.html#mathematizing-uncertainty-starting-with-bias-and-variance"><i class="fa fa-check"></i><b>5.5</b> Mathematizing Uncertainty: Starting with Bias and Variance</a></li>
+<li class="chapter" data-level="5.6" data-path="what-matters-in-ml-besides-prediction.html"><a href="what-matters-in-ml-besides-prediction.html#the-bias-variance-trade-off-in-machine-learning"><i class="fa fa-check"></i><b>5.6</b> The Bias-Variance Trade-off in Machine Learning</a>
+<ul>
+<li class="chapter" data-level="5.6.1" data-path="what-matters-in-ml-besides-prediction.html"><a href="what-matters-in-ml-besides-prediction.html#examples-of-the-bias-variance-trade-off"><i class="fa fa-check"></i><b>5.6.1</b> Examples of the Bias-Variance Trade-off</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="6" data-path="what-is-logistic-regression.html"><a href="what-is-logistic-regression.html"><i class="fa fa-check"></i><b>6</b> What is Logistic Regression?</a>
+<ul>
+<li class="chapter" data-level="6.1" data-path="what-is-logistic-regression.html"><a href="what-is-logistic-regression.html#logistic-regression-and-soft-classification"><i class="fa fa-check"></i><b>6.1</b> Logistic Regression and Soft-Classification</a></li>
+<li class="chapter" data-level="6.2" data-path="what-is-logistic-regression.html"><a href="what-is-logistic-regression.html#logistic-regression-and-bernoulli-likelihood"><i class="fa fa-check"></i><b>6.2</b> Logistic Regression and Bernoulli Likelihood</a></li>
+<li class="chapter" data-level="6.3" data-path="what-is-logistic-regression.html"><a href="what-is-logistic-regression.html#how-to-perform-maximum-likelihood-inference-for-logistic-regression"><i class="fa fa-check"></i><b>6.3</b> How to Perform Maximum Likelihood Inference for Logistic Regression</a></li>
+<li class="chapter" data-level="6.4" data-path="what-is-logistic-regression.html"><a href="what-is-logistic-regression.html#how-not-to-evaluate-classifiers"><i class="fa fa-check"></i><b>6.4</b> How (Not) to Evaluate Classifiers</a></li>
+<li class="chapter" data-level="6.5" data-path="what-is-logistic-regression.html"><a href="what-is-logistic-regression.html#how-to-interpret-logistic-regression"><i class="fa fa-check"></i><b>6.5</b> How to Interpret Logistic Regression</a></li>
+</ul></li>
+<li class="chapter" data-level="7" data-path="how-do-we-responsibly-use-conditional-models.html"><a href="how-do-we-responsibly-use-conditional-models.html"><i class="fa fa-check"></i><b>7</b> How Do We Responsibly Use Conditional Models?</a>
+<ul>
+<li class="chapter" data-level="7.1" data-path="how-do-we-responsibly-use-conditional-models.html"><a href="how-do-we-responsibly-use-conditional-models.html#everything-weve-done-so-far-in-probabilistic-ml"><i class="fa fa-check"></i><b>7.1</b> Everything We’ve Done So Far in Probabilistic ML</a></li>
+</ul></li>
+<li class="divider"></li>
+<li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
+
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Notes for CS181: Machine Learning</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="how-do-we-responsibly-use-conditional-models" class="section level1 hasAnchor" number="7">
+<h1><span class="header-section-number">Chapter 7</span> How Do We Responsibly Use Conditional Models?<a href="how-do-we-responsibly-use-conditional-models.html#how-do-we-responsibly-use-conditional-models" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<p><img src="https://i.imgur.com/xDR9VQd.png" /></p>
+<div id="everything-weve-done-so-far-in-probabilistic-ml" class="section level2 hasAnchor" number="7.1">
+<h2><span class="header-section-number">7.1</span> Everything We’ve Done So Far in Probabilistic ML<a href="how-do-we-responsibly-use-conditional-models.html#everything-weve-done-so-far-in-probabilistic-ml" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>For a set of observations <span class="math inline">\(y\)</span>, we can collect additional data <span class="math inline">\(\mathbf{x}\)</span> and model the <strong><em>conditional distribution</em></strong> <span class="math inline">\(p(y|\mathbf{x})\)</span>. This is exactly regression and classification models do, they use <strong><em>covariates</em></strong> <span class="math inline">\(\mathbf{x}\)</span> to predict the <strong><em>outcome</em></strong> <span class="math inline">\(y\)</span>.</p>
+<ol style="list-style-type: decimal">
+<li><p><strong>(Conditional Models)</strong> Why do we need additional data <span class="math inline">\(\mathbf{x}\)</span>? Why isn’t it sufficient to just model <span class="math inline">\(y\)</span> by itself (as a binomial, Guassian or a mixture of Gaussians)?</p>
+<ul>
+<li>to predict</li>
+<li>to explain</li>
+<li>to model finer grain variations in y (i.e. model data heterogeneity)</li>
+</ul></li>
+<li><p><strong>(Classification)</strong> For binary data (like whether or not an individual has kidney cancer), we can model <span class="math inline">\(p(y|\mathbf{x})\)</span> as a Bernoulli
+<span class="math display">\[
+y \sim \mathrm{Ber}\left(\mathrm{sigm}\left(f_\mathbf{w}\left(\mathbf{x} \right)\right)\right).
+\]</span></p></li>
+<li><p><strong>(Maximizing the Likelihood)</strong> We want to maximize the log Bernoulli likelihood of <span class="math inline">\(y\)</span> (conditioned on <span class="math inline">\(\mathbf{x}\)</span>) over model parameters <span class="math inline">\(\mathbf{w}\)</span>, but the zeros of the gradient of the log-likelihood cannot be analytically solved for!
+<span class="math display">\[
+\nabla_{\mathbf{w}} \ell(\mathbf{w}) = -\sum_{n=1}^N \left(y_n - \frac{1}{1 + e^{-\mathbf{w}^\top\phi(\mathbf{x}_{n})}} \right) \phi(\mathbf{x}_{n}) =\mathbf{0}
+\]</span>
+But just because we can’t analytically find the zeros of the gradient, it doesn’t mean that the gradient is useless! The gradient of a loss function points to the direction of the greatest rate of increase, hence <strong><em>the negative gradient points to the direction of the fastest way of decreasing the loss function</em></strong>.</p>
+<p>When we iteratively decrease the loss function by changing <span class="math inline">\(\mathbf{w}\)</span> in the direction of the negative gradient, this is called <strong><em>gradient descent</em></strong>.</p></li>
+<li><p><strong>(Properties of Gradient Descent)</strong> Gradient descent sounds like we can optimize any function without work, is it as good as it sounds?</p>
+<ul>
+<li>What do I need to know in order to use gradient descent?</li>
+<li>Is gradient descent guaranteed to converge?</li>
+<li>Is gradient descent efficient?</li>
+</ul></li>
+<li><p><strong>(Model Evaluation)</strong> How do I know my model is “correct”?</p>
+<ul>
+<li>Choose a meaningful numeric predictive metric (e.g. MSE, log-likelihood, accuracy, AUC etc) – which metric measures the model behavior that I actually care about?</li>
+<li>Evaluate your model along other important real-life axes:
+<ul>
+<li>Probabilistic vs Non-probabilistic</li>
+<li>Parametric vs Non-parametric</li>
+<li>Interpretability</li>
+</ul></li>
+</ul></li>
+<li><p><strong>(The Challenges of Conditional Models)</strong> Conditional models have so much potential to generate scientific understanding of our data but they are also the most frequently misused!</p>
+<p>Suppose that you fit a logistic regression model to predict whether a loan application should be approved. Suppose that you have three covariates:</p>
+<blockquote>
+<p><code>x_1</code> representing gender: 0 for male, 1 for female
+<code>x_2</code> for the income
+<code>x_3</code> for the loan amount</p>
+</blockquote>
+<p>Suppose that the parameters you found are:
+<span class="math display">\[
+p(y=1 | x_1, x_2, x_3) = \mathrm{sigm}(-1 + 3 x_1 + 1.5 x_2 + 1.75 x_3).
+\]</span>
+What can I conclude about the loan decisions data that this model was fitted on? Can I deploy this model for usage?</p>
+<ul>
+<li><strong>Bias in your conclusions is exponentially exacerbated by bias in the data collection process.</strong>
+<ul>
+<li><p><strong>What information are you asking for?</strong> If you ask the wrong question, the covariates you collect are at best unpredictive, and <strong><em>at worse they can mask the signal in the data</em></strong>.</p>
+<p>In many data collection processes, one finds that the questionaire might be using “sex” and “gender” interchangeably, or “race” and “ethnicity” interchageably. But the former (depending on field and context) frequently refers to biological invariants (like chromosomes and genetic lineage), whereas the latter frequently refers to lived experiences (related to identity, culture etc). <strong>Caveat:</strong> although we collect data on race and sex as if delineation in these categories are more “immutable” or “factual”, many have/do argue that these concepts are also social constructs (see discussion on false binaries and false aggregtaion)!</p>
+<p>When you ask for “sex” are you asking about a person’s chromosomal information, becaues you’re studying chromosomal related diseases, or are you asking about their experiences with the US medical system and how their health outcome is affected by their gendery identity OR the identity that people tend to assume of them? <strong>For example:</strong> women, especially women of color, tend to be under-diagnosed and mis-diagnosed due to gendered treatments of patients.</p>
+<p>To complicate matters, the terms “gender” and “sex” can have very specific legal definitions – that may not align with defintions in medical or sociological contexts! For example, the language of the Equal Credit Opportunity Act is written in terms of “sex”, however, this term is not defined in the ECOA. The Consumer Financial Protection Bureau interprets (in their operating philosophy) this term to include both sexual orientation and gender identity.</p></li>
+<li><p><strong>Did you already bias the answer?</strong> If you gave confusing, misleading or incorrect options for answers (think about when you were frustrated with the concept quizzes!), then the covariates you collect are at best unpredictive, and <strong><em>at worse they can mask the signal in the data</em></strong>.</p>
+<p>In many data collection processes, one finds that the respondent is forced into a category that is unrepresentative of their experience, like having “Asian” as a broad racial category that includes South Asian, East Asian, South East Asian, like providing binary choices for gender or sex.</p>
+<p>If you are looking for disparaties in health outcomes, you might miss disparaties amongst important smaller subgroups within broad group of “Asian”, since health outcomes are often affected by income and Asian-Americans have the largest in-group income disparity.</p></li>
+<li><p><strong>Should you be asking for this information?</strong> The complexity of asking a seemingly simple question can seem overwhelming, often we resort to over-collecting (collecting every piece of information that we can think of) or under-collecting (not collecting any sensitive attribute).</p>
+<p><strong>Why you might not want to</strong> But respondents (e.g. patients, applicants for benefits) can be suspicious that their data can be used precisely to discriminate against them on the basis of protected attributes. Note that data collection have often historically been used to oppress, not to up-lift, vunerable communities. So collecting this data without clear purpose can compromise user trust and constitute a privacy threat if this data is not well protected.</p>
+<p><strong>Why you should</strong> However, in order to make sure our model is not disproportionately negatively impacting vunerable subgroups and that we are in compliancenb with laws like the EOCA, we need to check for disparate impact on protected groups. But in order to do that, we need to have access to sensitive attributes.</p></li>
+</ul></li>
+<li><strong>Is correlation causation?</strong>
+<ul>
+<li><p>It appears that the sex of the applicant the logistic regression model has the greatest influence on the prediction of the model, does this mean that the human decision makers were biased? (<strong>Hint:</strong> not necssarily, but it might be a hypothesis to explore to retroactively detect potential regulatory violation in this dataset.)</p></li>
+<li><p>If the interpretations of the coefficients of the logistic regression model does not imply human bias in the data, then can we use this model for real life loan decisions? (<strong>Hint:</strong> the answer is NO. It would be an violation!)</p></li>
+</ul></li>
+</ul></li>
+</ol>
+
+</div>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="what-is-logistic-regression.html" class="navigation navigation-prev navigation-unique" aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+"sharing": {
+"github": false,
+"facebook": true,
+"twitter": true,
+"linkedin": false,
+"weibo": false,
+"instapaper": false,
+"vk": false,
+"whatsapp": false,
+"all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
+},
+"fontsettings": {
+"theme": "white",
+"family": "sans",
+"size": 2
+},
+"edit": {
+"link": "https://github.com/rstudio/bookdown-demo/edit/master/06-How-to-Responsibly-Use-ML.Rmd",
+"text": "Edit"
+},
+"history": {
+"link": null,
+"text": null
+},
+"view": {
+"link": null,
+"text": null
+},
+"download": ["bookdown-demo.pdf", "bookdown-demo.epub"],
+"search": {
+"engine": "fuse",
+"options": null
+},
+"toc": {
+"collapse": "subsection"
+}
+});
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "true";
+    if (src === "" || src === "true") src = "https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.9/latest.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:")
+      if (/^https?:/.test(src))
+        src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+</body>
+
+</html>

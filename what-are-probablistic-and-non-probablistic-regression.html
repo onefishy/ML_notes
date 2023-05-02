@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>Chapter 4 What are Probablistic and Non-Probablistic Regression? | Notes for CS181: Machine Learning</title>
+  <meta name="description" content="This is a set of note for CS181: Machine Learning (Spring 2023)" />
+  <meta name="generator" content="bookdown 0.33 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="Chapter 4 What are Probablistic and Non-Probablistic Regression? | Notes for CS181: Machine Learning" />
+  <meta property="og:type" content="book" />
+  
+  <meta property="og:description" content="This is a set of note for CS181: Machine Learning (Spring 2023)" />
+  <meta name="github-repo" content="rstudio/bookdown-demo" />
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Chapter 4 What are Probablistic and Non-Probablistic Regression? | Notes for CS181: Machine Learning" />
+  
+  <meta name="twitter:description" content="This is a set of note for CS181: Machine Learning (Spring 2023)" />
+  
+
+<meta name="author" content="Yihui Xie" />
+
+
+<meta name="date" content="2023-05-02" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="what-is-regression.html"/>
+<link rel="next" href="what-matters-in-ml-besides-prediction.html"/>
+<script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+<link href="libs/anchor-sections-1.1.0/anchor-sections.css" rel="stylesheet" />
+<link href="libs/anchor-sections-1.1.0/anchor-sections-hash.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.1.0/anchor-sections.js"></script>
+
+
+
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li><a href="./">A Minimal Book Example</a></li>
+
+<li class="divider"></li>
+<li class="chapter" data-level="1" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i><b>1</b> Notes for CS181: Machine Learning</a>
+<ul>
+<li class="chapter" data-level="1.1" data-path="index.html"><a href="index.html#spring-2023"><i class="fa fa-check"></i><b>1.1</b> Spring 2023</a></li>
+</ul></li>
+<li class="chapter" data-level="2" data-path="intro.html"><a href="intro.html"><i class="fa fa-check"></i><b>2</b> What is CS181?</a>
+<ul>
+<li class="chapter" data-level="2.1" data-path="intro.html"><a href="intro.html#why-is-ai-a-big-deal"><i class="fa fa-check"></i><b>2.1</b> Why Is AI a Big Deal?</a>
+<ul>
+<li class="chapter" data-level="2.1.1" data-path="intro.html"><a href="intro.html#but-is-accuracy-enough"><i class="fa fa-check"></i><b>2.1.1</b> But Is Accuracy Enough?</a></li>
+<li class="chapter" data-level="2.1.2" data-path="intro.html"><a href="intro.html#what-happens-when-machine-learning-models-are-catastrophically-wrong"><i class="fa fa-check"></i><b>2.1.2</b> What Happens When Machine Learning Models are Catastrophically Wrong?</a></li>
+<li class="chapter" data-level="2.1.3" data-path="intro.html"><a href="intro.html#are-machine-models-right-for-the-right-reasons"><i class="fa fa-check"></i><b>2.1.3</b> Are Machine Models Right for the Right Reasons?</a></li>
+<li class="chapter" data-level="2.1.4" data-path="intro.html"><a href="intro.html#what-is-the-role-of-the-human-decision-maker"><i class="fa fa-check"></i><b>2.1.4</b> What is the Role of the Human Decision Maker?</a></li>
+<li class="chapter" data-level="2.1.5" data-path="intro.html"><a href="intro.html#what-are-the-broader-impacts-of-tech"><i class="fa fa-check"></i><b>2.1.5</b> What are the Broader Impacts of Tech?</a></li>
+</ul></li>
+<li class="chapter" data-level="2.2" data-path="intro.html"><a href="intro.html#machine-learning-is-much-more-than-accuracy"><i class="fa fa-check"></i><b>2.2</b> Machine Learning is Much More Than Accuracy</a></li>
+<li class="chapter" data-level="2.3" data-path="intro.html"><a href="intro.html#what-is-cs181"><i class="fa fa-check"></i><b>2.3</b> What is CS181?</a></li>
+<li class="chapter" data-level="2.4" data-path="intro.html"><a href="intro.html#what-we-are-offering-you"><i class="fa fa-check"></i><b>2.4</b> What We are Offering You</a></li>
+<li class="chapter" data-level="2.5" data-path="intro.html"><a href="intro.html#what-we-are-asking-from-you"><i class="fa fa-check"></i><b>2.5</b> What We are Asking From You</a></li>
+<li class="chapter" data-level="2.6" data-path="intro.html"><a href="intro.html#grading-evaluation"><i class="fa fa-check"></i><b>2.6</b> Grading &amp; Evaluation</a></li>
+</ul></li>
+<li class="chapter" data-level="3" data-path="what-is-regression.html"><a href="what-is-regression.html"><i class="fa fa-check"></i><b>3</b> What is Regression?</a>
+<ul>
+<li class="chapter" data-level="3.1" data-path="what-is-regression.html"><a href="what-is-regression.html#what-is-machine-learning"><i class="fa fa-check"></i><b>3.1</b> What is Machine Learning?</a></li>
+<li class="chapter" data-level="3.2" data-path="what-is-regression.html"><a href="what-is-regression.html#what-is-regression-1"><i class="fa fa-check"></i><b>3.2</b> What is Regression?</a></li>
+<li class="chapter" data-level="3.3" data-path="what-is-regression.html"><a href="what-is-regression.html#almost-everything-is-linear-regression"><i class="fa fa-check"></i><b>3.3</b> (Almost) Everything is Linear Regression</a></li>
+<li class="chapter" data-level="3.4" data-path="what-is-regression.html"><a href="what-is-regression.html#what-is-model-evaluation"><i class="fa fa-check"></i><b>3.4</b> What is Model Evaluation?</a></li>
+<li class="chapter" data-level="3.5" data-path="what-is-regression.html"><a href="what-is-regression.html#what-is-model-critique"><i class="fa fa-check"></i><b>3.5</b> What is Model Critique?</a></li>
+<li class="chapter" data-level="3.6" data-path="what-is-regression.html"><a href="what-is-regression.html#limitations-and-connections"><i class="fa fa-check"></i><b>3.6</b> Limitations and Connections</a></li>
+</ul></li>
+<li class="chapter" data-level="4" data-path="what-are-probablistic-and-non-probablistic-regression.html"><a href="what-are-probablistic-and-non-probablistic-regression.html"><i class="fa fa-check"></i><b>4</b> What are Probablistic and Non-Probablistic Regression?</a>
+<ul>
+<li class="chapter" data-level="4.1" data-path="what-are-probablistic-and-non-probablistic-regression.html"><a href="what-are-probablistic-and-non-probablistic-regression.html#what-is-probabilistic-regression"><i class="fa fa-check"></i><b>4.1</b> What is Probabilistic Regression?</a></li>
+<li class="chapter" data-level="4.2" data-path="what-are-probablistic-and-non-probablistic-regression.html"><a href="what-are-probablistic-and-non-probablistic-regression.html#almost-everything-is-linear-regression-1"><i class="fa fa-check"></i><b>4.2</b> (Almost) Everything is Linear Regression</a></li>
+<li class="chapter" data-level="4.3" data-path="what-are-probablistic-and-non-probablistic-regression.html"><a href="what-are-probablistic-and-non-probablistic-regression.html#the-cube-a-model-comparison-paradigm"><i class="fa fa-check"></i><b>4.3</b> The Cube: A Model Comparison Paradigm</a></li>
+</ul></li>
+<li class="chapter" data-level="5" data-path="what-matters-in-ml-besides-prediction.html"><a href="what-matters-in-ml-besides-prediction.html"><i class="fa fa-check"></i><b>5</b> What Matters in ML Besides Prediction?</a>
+<ul>
+<li class="chapter" data-level="5.1" data-path="what-matters-in-ml-besides-prediction.html"><a href="what-matters-in-ml-besides-prediction.html#what-is-machine-learning-revisited"><i class="fa fa-check"></i><b>5.1</b> What is Machine Learning? Revisited</a></li>
+<li class="chapter" data-level="5.2" data-path="what-matters-in-ml-besides-prediction.html"><a href="what-matters-in-ml-besides-prediction.html#what-are-we-uncertain-about"><i class="fa fa-check"></i><b>5.2</b> What Are We Uncertain About?</a></li>
+<li class="chapter" data-level="5.3" data-path="what-matters-in-ml-besides-prediction.html"><a href="what-matters-in-ml-besides-prediction.html#where-is-uncertainty-coming-from"><i class="fa fa-check"></i><b>5.3</b> Where is Uncertainty Coming From?</a></li>
+<li class="chapter" data-level="5.4" data-path="what-matters-in-ml-besides-prediction.html"><a href="what-matters-in-ml-besides-prediction.html#how-do-we-compute-uncertainty"><i class="fa fa-check"></i><b>5.4</b> How Do We Compute Uncertainty?</a></li>
+<li class="chapter" data-level="5.5" data-path="what-matters-in-ml-besides-prediction.html"><a href="what-matters-in-ml-besides-prediction.html#mathematizing-uncertainty-starting-with-bias-and-variance"><i class="fa fa-check"></i><b>5.5</b> Mathematizing Uncertainty: Starting with Bias and Variance</a></li>
+<li class="chapter" data-level="5.6" data-path="what-matters-in-ml-besides-prediction.html"><a href="what-matters-in-ml-besides-prediction.html#the-bias-variance-trade-off-in-machine-learning"><i class="fa fa-check"></i><b>5.6</b> The Bias-Variance Trade-off in Machine Learning</a>
+<ul>
+<li class="chapter" data-level="5.6.1" data-path="what-matters-in-ml-besides-prediction.html"><a href="what-matters-in-ml-besides-prediction.html#examples-of-the-bias-variance-trade-off"><i class="fa fa-check"></i><b>5.6.1</b> Examples of the Bias-Variance Trade-off</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="6" data-path="what-is-logistic-regression.html"><a href="what-is-logistic-regression.html"><i class="fa fa-check"></i><b>6</b> What is Logistic Regression?</a>
+<ul>
+<li class="chapter" data-level="6.1" data-path="what-is-logistic-regression.html"><a href="what-is-logistic-regression.html#logistic-regression-and-soft-classification"><i class="fa fa-check"></i><b>6.1</b> Logistic Regression and Soft-Classification</a></li>
+<li class="chapter" data-level="6.2" data-path="what-is-logistic-regression.html"><a href="what-is-logistic-regression.html#logistic-regression-and-bernoulli-likelihood"><i class="fa fa-check"></i><b>6.2</b> Logistic Regression and Bernoulli Likelihood</a></li>
+<li class="chapter" data-level="6.3" data-path="what-is-logistic-regression.html"><a href="what-is-logistic-regression.html#how-to-perform-maximum-likelihood-inference-for-logistic-regression"><i class="fa fa-check"></i><b>6.3</b> How to Perform Maximum Likelihood Inference for Logistic Regression</a></li>
+<li class="chapter" data-level="6.4" data-path="what-is-logistic-regression.html"><a href="what-is-logistic-regression.html#how-not-to-evaluate-classifiers"><i class="fa fa-check"></i><b>6.4</b> How (Not) to Evaluate Classifiers</a></li>
+<li class="chapter" data-level="6.5" data-path="what-is-logistic-regression.html"><a href="what-is-logistic-regression.html#how-to-interpret-logistic-regression"><i class="fa fa-check"></i><b>6.5</b> How to Interpret Logistic Regression</a></li>
+</ul></li>
+<li class="chapter" data-level="7" data-path="how-do-we-responsibly-use-conditional-models.html"><a href="how-do-we-responsibly-use-conditional-models.html"><i class="fa fa-check"></i><b>7</b> How Do We Responsibly Use Conditional Models?</a>
+<ul>
+<li class="chapter" data-level="7.1" data-path="how-do-we-responsibly-use-conditional-models.html"><a href="how-do-we-responsibly-use-conditional-models.html#everything-weve-done-so-far-in-probabilistic-ml"><i class="fa fa-check"></i><b>7.1</b> Everything We’ve Done So Far in Probabilistic ML</a></li>
+</ul></li>
+<li class="divider"></li>
+<li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
+
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Notes for CS181: Machine Learning</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="what-are-probablistic-and-non-probablistic-regression" class="section level1 hasAnchor" number="4">
+<h1><span class="header-section-number">Chapter 4</span> What are Probablistic and Non-Probablistic Regression?<a href="what-are-probablistic-and-non-probablistic-regression.html#what-are-probablistic-and-non-probablistic-regression" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<p><img src="https://i.imgur.com/xDR9VQd.png" /></p>
+<div id="what-is-probabilistic-regression" class="section level2 hasAnchor" number="4.1">
+<h2><span class="header-section-number">4.1</span> What is Probabilistic Regression?<a href="what-are-probablistic-and-non-probablistic-regression.html#what-is-probabilistic-regression" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>As we saw in Lecture #2, in regression, we can choose amongst a very large number of loss functions (i.e. functions that quantify the fit of our model). One way to justify our choice is to reason explicitly about how residuals (prediction errors) arise.</p>
+<p>If we include in our model specification a theory of how residuals arise as a random variable, then we have a <em>probabilistic regression model</em>.</p>
+<p>A probabilistic regression problem is the task of predicting an output value <span class="math inline">\(y \in \mathbb{R}\)</span>, given an input <span class="math inline">\(\mathbf{x} \in \mathbb{R}^D\)</span>, where the data generating process includes a source of random noise <span class="math inline">\(\epsilon\)</span>.</p>
+<p>We have seen one way to solve a probabilistic regression problem, where the observation noise is <em>additive</em>:
+1. <em>choose</em> a training data set of <span class="math inline">\(N\)</span> number of observations, <span class="math inline">\(\mathcal{D} = \{(\mathbf{x}_1, y_1),\ldots,(\mathbf{x}_N, y_N)\}\)</span>.
+2. <em>hypothesize</em> that the relationship between <span class="math inline">\(\mathbf{x}\)</span> and <span class="math inline">\(y\)</span> is captured by
+<span class="math display">\[
+  f_\mathbf{w}(\mathbf{x})
+  \]</span>
+where <span class="math inline">\(\mathbf{w} \in \mathbb{R}^M\)</span> are the parameters (i.e. unknown coefficients) of the function <span class="math inline">\(f\)</span>.
+3. <em>choose</em> a RV <span class="math inline">\(\epsilon\)</span> that describes the additive observation noise:
+<span class="math display">\[
+y = f_\mathbf{w}(\mathbf{x}) + \epsilon,\; \epsilon \sim p(\epsilon | \theta)
+\]</span>
+This choice defines a <em>likelihood</em> <span class="math inline">\(p(y| \mathbf{w}, \mathbf{x})\)</span>, describing the likelihood of observing <span class="math inline">\((y, \mathbf{x})\)</span> given that the model is <span class="math inline">\(f_\mathbf{w}\)</span>.
+5. <em>choose</em> a math notion for “how well <span class="math inline">\(f_\mathbf{w}\)</span> fits the noisy data”, i.e. a <em>loss function</em>, <span class="math inline">\(\mathcal{L}(\mathbf{w})\)</span>.
+6. <em>choose</em> a way to solve for the parameters <span class="math inline">\(\mathbf{w}\)</span> that minimizes the loss function:
+<span class="math display">\[
+  \mathbf{w}^* = \mathrm{argmin}_\mathbf{w}\; \mathcal{L}(\mathbf{w})
+  \]</span></p>
+<p>This framework applies to probabilistic regression with any functional form for <span class="math inline">\(f\)</span> (linear, polynomial, neural network etc).</p>
+<p><em>Note:</em> while <span class="math inline">\(\mathbf{w}\)</span> is learnt, the parameters <span class="math inline">\(\theta\)</span> of the noise distribution <span class="math inline">\(p(\epsilon | \theta)\)</span> is typically set by the ML engineer prior to learning <span class="math inline">\(\mathbf{w}\)</span>. Parameters like <span class="math inline">\(\theta\)</span> that must be chosen prior to learning are called <strong><em>hyperparameters</em></strong>.</p>
+<p>Technically, <span class="math inline">\(y\)</span> is conditioned on <span class="math inline">\(\mathbf{w}\)</span>, <span class="math inline">\(\mathbf{x}\)</span> and <span class="math inline">\(\theta\)</span> in the likelihood, <span class="math inline">\(p(y| \mathbf{w}, \mathbf{x}, \theta)\)</span>, but typically we drop the <span class="math inline">\(\theta\)</span> and write <span class="math inline">\(p(y| \mathbf{w}, \mathbf{x})\)</span> if we are not intending to infer it from the data.</p>
+</div>
+<div id="almost-everything-is-linear-regression-1" class="section level2 hasAnchor" number="4.2">
+<h2><span class="header-section-number">4.2</span> (Almost) Everything is Linear Regression<a href="what-are-probablistic-and-non-probablistic-regression.html#almost-everything-is-linear-regression-1" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>Overwhelmingly frequently in machine learning, we assume <em>additive zero-mean homoskedastic Gaussian noise</em>, that is
+<span class="math display">\[
+y = f_\mathbf{w}(\mathbf{x}) + \epsilon,\; \epsilon \sim \mathcal{N}(0, \sigma^2)
+\]</span>
+which implies a Gaussian likelihood:
+<span class="math display">\[
+y | \mathbf{w}, \mathbf{x} \sim \mathcal{N}(f_\mathbf{w}(\mathbf{x}), \sigma^2).
+\]</span>
+We <em>choose</em> the negative joint log-likelihood of the data as the metric for how well our model fits the data
+<span class="math display">\[
+\mathcal{L}(\mathbf{w}) = -\sum_{n=1}^N \log p(y_n | \mathbf{w}, \mathbf{x}_n).
+\]</span>
+Choosing this loss follows the Maximum Likelihood Principle, encoding our belief that models that renders the observed data more likely are better models.</p>
+<p>Now, we learn parameters of <span class="math inline">\(f\)</span> to minimize <span class="math inline">\(\mathcal{L}\)</span> (equivalently, maximizing the joint log-likelihood of the data):
+<span class="math display">\[
+\mathbf{w}^{\text{MLE}} = \mathrm{argmin}_{\mathbf{w}} \mathcal{L}(\mathbf{w})
+\]</span>
+The solution <span class="math inline">\(\mathbf{w}^{\text{MLE}}\)</span> is called the <em>maximum likelihood estimate</em> of <span class="math inline">\(\mathbf{w}\)</span>.</p>
+<p>We showed that under this set of assumption and choices, probabilistic regression is equivalent to non-probabilistic regression:
+<span class="math display">\[
+\mathbf{w}^{\text{MLE}} = \mathbf{w}^{\text{OLS}} = (\mathbf{X}^\top\mathbf{X})^{-1}\mathbf{X}^\top\mathbf{y}
+\]</span>
+Maximizing log-likelihood is the same as minimizing the MSE.</p>
+<p><strong>Question 1:</strong> If the solution to probablistic regression is equivalent to non-probabilistic regression, does this mean that probabilistic regression models are equivalent to non-probabilistic models?</p>
+<p><strong>Question 2:</strong> We saw that MSE:
+1. cannot be used alone to evaluate the “goodness” of a model
+2. can be helpful to detect overfitting
+3. may be unhelpful in detecting underfitting</p>
+<p>What about the log-likelihood?</p>
+<p><strong>Question 3:</strong> How does one evaluate a probabilistic model?</p>
+<p><strong>Question 4:</strong> How do we choose hyperparameters of our probabilistic model?</p>
+<ol style="list-style-type: decimal">
+<li>Validation</li>
+<li>Prior or Domain Knowledge</li>
+<li>Analytically or Algorithmically Optimizing an Objective Function:
+<span class="math display">\[
+\sigma^{\text{MLE}} = \mathrm{argmax}_\sigma\; \ell(\mathbf{w}^{\text{MLE}}, \sigma) = \mathrm{argmax}_\sigma\; \log\left[\prod_{n=1}^N p(y_n | \mathbf{x}_n, \mathbf{w}^{\text{MLE}}, \sigma)\right]
+\]</span></li>
+</ol>
+</div>
+<div id="the-cube-a-model-comparison-paradigm" class="section level2 hasAnchor" number="4.3">
+<h2><span class="header-section-number">4.3</span> The Cube: A Model Comparison Paradigm<a href="what-are-probablistic-and-non-probablistic-regression.html#the-cube-a-model-comparison-paradigm" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<div id="i.-axis-probabilistic-vs-non-probabilistic" class="section level4 hasAnchor" number="4.3.0.1">
+<h4><span class="header-section-number">4.3.0.1</span> I. Axis: Probabilistic vs Non-probabilistic<a href="what-are-probablistic-and-non-probablistic-regression.html#i.-axis-probabilistic-vs-non-probabilistic" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<table>
+<colgroup>
+<col width="25%" />
+<col width="25%" />
+<col width="25%" />
+<col width="25%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Model</th>
+<th>Definition</th>
+<th>Pro</th>
+<th>Con</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Probabilistic</td>
+<td>Specifying a distribution for the data (and potentially the model), explicitly defining the source and type of noise</td>
+<td>When model is “wrong”, we have more assumptions we can interrogate and change in order to improve the model</td>
+<td>We need to make more choices (e.g. assuming a distribution for the noise); more choices means more chances to be wrong</td>
+</tr>
+<tr class="even">
+<td>Non-Probabilistic</td>
+<td>Specify a functional form for the data; does not explicitly define sources and types of data randomness</td>
+<td>We make less assumptions about the data (which may be wrong); not all useful objective functions (e.g. human personal preference) can be easily given a probabilistic interpretation</td>
+<td>When the “model” is wrong, we have less assumptions to attribute the problem and hence fewer obvious ways to fix the model</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Probabilistic:</strong> regression by specifying likelihood</p>
+<p><strong>Non-probabilistic:</strong> regression by minimizing MSE, KNN, kernel regression (for now), regression trees (for now)</p>
+<p><strong>Question:</strong> When is it better to use probabilistic regression, when is it better to use non-probabilistic regression?</p>
+</div>
+<div id="ii.-axis-parametric-vs-non-parametric" class="section level4 hasAnchor" number="4.3.0.2">
+<h4><span class="header-section-number">4.3.0.2</span> II. Axis: Parametric vs Non-Parametric<a href="what-are-probablistic-and-non-probablistic-regression.html#ii.-axis-parametric-vs-non-parametric" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<table>
+<colgroup>
+<col width="25%" />
+<col width="25%" />
+<col width="25%" />
+<col width="25%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Model</th>
+<th>Definition</th>
+<th>Pro</th>
+<th>Con</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Parametric</td>
+<td>Assumes a fixed, finite functional form <span class="math inline">\(f(\mathbf{x})\)</span> for regressor</td>
+<td>Once the parameters of the functional form is learnt, only the parameters needs to be saved</td>
+<td>Need to guess the right functional form for the regressor</td>
+</tr>
+<tr class="even">
+<td>Non-Parametric</td>
+<td>Functional form is implicit and can adapt to observed data</td>
+<td>No need to specify an explicit functional form</td>
+<td>Typically, the training data needs to be saved for every prediction</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Parametric:</strong> linear, polynomial, arbitrary basis regression (probabilistic and non-probabilistic); regression trees</p>
+<p><strong>Non-Parametric:</strong> KNN, kernel regression</p>
+<p><strong>Question:</strong> When is it better to use parametric regression, when is it better to use non-parametric regression?</p>
+</div>
+<div id="iii.-axis-ease-of-interpretation" class="section level4 hasAnchor" number="4.3.0.3">
+<h4><span class="header-section-number">4.3.0.3</span> III. Axis: Ease of Interpretation<a href="what-are-probablistic-and-non-probablistic-regression.html#iii.-axis-ease-of-interpretation" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<table>
+<colgroup>
+<col width="25%" />
+<col width="25%" />
+<col width="25%" />
+<col width="25%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Model</th>
+<th>Example</th>
+<th>Potential Pro</th>
+<th>Potential Con</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Simple Models</td>
+<td>Models that can be easily inspected in its entirety, models whose decision process can be easily described</td>
+<td>Through interpretation these models can provide scientific insight, be validated by humans, encourage user trust</td>
+<td>Simple models may be, though are not necessarily, lacking in capacity to capture complex trends in data</td>
+</tr>
+<tr class="even">
+<td>Complex Models</td>
+<td>Models with too many parameters, complex non-linear transformation of data, or whose decision process is lengthy</td>
+<td>Complex models often have the capacity to capture very interesting trends in the data</td>
+<td>Complex models may be, though are not necessarily, more difficult to interpret, explain, validate and trust</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Model Interpretation:</strong> interpretability isn’t a binary label, every model can be “interpreted” in some way:
+- <em>linear regression:</em> looking at regression weights
+- <em>arbitrary basis regression (including neural networks):</em> looking at regression weights and the features <span class="math inline">\(\phi(\mathbf{x})\)</span>
+- <em>probabilistic regression:</em> looking at regression weights and the noise distribution
+- <em>regression tree:</em> printing out the tree as a sequence of branching decisions
+- <em>KNN:</em> looking at the <span class="math inline">\(k\)</span> nearest neighbors
+- <em>kernel regression:</em> interpreting the kernel <span class="math inline">\(k\)</span> as a measure of similarity between two inputs <span class="math inline">\(\mathbf{x}\)</span> and <span class="math inline">\(\mathbf{x}&#39;\)</span></p>
+<p><strong>Question:</strong> When do we need interpretable models, when does interpretability not matter? Who needs interpretable models? What does interpretable mean?</p>
+
+</div>
+</div>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="what-is-regression.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="what-matters-in-ml-besides-prediction.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+"sharing": {
+"github": false,
+"facebook": true,
+"twitter": true,
+"linkedin": false,
+"weibo": false,
+"instapaper": false,
+"vk": false,
+"whatsapp": false,
+"all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
+},
+"fontsettings": {
+"theme": "white",
+"family": "sans",
+"size": 2
+},
+"edit": {
+"link": "https://github.com/rstudio/bookdown-demo/edit/master/03-What-are-Prob-Models.Rmd",
+"text": "Edit"
+},
+"history": {
+"link": null,
+"text": null
+},
+"view": {
+"link": null,
+"text": null
+},
+"download": ["bookdown-demo.pdf", "bookdown-demo.epub"],
+"search": {
+"engine": "fuse",
+"options": null
+},
+"toc": {
+"collapse": "subsection"
+}
+});
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "true";
+    if (src === "" || src === "true") src = "https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.9/latest.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:")
+      if (/^https?:/.test(src))
+        src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+</body>
+
+</html>

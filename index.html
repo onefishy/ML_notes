@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>Notes for CS181: Machine Learning</title>
+  <meta name="description" content="This is a set of note for CS181: Machine Learning (Spring 2023)" />
+  <meta name="generator" content="bookdown 0.33 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="Notes for CS181: Machine Learning" />
+  <meta property="og:type" content="book" />
+  
+  <meta property="og:description" content="This is a set of note for CS181: Machine Learning (Spring 2023)" />
+  <meta name="github-repo" content="rstudio/bookdown-demo" />
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Notes for CS181: Machine Learning" />
+  
+  <meta name="twitter:description" content="This is a set of note for CS181: Machine Learning (Spring 2023)" />
+  
+
+<meta name="author" content="Yihui Xie" />
+
+
+<meta name="date" content="2023-05-02" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+
+<link rel="next" href="intro.html"/>
+<script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+<link href="libs/anchor-sections-1.1.0/anchor-sections.css" rel="stylesheet" />
+<link href="libs/anchor-sections-1.1.0/anchor-sections-hash.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.1.0/anchor-sections.js"></script>
+
+
+
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li><a href="./">A Minimal Book Example</a></li>
+
+<li class="divider"></li>
+<li class="chapter" data-level="1" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i><b>1</b> Notes for CS181: Machine Learning</a>
+<ul>
+<li class="chapter" data-level="1.1" data-path="index.html"><a href="index.html#spring-2023"><i class="fa fa-check"></i><b>1.1</b> Spring 2023</a></li>
+</ul></li>
+<li class="chapter" data-level="2" data-path="intro.html"><a href="intro.html"><i class="fa fa-check"></i><b>2</b> What is CS181?</a>
+<ul>
+<li class="chapter" data-level="2.1" data-path="intro.html"><a href="intro.html#why-is-ai-a-big-deal"><i class="fa fa-check"></i><b>2.1</b> Why Is AI a Big Deal?</a>
+<ul>
+<li class="chapter" data-level="2.1.1" data-path="intro.html"><a href="intro.html#but-is-accuracy-enough"><i class="fa fa-check"></i><b>2.1.1</b> But Is Accuracy Enough?</a></li>
+<li class="chapter" data-level="2.1.2" data-path="intro.html"><a href="intro.html#what-happens-when-machine-learning-models-are-catastrophically-wrong"><i class="fa fa-check"></i><b>2.1.2</b> What Happens When Machine Learning Models are Catastrophically Wrong?</a></li>
+<li class="chapter" data-level="2.1.3" data-path="intro.html"><a href="intro.html#are-machine-models-right-for-the-right-reasons"><i class="fa fa-check"></i><b>2.1.3</b> Are Machine Models Right for the Right Reasons?</a></li>
+<li class="chapter" data-level="2.1.4" data-path="intro.html"><a href="intro.html#what-is-the-role-of-the-human-decision-maker"><i class="fa fa-check"></i><b>2.1.4</b> What is the Role of the Human Decision Maker?</a></li>
+<li class="chapter" data-level="2.1.5" data-path="intro.html"><a href="intro.html#what-are-the-broader-impacts-of-tech"><i class="fa fa-check"></i><b>2.1.5</b> What are the Broader Impacts of Tech?</a></li>
+</ul></li>
+<li class="chapter" data-level="2.2" data-path="intro.html"><a href="intro.html#machine-learning-is-much-more-than-accuracy"><i class="fa fa-check"></i><b>2.2</b> Machine Learning is Much More Than Accuracy</a></li>
+<li class="chapter" data-level="2.3" data-path="intro.html"><a href="intro.html#what-is-cs181"><i class="fa fa-check"></i><b>2.3</b> What is CS181?</a></li>
+<li class="chapter" data-level="2.4" data-path="intro.html"><a href="intro.html#what-we-are-offering-you"><i class="fa fa-check"></i><b>2.4</b> What We are Offering You</a></li>
+<li class="chapter" data-level="2.5" data-path="intro.html"><a href="intro.html#what-we-are-asking-from-you"><i class="fa fa-check"></i><b>2.5</b> What We are Asking From You</a></li>
+<li class="chapter" data-level="2.6" data-path="intro.html"><a href="intro.html#grading-evaluation"><i class="fa fa-check"></i><b>2.6</b> Grading &amp; Evaluation</a></li>
+</ul></li>
+<li class="chapter" data-level="3" data-path="what-is-regression.html"><a href="what-is-regression.html"><i class="fa fa-check"></i><b>3</b> What is Regression?</a>
+<ul>
+<li class="chapter" data-level="3.1" data-path="what-is-regression.html"><a href="what-is-regression.html#what-is-machine-learning"><i class="fa fa-check"></i><b>3.1</b> What is Machine Learning?</a></li>
+<li class="chapter" data-level="3.2" data-path="what-is-regression.html"><a href="what-is-regression.html#what-is-regression-1"><i class="fa fa-check"></i><b>3.2</b> What is Regression?</a></li>
+<li class="chapter" data-level="3.3" data-path="what-is-regression.html"><a href="what-is-regression.html#almost-everything-is-linear-regression"><i class="fa fa-check"></i><b>3.3</b> (Almost) Everything is Linear Regression</a></li>
+<li class="chapter" data-level="3.4" data-path="what-is-regression.html"><a href="what-is-regression.html#what-is-model-evaluation"><i class="fa fa-check"></i><b>3.4</b> What is Model Evaluation?</a></li>
+<li class="chapter" data-level="3.5" data-path="what-is-regression.html"><a href="what-is-regression.html#what-is-model-critique"><i class="fa fa-check"></i><b>3.5</b> What is Model Critique?</a></li>
+<li class="chapter" data-level="3.6" data-path="what-is-regression.html"><a href="what-is-regression.html#limitations-and-connections"><i class="fa fa-check"></i><b>3.6</b> Limitations and Connections</a></li>
+</ul></li>
+<li class="chapter" data-level="4" data-path="what-are-probablistic-and-non-probablistic-regression.html"><a href="what-are-probablistic-and-non-probablistic-regression.html"><i class="fa fa-check"></i><b>4</b> What are Probablistic and Non-Probablistic Regression?</a>
+<ul>
+<li class="chapter" data-level="4.1" data-path="what-are-probablistic-and-non-probablistic-regression.html"><a href="what-are-probablistic-and-non-probablistic-regression.html#what-is-probabilistic-regression"><i class="fa fa-check"></i><b>4.1</b> What is Probabilistic Regression?</a></li>
+<li class="chapter" data-level="4.2" data-path="what-are-probablistic-and-non-probablistic-regression.html"><a href="what-are-probablistic-and-non-probablistic-regression.html#almost-everything-is-linear-regression-1"><i class="fa fa-check"></i><b>4.2</b> (Almost) Everything is Linear Regression</a></li>
+<li class="chapter" data-level="4.3" data-path="what-are-probablistic-and-non-probablistic-regression.html"><a href="what-are-probablistic-and-non-probablistic-regression.html#the-cube-a-model-comparison-paradigm"><i class="fa fa-check"></i><b>4.3</b> The Cube: A Model Comparison Paradigm</a></li>
+</ul></li>
+<li class="chapter" data-level="5" data-path="what-matters-in-ml-besides-prediction.html"><a href="what-matters-in-ml-besides-prediction.html"><i class="fa fa-check"></i><b>5</b> What Matters in ML Besides Prediction?</a>
+<ul>
+<li class="chapter" data-level="5.1" data-path="what-matters-in-ml-besides-prediction.html"><a href="what-matters-in-ml-besides-prediction.html#what-is-machine-learning-revisited"><i class="fa fa-check"></i><b>5.1</b> What is Machine Learning? Revisited</a></li>
+<li class="chapter" data-level="5.2" data-path="what-matters-in-ml-besides-prediction.html"><a href="what-matters-in-ml-besides-prediction.html#what-are-we-uncertain-about"><i class="fa fa-check"></i><b>5.2</b> What Are We Uncertain About?</a></li>
+<li class="chapter" data-level="5.3" data-path="what-matters-in-ml-besides-prediction.html"><a href="what-matters-in-ml-besides-prediction.html#where-is-uncertainty-coming-from"><i class="fa fa-check"></i><b>5.3</b> Where is Uncertainty Coming From?</a></li>
+<li class="chapter" data-level="5.4" data-path="what-matters-in-ml-besides-prediction.html"><a href="what-matters-in-ml-besides-prediction.html#how-do-we-compute-uncertainty"><i class="fa fa-check"></i><b>5.4</b> How Do We Compute Uncertainty?</a></li>
+<li class="chapter" data-level="5.5" data-path="what-matters-in-ml-besides-prediction.html"><a href="what-matters-in-ml-besides-prediction.html#mathematizing-uncertainty-starting-with-bias-and-variance"><i class="fa fa-check"></i><b>5.5</b> Mathematizing Uncertainty: Starting with Bias and Variance</a></li>
+<li class="chapter" data-level="5.6" data-path="what-matters-in-ml-besides-prediction.html"><a href="what-matters-in-ml-besides-prediction.html#the-bias-variance-trade-off-in-machine-learning"><i class="fa fa-check"></i><b>5.6</b> The Bias-Variance Trade-off in Machine Learning</a>
+<ul>
+<li class="chapter" data-level="5.6.1" data-path="what-matters-in-ml-besides-prediction.html"><a href="what-matters-in-ml-besides-prediction.html#examples-of-the-bias-variance-trade-off"><i class="fa fa-check"></i><b>5.6.1</b> Examples of the Bias-Variance Trade-off</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="6" data-path="what-is-logistic-regression.html"><a href="what-is-logistic-regression.html"><i class="fa fa-check"></i><b>6</b> What is Logistic Regression?</a>
+<ul>
+<li class="chapter" data-level="6.1" data-path="what-is-logistic-regression.html"><a href="what-is-logistic-regression.html#logistic-regression-and-soft-classification"><i class="fa fa-check"></i><b>6.1</b> Logistic Regression and Soft-Classification</a></li>
+<li class="chapter" data-level="6.2" data-path="what-is-logistic-regression.html"><a href="what-is-logistic-regression.html#logistic-regression-and-bernoulli-likelihood"><i class="fa fa-check"></i><b>6.2</b> Logistic Regression and Bernoulli Likelihood</a></li>
+<li class="chapter" data-level="6.3" data-path="what-is-logistic-regression.html"><a href="what-is-logistic-regression.html#how-to-perform-maximum-likelihood-inference-for-logistic-regression"><i class="fa fa-check"></i><b>6.3</b> How to Perform Maximum Likelihood Inference for Logistic Regression</a></li>
+<li class="chapter" data-level="6.4" data-path="what-is-logistic-regression.html"><a href="what-is-logistic-regression.html#how-not-to-evaluate-classifiers"><i class="fa fa-check"></i><b>6.4</b> How (Not) to Evaluate Classifiers</a></li>
+<li class="chapter" data-level="6.5" data-path="what-is-logistic-regression.html"><a href="what-is-logistic-regression.html#how-to-interpret-logistic-regression"><i class="fa fa-check"></i><b>6.5</b> How to Interpret Logistic Regression</a></li>
+</ul></li>
+<li class="chapter" data-level="7" data-path="how-do-we-responsibly-use-conditional-models.html"><a href="how-do-we-responsibly-use-conditional-models.html"><i class="fa fa-check"></i><b>7</b> How Do We Responsibly Use Conditional Models?</a>
+<ul>
+<li class="chapter" data-level="7.1" data-path="how-do-we-responsibly-use-conditional-models.html"><a href="how-do-we-responsibly-use-conditional-models.html#everything-weve-done-so-far-in-probabilistic-ml"><i class="fa fa-check"></i><b>7.1</b> Everything We’ve Done So Far in Probabilistic ML</a></li>
+</ul></li>
+<li class="divider"></li>
+<li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
+
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Notes for CS181: Machine Learning</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="header">
+<h1 class="title">Notes for CS181: Machine Learning</h1>
+<p class="author"><em>Yihui Xie</em></p>
+<p class="date"><em>2023-05-02</em></p>
+</div>
+<div id="notes-for-cs181-machine-learning" class="section level1 hasAnchor" number="1">
+<h1><span class="header-section-number">Chapter 1</span> Notes for CS181: Machine Learning<a href="index.html#notes-for-cs181-machine-learning" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<div id="spring-2023" class="section level2 hasAnchor" number="1.1">
+<h2><span class="header-section-number">1.1</span> Spring 2023<a href="index.html#spring-2023" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>This is a set of notes from the Spring 2023 iteration of CS181: Machine Learning</p>
+<p><img src="https://i.imgur.com/xDR9VQd.png" /></p>
+
+</div>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+
+<a href="intro.html" class="navigation navigation-next navigation-unique" aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+"sharing": {
+"github": false,
+"facebook": true,
+"twitter": true,
+"linkedin": false,
+"weibo": false,
+"instapaper": false,
+"vk": false,
+"whatsapp": false,
+"all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
+},
+"fontsettings": {
+"theme": "white",
+"family": "sans",
+"size": 2
+},
+"edit": {
+"link": "https://github.com/rstudio/bookdown-demo/edit/master/index.Rmd",
+"text": "Edit"
+},
+"history": {
+"link": null,
+"text": null
+},
+"view": {
+"link": null,
+"text": null
+},
+"download": ["bookdown-demo.pdf", "bookdown-demo.epub"],
+"search": {
+"engine": "fuse",
+"options": null
+},
+"toc": {
+"collapse": "subsection"
+}
+});
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "true";
+    if (src === "" || src === "true") src = "https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.9/latest.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:")
+      if (/^https?:/.test(src))
+        src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+</body>
+
+</html>

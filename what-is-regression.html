@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>Chapter 3 What is Regression? | Notes for CS181: Machine Learning</title>
+  <meta name="description" content="This is a set of note for CS181: Machine Learning (Spring 2023)" />
+  <meta name="generator" content="bookdown 0.33 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="Chapter 3 What is Regression? | Notes for CS181: Machine Learning" />
+  <meta property="og:type" content="book" />
+  
+  <meta property="og:description" content="This is a set of note for CS181: Machine Learning (Spring 2023)" />
+  <meta name="github-repo" content="rstudio/bookdown-demo" />
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Chapter 3 What is Regression? | Notes for CS181: Machine Learning" />
+  
+  <meta name="twitter:description" content="This is a set of note for CS181: Machine Learning (Spring 2023)" />
+  
+
+<meta name="author" content="Yihui Xie" />
+
+
+<meta name="date" content="2023-05-02" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="intro.html"/>
+<link rel="next" href="what-are-probablistic-and-non-probablistic-regression.html"/>
+<script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+<link href="libs/anchor-sections-1.1.0/anchor-sections.css" rel="stylesheet" />
+<link href="libs/anchor-sections-1.1.0/anchor-sections-hash.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.1.0/anchor-sections.js"></script>
+
+
+
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li><a href="./">A Minimal Book Example</a></li>
+
+<li class="divider"></li>
+<li class="chapter" data-level="1" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i><b>1</b> Notes for CS181: Machine Learning</a>
+<ul>
+<li class="chapter" data-level="1.1" data-path="index.html"><a href="index.html#spring-2023"><i class="fa fa-check"></i><b>1.1</b> Spring 2023</a></li>
+</ul></li>
+<li class="chapter" data-level="2" data-path="intro.html"><a href="intro.html"><i class="fa fa-check"></i><b>2</b> What is CS181?</a>
+<ul>
+<li class="chapter" data-level="2.1" data-path="intro.html"><a href="intro.html#why-is-ai-a-big-deal"><i class="fa fa-check"></i><b>2.1</b> Why Is AI a Big Deal?</a>
+<ul>
+<li class="chapter" data-level="2.1.1" data-path="intro.html"><a href="intro.html#but-is-accuracy-enough"><i class="fa fa-check"></i><b>2.1.1</b> But Is Accuracy Enough?</a></li>
+<li class="chapter" data-level="2.1.2" data-path="intro.html"><a href="intro.html#what-happens-when-machine-learning-models-are-catastrophically-wrong"><i class="fa fa-check"></i><b>2.1.2</b> What Happens When Machine Learning Models are Catastrophically Wrong?</a></li>
+<li class="chapter" data-level="2.1.3" data-path="intro.html"><a href="intro.html#are-machine-models-right-for-the-right-reasons"><i class="fa fa-check"></i><b>2.1.3</b> Are Machine Models Right for the Right Reasons?</a></li>
+<li class="chapter" data-level="2.1.4" data-path="intro.html"><a href="intro.html#what-is-the-role-of-the-human-decision-maker"><i class="fa fa-check"></i><b>2.1.4</b> What is the Role of the Human Decision Maker?</a></li>
+<li class="chapter" data-level="2.1.5" data-path="intro.html"><a href="intro.html#what-are-the-broader-impacts-of-tech"><i class="fa fa-check"></i><b>2.1.5</b> What are the Broader Impacts of Tech?</a></li>
+</ul></li>
+<li class="chapter" data-level="2.2" data-path="intro.html"><a href="intro.html#machine-learning-is-much-more-than-accuracy"><i class="fa fa-check"></i><b>2.2</b> Machine Learning is Much More Than Accuracy</a></li>
+<li class="chapter" data-level="2.3" data-path="intro.html"><a href="intro.html#what-is-cs181"><i class="fa fa-check"></i><b>2.3</b> What is CS181?</a></li>
+<li class="chapter" data-level="2.4" data-path="intro.html"><a href="intro.html#what-we-are-offering-you"><i class="fa fa-check"></i><b>2.4</b> What We are Offering You</a></li>
+<li class="chapter" data-level="2.5" data-path="intro.html"><a href="intro.html#what-we-are-asking-from-you"><i class="fa fa-check"></i><b>2.5</b> What We are Asking From You</a></li>
+<li class="chapter" data-level="2.6" data-path="intro.html"><a href="intro.html#grading-evaluation"><i class="fa fa-check"></i><b>2.6</b> Grading &amp; Evaluation</a></li>
+</ul></li>
+<li class="chapter" data-level="3" data-path="what-is-regression.html"><a href="what-is-regression.html"><i class="fa fa-check"></i><b>3</b> What is Regression?</a>
+<ul>
+<li class="chapter" data-level="3.1" data-path="what-is-regression.html"><a href="what-is-regression.html#what-is-machine-learning"><i class="fa fa-check"></i><b>3.1</b> What is Machine Learning?</a></li>
+<li class="chapter" data-level="3.2" data-path="what-is-regression.html"><a href="what-is-regression.html#what-is-regression-1"><i class="fa fa-check"></i><b>3.2</b> What is Regression?</a></li>
+<li class="chapter" data-level="3.3" data-path="what-is-regression.html"><a href="what-is-regression.html#almost-everything-is-linear-regression"><i class="fa fa-check"></i><b>3.3</b> (Almost) Everything is Linear Regression</a></li>
+<li class="chapter" data-level="3.4" data-path="what-is-regression.html"><a href="what-is-regression.html#what-is-model-evaluation"><i class="fa fa-check"></i><b>3.4</b> What is Model Evaluation?</a></li>
+<li class="chapter" data-level="3.5" data-path="what-is-regression.html"><a href="what-is-regression.html#what-is-model-critique"><i class="fa fa-check"></i><b>3.5</b> What is Model Critique?</a></li>
+<li class="chapter" data-level="3.6" data-path="what-is-regression.html"><a href="what-is-regression.html#limitations-and-connections"><i class="fa fa-check"></i><b>3.6</b> Limitations and Connections</a></li>
+</ul></li>
+<li class="chapter" data-level="4" data-path="what-are-probablistic-and-non-probablistic-regression.html"><a href="what-are-probablistic-and-non-probablistic-regression.html"><i class="fa fa-check"></i><b>4</b> What are Probablistic and Non-Probablistic Regression?</a>
+<ul>
+<li class="chapter" data-level="4.1" data-path="what-are-probablistic-and-non-probablistic-regression.html"><a href="what-are-probablistic-and-non-probablistic-regression.html#what-is-probabilistic-regression"><i class="fa fa-check"></i><b>4.1</b> What is Probabilistic Regression?</a></li>
+<li class="chapter" data-level="4.2" data-path="what-are-probablistic-and-non-probablistic-regression.html"><a href="what-are-probablistic-and-non-probablistic-regression.html#almost-everything-is-linear-regression-1"><i class="fa fa-check"></i><b>4.2</b> (Almost) Everything is Linear Regression</a></li>
+<li class="chapter" data-level="4.3" data-path="what-are-probablistic-and-non-probablistic-regression.html"><a href="what-are-probablistic-and-non-probablistic-regression.html#the-cube-a-model-comparison-paradigm"><i class="fa fa-check"></i><b>4.3</b> The Cube: A Model Comparison Paradigm</a></li>
+</ul></li>
+<li class="chapter" data-level="5" data-path="what-matters-in-ml-besides-prediction.html"><a href="what-matters-in-ml-besides-prediction.html"><i class="fa fa-check"></i><b>5</b> What Matters in ML Besides Prediction?</a>
+<ul>
+<li class="chapter" data-level="5.1" data-path="what-matters-in-ml-besides-prediction.html"><a href="what-matters-in-ml-besides-prediction.html#what-is-machine-learning-revisited"><i class="fa fa-check"></i><b>5.1</b> What is Machine Learning? Revisited</a></li>
+<li class="chapter" data-level="5.2" data-path="what-matters-in-ml-besides-prediction.html"><a href="what-matters-in-ml-besides-prediction.html#what-are-we-uncertain-about"><i class="fa fa-check"></i><b>5.2</b> What Are We Uncertain About?</a></li>
+<li class="chapter" data-level="5.3" data-path="what-matters-in-ml-besides-prediction.html"><a href="what-matters-in-ml-besides-prediction.html#where-is-uncertainty-coming-from"><i class="fa fa-check"></i><b>5.3</b> Where is Uncertainty Coming From?</a></li>
+<li class="chapter" data-level="5.4" data-path="what-matters-in-ml-besides-prediction.html"><a href="what-matters-in-ml-besides-prediction.html#how-do-we-compute-uncertainty"><i class="fa fa-check"></i><b>5.4</b> How Do We Compute Uncertainty?</a></li>
+<li class="chapter" data-level="5.5" data-path="what-matters-in-ml-besides-prediction.html"><a href="what-matters-in-ml-besides-prediction.html#mathematizing-uncertainty-starting-with-bias-and-variance"><i class="fa fa-check"></i><b>5.5</b> Mathematizing Uncertainty: Starting with Bias and Variance</a></li>
+<li class="chapter" data-level="5.6" data-path="what-matters-in-ml-besides-prediction.html"><a href="what-matters-in-ml-besides-prediction.html#the-bias-variance-trade-off-in-machine-learning"><i class="fa fa-check"></i><b>5.6</b> The Bias-Variance Trade-off in Machine Learning</a>
+<ul>
+<li class="chapter" data-level="5.6.1" data-path="what-matters-in-ml-besides-prediction.html"><a href="what-matters-in-ml-besides-prediction.html#examples-of-the-bias-variance-trade-off"><i class="fa fa-check"></i><b>5.6.1</b> Examples of the Bias-Variance Trade-off</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="6" data-path="what-is-logistic-regression.html"><a href="what-is-logistic-regression.html"><i class="fa fa-check"></i><b>6</b> What is Logistic Regression?</a>
+<ul>
+<li class="chapter" data-level="6.1" data-path="what-is-logistic-regression.html"><a href="what-is-logistic-regression.html#logistic-regression-and-soft-classification"><i class="fa fa-check"></i><b>6.1</b> Logistic Regression and Soft-Classification</a></li>
+<li class="chapter" data-level="6.2" data-path="what-is-logistic-regression.html"><a href="what-is-logistic-regression.html#logistic-regression-and-bernoulli-likelihood"><i class="fa fa-check"></i><b>6.2</b> Logistic Regression and Bernoulli Likelihood</a></li>
+<li class="chapter" data-level="6.3" data-path="what-is-logistic-regression.html"><a href="what-is-logistic-regression.html#how-to-perform-maximum-likelihood-inference-for-logistic-regression"><i class="fa fa-check"></i><b>6.3</b> How to Perform Maximum Likelihood Inference for Logistic Regression</a></li>
+<li class="chapter" data-level="6.4" data-path="what-is-logistic-regression.html"><a href="what-is-logistic-regression.html#how-not-to-evaluate-classifiers"><i class="fa fa-check"></i><b>6.4</b> How (Not) to Evaluate Classifiers</a></li>
+<li class="chapter" data-level="6.5" data-path="what-is-logistic-regression.html"><a href="what-is-logistic-regression.html#how-to-interpret-logistic-regression"><i class="fa fa-check"></i><b>6.5</b> How to Interpret Logistic Regression</a></li>
+</ul></li>
+<li class="chapter" data-level="7" data-path="how-do-we-responsibly-use-conditional-models.html"><a href="how-do-we-responsibly-use-conditional-models.html"><i class="fa fa-check"></i><b>7</b> How Do We Responsibly Use Conditional Models?</a>
+<ul>
+<li class="chapter" data-level="7.1" data-path="how-do-we-responsibly-use-conditional-models.html"><a href="how-do-we-responsibly-use-conditional-models.html#everything-weve-done-so-far-in-probabilistic-ml"><i class="fa fa-check"></i><b>7.1</b> Everything We’ve Done So Far in Probabilistic ML</a></li>
+</ul></li>
+<li class="divider"></li>
+<li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
+
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Notes for CS181: Machine Learning</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="what-is-regression" class="section level1 hasAnchor" number="3">
+<h1><span class="header-section-number">Chapter 3</span> What is Regression?<a href="what-is-regression.html#what-is-regression" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<p><img src="https://i.imgur.com/xDR9VQd.png" /></p>
+<div id="what-is-machine-learning" class="section level2 hasAnchor" number="3.1">
+<h2><span class="header-section-number">3.1</span> What is Machine Learning?<a href="what-is-regression.html#what-is-machine-learning" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>Machine learning is typically the task of <em>learning</em> a <em>function</em>, <span class="math inline">\(f\)</span>, given a set of training data, <span class="math inline">\(\mathcal{D}\)</span>. This learnt function <span class="math inline">\(f\)</span> can be used to make predictions on new data in <em>regression</em> and <em>classification</em>, this function can be used to explain how the observed data is structured in <em>unsupervised learning</em>.</p>
+<p>In this class, this function <span class="math inline">\(f\)</span> can be linear (linear, polynomial, basis regression models), represented by a neural network (deep learning models), or defined <em>without</em> an explicit formula in terms of the input (non-parametric models)!</p>
+</div>
+<div id="what-is-regression-1" class="section level2 hasAnchor" number="3.2">
+<h2><span class="header-section-number">3.2</span> What is Regression?<a href="what-is-regression.html#what-is-regression-1" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>Thus far in the course, a regression problem is the task of predicting an output value <span class="math inline">\(y \in \mathbb{R}\)</span>, given an input <span class="math inline">\(\mathbf{x} \in \mathbb{R}^D\)</span>.</p>
+<p>We have seen one way to solve a regression problem:
+1. <em>choose</em> a training data set of <span class="math inline">\(N\)</span> number of observations, <span class="math inline">\(\mathcal{D} = \{(\mathbf{x}_1, y_1),\ldots,(\mathbf{x}_N, y_N)\}\)</span>.
+2. <em>hypothesize</em> that the relationship between <span class="math inline">\(\mathbf{x}\)</span> and <span class="math inline">\(y\)</span> is captured by
+<span class="math display">\[
+  y = f_\mathbf{w}(\mathbf{x})
+  \]</span>
+where <span class="math inline">\(\mathbf{w} \in \mathbb{R}^M\)</span> are the parameters (i.e. unknown coefficients) of the function <span class="math inline">\(f\)</span>.
+3. <em>choose</em> a math notion for “how well <span class="math inline">\(f_\mathbf{w}\)</span> fits the data”, i.e. a <em>loss function</em>, <span class="math inline">\(\mathcal{L}(\mathbf{w})\)</span>.
+4. <em>choose</em> a way to solve for the parameters <span class="math inline">\(\mathbf{w}\)</span> that minimizes the loss function:
+<span class="math display">\[
+  \mathbf{w}^* = \mathrm{argmin}_\mathbf{w}\; \mathcal{L}(\mathbf{w})
+  \]</span></p>
+<p>This framework applies to linear, polynomial and basis regression as well as fancy neural network regression.</p>
+<p><em>Note:</em> every step in the above solution is a <strong><em>design choice</em></strong>, which means that you can chose wrongly for your given real-life problem. In your model evaluation step, you must revisit and critique each design choice.</p>
+</div>
+<div id="almost-everything-is-linear-regression" class="section level2 hasAnchor" number="3.3">
+<h2><span class="header-section-number">3.3</span> (Almost) Everything is Linear Regression<a href="what-is-regression.html#almost-everything-is-linear-regression" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>In <strong>linear regression</strong>, we assume that our function <span class="math inline">\(f_\mathbf{w}\)</span> as the form
+<span class="math display">\[
+  y = f_\mathbf{w}(\mathbf{x}) = \mathbf{w}^\top \mathbf{x}
+\]</span>
+If we choose Mean Square Error as our loss function, then
+<span class="math display">\[
+  \mathcal{L}(\mathbf{w}) = \frac{1}{N}\sum_{n=1}^N(y_n - f_\mathbf{w}(\mathbf{x}))^2.
+  \]</span></p>
+<p>If we choose to analytically minimize <span class="math inline">\(\mathcal{L}\)</span> over possible values of <span class="math inline">\(\mathbf{w}\)</span> (using calculus), then we get
+<span class="math display">\[
+\mathbf{w}^* = (\mathbf{X}^\top\mathbf{X})^{-1}\mathbf{X}^\top\mathbf{y}
+\]</span>
+where <span class="math inline">\(\mathbf{X} \in \mathbb{R}^{N\times D}\)</span> is the matrix of all your training input and <span class="math inline">\(\mathbf{y} \in \mathbb{R}^N\)</span> is the vector of all your training target values.</p>
+<p>For each new input <span class="math inline">\(\mathbf{x}\)</span>, our model prediction would be
+<span class="math display">\[
+\hat{y} = (\mathbf{w}^*)^\top\mathbf{x} = \left[(\mathbf{X}^\top\mathbf{X})^{-1}\mathbf{X}^\top\mathbf{y}\right]^\top\mathbf{x}.
+\]</span></p>
+<p>Once we have solved the linear regression problem, it turns out we have solved the regression problem for a large number of <strong><em>non-linear</em></strong> regression problems!</p>
+<p><strong>Polynomial Regression:</strong> Polynomial regression of degree <span class="math inline">\(K\)</span> is just linear regression on top of input data that’s been augmented with polynomial features:
+<span class="math display">\[
+y = \mathbf{w}^\top \phi(\mathbf{x})
+\]</span>
+where <span class="math inline">\(\phi: \mathbb{R}^D \to \mathbb{R}^{D * K + 1}\)</span> is defined by
+<span class="math display">\[
+\phi((1\; x_1\; \ldots\; x_D)^\top) = (1\; x_1\; x^2_1\; \ldots\; x^K_1\; x_2\; x^2_2\; \ldots\; x^K_2\; \ldots \; x_D\; x^2_D\; \ldots\; x^K_D)^\top.
+\]</span>
+Thus, the solution to polynomial regression is
+<span class="math display">\[
+\mathbf{w}^* = (\phi(\mathbf{X})^\top\phi(\mathbf{X}))^{-1}\phi(\mathbf{X})^\top\mathbf{y}
+\]</span></p>
+<p>For each new input <span class="math inline">\(\mathbf{x}\)</span>, our model prediction would be
+<span class="math display">\[
+\hat{y} = (\mathbf{w}^*)^\top\mathbf{x} = \left[(\mathbf{\Phi}^\top\mathbf{\Phi})^{-1}\mathbf{\Phi}^\top\mathbf{y}\right]^\top\mathbf{x},
+\]</span>
+where we write <span class="math inline">\(\mathbf{\Phi}\)</span> for <span class="math inline">\(\phi(\mathbf{X})\)</span>.</p>
+<p><strong>Regression on Arbitrary Bases:</strong> We can choose <em>any</em> non-linear feature map <span class="math inline">\(\phi: \mathbb{R}^{D} \to \mathbb{R}^{D&#39;}\)</span> and capture non-linear trends in the data by performing linear regression on <span class="math inline">\(\phi(\mathbf{x})\)</span>.</p>
+<p><strong>Neural Network Regression:</strong> Later, we will view neural network regression as:
+1. first <em>learning</em>, rather than choosing, a feature map <span class="math inline">\(\phi\)</span>
+2. then performing linear regression on <span class="math inline">\(\phi(\mathbf{x})\)</span>.</p>
+<hr />
+</div>
+<div id="what-is-model-evaluation" class="section level2 hasAnchor" number="3.4">
+<h2><span class="header-section-number">3.4</span> What is Model Evaluation?<a href="what-is-regression.html#what-is-model-evaluation" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>So, we’ve solved (linear) regression, i.e. we found <span class="math inline">\(\mathbf{w}^*\)</span> that minimizes the Mean Square Error on <span class="math inline">\(\mathcal{D}\)</span>. Are we done?</p>
+<p><strong>No!</strong> The machine learning has only just started!</p>
+<p>We still need to evaluate our model:</p>
+<ol style="list-style-type: decimal">
+<li>what is the Mean Square Error of our model on the test data? Why do we need to check this?
+&gt; What if train MSE is 0.9 and test MSE is 10?</li>
+<li>can we visually inspect our model on training and test data (i.e. plot the model against the data)? Why visually inspect if we’ve computed MSE?</li>
+<li>we need to interpret the model. Why interpret when we have the MSE?
+&gt; What if we saw that selling price was related to square footage and number of rooms by <span class="math inline">\(y = -5 * \mathrm{Sqft} + \mathrm{Rooms}\)</span>?</li>
+<li>does the model help us solve the problem? That is, who is making the final decision on the problem? How are they going to be using the model? What information do they need from the model to make good decisions?
+&gt; What we found the literal model that generated the data, but the MSE will always be around 10 mg (why MSE not be zero)? Say our task is to prescribe a new seizure medication for epileptic patients, where the safe dosage range is between 20 mg and 30 mg. Is this a helpful model?</li>
+<li>what are the limitations of our models – what are the assumptions we made when building/testing our model? How will our model behave when those assumptions are violated? When our model fails or succeeds, what will be the negative or positive real-life consequences and how will those consequences be distributed amongst the population?
+&gt; If our model causes physicians in a clinical trial to make poor decisions or draw incorrect conclusions, which patient groups will be the most impacted? How will they be impacted?</li>
+</ol>
+</div>
+<div id="what-is-model-critique" class="section level2 hasAnchor" number="3.5">
+<h2><span class="header-section-number">3.5</span> What is Model Critique?<a href="what-is-regression.html#what-is-model-critique" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>If the model fails any of the above four evaluation steps, we need to revisit and potentially re-do each design decision:</p>
+<ol style="list-style-type: decimal">
+<li>Is our training data the “right” data set?</li>
+<li>Is the functional form (linear or polynomial of degree 2) we assumed correct?</li>
+<li>Does our loss function capture what we really want to happen in real-life?</li>
+<li>Did we optimize well?</li>
+<li>Did we provide the right information about the model to the human decision maker?</li>
+</ol>
+</div>
+<div id="limitations-and-connections" class="section level2 hasAnchor" number="3.6">
+<h2><span class="header-section-number">3.6</span> Limitations and Connections<a href="what-is-regression.html#limitations-and-connections" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>Our current approach to regression is limited in a number of ways:
+1. We need to guess the “right” functional form of the data trend. <em>(Non-parametric regression and Neural Network Regression will help.)</em>
+2. Our choice to always minimize MSE seem arbitrary. <em>(Probabilistic Regression will help.)</em>
+3. We needed to do lots of fancy calculus to minimize our loss function – what if we can’t solve for the stationary points?! (<em>Gradient Descent will help</em>)
+3. Minimizing the loss function seems to involve differentiation – what if it’s too hard to write out the gradient of my loss function?! (<em>Automatic differentiation will help</em>)
+3. We can’t explain why observed <span class="math inline">\(y\)</span>’s don’t agree with the predictions of a perfect model <span class="math inline">\(f_\mathbf{w}\)</span>. <em>(Probabilistic Regression will help.)</em>
+4. We have important domain knowledge (i.e. higher square footage should not negatively impact sales price) that we are not incorporating into our model. <em>(Bayesian Regression will help)</em>
+5. We have no uncertainty, just predictions! <em>(Confidence and predictive intervals will help, so will Bayesian models)</em>
+6. Is printing out the model parameters the best way to interpret the model? <em>(Different XAI techniques will help)</em>
+&gt; Say we find that selling price is related to square footage and number of rooms by
+<span class="math display">\[
+     y = 5\; * \mathrm{SqFt} + 0.1\; * \mathrm{Rooms}
+     \]</span>
+What would you say is the most important factor in determining selling price?
+If you realized that <span class="math inline">\(\mathrm{SqFt} = 15 * \mathrm{Rooms}\)</span>, would this change your interpretation of the model?
+7. Our discussion of model evaluation and critique have been in the abstract – we have not considered any real-life evaluations of or constraints on our models. <em>(Working with domain experts will help)</em></p>
+
+</div>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="intro.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="what-are-probablistic-and-non-probablistic-regression.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+"sharing": {
+"github": false,
+"facebook": true,
+"twitter": true,
+"linkedin": false,
+"weibo": false,
+"instapaper": false,
+"vk": false,
+"whatsapp": false,
+"all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
+},
+"fontsettings": {
+"theme": "white",
+"family": "sans",
+"size": 2
+},
+"edit": {
+"link": "https://github.com/rstudio/bookdown-demo/edit/master/02-What-is-Regression.Rmd",
+"text": "Edit"
+},
+"history": {
+"link": null,
+"text": null
+},
+"view": {
+"link": null,
+"text": null
+},
+"download": ["bookdown-demo.pdf", "bookdown-demo.epub"],
+"search": {
+"engine": "fuse",
+"options": null
+},
+"toc": {
+"collapse": "subsection"
+}
+});
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "true";
+    if (src === "" || src === "true") src = "https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.9/latest.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:")
+      if (/^https?:/.test(src))
+        src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+</body>
+
+</html>

@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+<head>
+
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <title>Chapter 2 What is CS181? | Notes for CS181: Machine Learning</title>
+  <meta name="description" content="This is a set of note for CS181: Machine Learning (Spring 2023)" />
+  <meta name="generator" content="bookdown 0.33 and GitBook 2.6.7" />
+
+  <meta property="og:title" content="Chapter 2 What is CS181? | Notes for CS181: Machine Learning" />
+  <meta property="og:type" content="book" />
+  
+  <meta property="og:description" content="This is a set of note for CS181: Machine Learning (Spring 2023)" />
+  <meta name="github-repo" content="rstudio/bookdown-demo" />
+
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Chapter 2 What is CS181? | Notes for CS181: Machine Learning" />
+  
+  <meta name="twitter:description" content="This is a set of note for CS181: Machine Learning (Spring 2023)" />
+  
+
+<meta name="author" content="Yihui Xie" />
+
+
+<meta name="date" content="2023-05-02" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  
+  
+<link rel="prev" href="index.html"/>
+<link rel="next" href="what-is-regression.html"/>
+<script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
+<link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-table.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-bookdown.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-highlight.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-search.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-fontsettings.css" rel="stylesheet" />
+<link href="libs/gitbook-2.6.7/css/plugin-clipboard.css" rel="stylesheet" />
+
+
+
+
+
+
+
+
+<link href="libs/anchor-sections-1.1.0/anchor-sections.css" rel="stylesheet" />
+<link href="libs/anchor-sections-1.1.0/anchor-sections-hash.css" rel="stylesheet" />
+<script src="libs/anchor-sections-1.1.0/anchor-sections.js"></script>
+
+
+
+
+<link rel="stylesheet" href="style.css" type="text/css" />
+</head>
+
+<body>
+
+
+
+  <div class="book without-animation with-summary font-size-2 font-family-1" data-basepath=".">
+
+    <div class="book-summary">
+      <nav role="navigation">
+
+<ul class="summary">
+<li><a href="./">A Minimal Book Example</a></li>
+
+<li class="divider"></li>
+<li class="chapter" data-level="1" data-path="index.html"><a href="index.html"><i class="fa fa-check"></i><b>1</b> Notes for CS181: Machine Learning</a>
+<ul>
+<li class="chapter" data-level="1.1" data-path="index.html"><a href="index.html#spring-2023"><i class="fa fa-check"></i><b>1.1</b> Spring 2023</a></li>
+</ul></li>
+<li class="chapter" data-level="2" data-path="intro.html"><a href="intro.html"><i class="fa fa-check"></i><b>2</b> What is CS181?</a>
+<ul>
+<li class="chapter" data-level="2.1" data-path="intro.html"><a href="intro.html#why-is-ai-a-big-deal"><i class="fa fa-check"></i><b>2.1</b> Why Is AI a Big Deal?</a>
+<ul>
+<li class="chapter" data-level="2.1.1" data-path="intro.html"><a href="intro.html#but-is-accuracy-enough"><i class="fa fa-check"></i><b>2.1.1</b> But Is Accuracy Enough?</a></li>
+<li class="chapter" data-level="2.1.2" data-path="intro.html"><a href="intro.html#what-happens-when-machine-learning-models-are-catastrophically-wrong"><i class="fa fa-check"></i><b>2.1.2</b> What Happens When Machine Learning Models are Catastrophically Wrong?</a></li>
+<li class="chapter" data-level="2.1.3" data-path="intro.html"><a href="intro.html#are-machine-models-right-for-the-right-reasons"><i class="fa fa-check"></i><b>2.1.3</b> Are Machine Models Right for the Right Reasons?</a></li>
+<li class="chapter" data-level="2.1.4" data-path="intro.html"><a href="intro.html#what-is-the-role-of-the-human-decision-maker"><i class="fa fa-check"></i><b>2.1.4</b> What is the Role of the Human Decision Maker?</a></li>
+<li class="chapter" data-level="2.1.5" data-path="intro.html"><a href="intro.html#what-are-the-broader-impacts-of-tech"><i class="fa fa-check"></i><b>2.1.5</b> What are the Broader Impacts of Tech?</a></li>
+</ul></li>
+<li class="chapter" data-level="2.2" data-path="intro.html"><a href="intro.html#machine-learning-is-much-more-than-accuracy"><i class="fa fa-check"></i><b>2.2</b> Machine Learning is Much More Than Accuracy</a></li>
+<li class="chapter" data-level="2.3" data-path="intro.html"><a href="intro.html#what-is-cs181"><i class="fa fa-check"></i><b>2.3</b> What is CS181?</a></li>
+<li class="chapter" data-level="2.4" data-path="intro.html"><a href="intro.html#what-we-are-offering-you"><i class="fa fa-check"></i><b>2.4</b> What We are Offering You</a></li>
+<li class="chapter" data-level="2.5" data-path="intro.html"><a href="intro.html#what-we-are-asking-from-you"><i class="fa fa-check"></i><b>2.5</b> What We are Asking From You</a></li>
+<li class="chapter" data-level="2.6" data-path="intro.html"><a href="intro.html#grading-evaluation"><i class="fa fa-check"></i><b>2.6</b> Grading &amp; Evaluation</a></li>
+</ul></li>
+<li class="chapter" data-level="3" data-path="what-is-regression.html"><a href="what-is-regression.html"><i class="fa fa-check"></i><b>3</b> What is Regression?</a>
+<ul>
+<li class="chapter" data-level="3.1" data-path="what-is-regression.html"><a href="what-is-regression.html#what-is-machine-learning"><i class="fa fa-check"></i><b>3.1</b> What is Machine Learning?</a></li>
+<li class="chapter" data-level="3.2" data-path="what-is-regression.html"><a href="what-is-regression.html#what-is-regression-1"><i class="fa fa-check"></i><b>3.2</b> What is Regression?</a></li>
+<li class="chapter" data-level="3.3" data-path="what-is-regression.html"><a href="what-is-regression.html#almost-everything-is-linear-regression"><i class="fa fa-check"></i><b>3.3</b> (Almost) Everything is Linear Regression</a></li>
+<li class="chapter" data-level="3.4" data-path="what-is-regression.html"><a href="what-is-regression.html#what-is-model-evaluation"><i class="fa fa-check"></i><b>3.4</b> What is Model Evaluation?</a></li>
+<li class="chapter" data-level="3.5" data-path="what-is-regression.html"><a href="what-is-regression.html#what-is-model-critique"><i class="fa fa-check"></i><b>3.5</b> What is Model Critique?</a></li>
+<li class="chapter" data-level="3.6" data-path="what-is-regression.html"><a href="what-is-regression.html#limitations-and-connections"><i class="fa fa-check"></i><b>3.6</b> Limitations and Connections</a></li>
+</ul></li>
+<li class="chapter" data-level="4" data-path="what-are-probablistic-and-non-probablistic-regression.html"><a href="what-are-probablistic-and-non-probablistic-regression.html"><i class="fa fa-check"></i><b>4</b> What are Probablistic and Non-Probablistic Regression?</a>
+<ul>
+<li class="chapter" data-level="4.1" data-path="what-are-probablistic-and-non-probablistic-regression.html"><a href="what-are-probablistic-and-non-probablistic-regression.html#what-is-probabilistic-regression"><i class="fa fa-check"></i><b>4.1</b> What is Probabilistic Regression?</a></li>
+<li class="chapter" data-level="4.2" data-path="what-are-probablistic-and-non-probablistic-regression.html"><a href="what-are-probablistic-and-non-probablistic-regression.html#almost-everything-is-linear-regression-1"><i class="fa fa-check"></i><b>4.2</b> (Almost) Everything is Linear Regression</a></li>
+<li class="chapter" data-level="4.3" data-path="what-are-probablistic-and-non-probablistic-regression.html"><a href="what-are-probablistic-and-non-probablistic-regression.html#the-cube-a-model-comparison-paradigm"><i class="fa fa-check"></i><b>4.3</b> The Cube: A Model Comparison Paradigm</a></li>
+</ul></li>
+<li class="chapter" data-level="5" data-path="what-matters-in-ml-besides-prediction.html"><a href="what-matters-in-ml-besides-prediction.html"><i class="fa fa-check"></i><b>5</b> What Matters in ML Besides Prediction?</a>
+<ul>
+<li class="chapter" data-level="5.1" data-path="what-matters-in-ml-besides-prediction.html"><a href="what-matters-in-ml-besides-prediction.html#what-is-machine-learning-revisited"><i class="fa fa-check"></i><b>5.1</b> What is Machine Learning? Revisited</a></li>
+<li class="chapter" data-level="5.2" data-path="what-matters-in-ml-besides-prediction.html"><a href="what-matters-in-ml-besides-prediction.html#what-are-we-uncertain-about"><i class="fa fa-check"></i><b>5.2</b> What Are We Uncertain About?</a></li>
+<li class="chapter" data-level="5.3" data-path="what-matters-in-ml-besides-prediction.html"><a href="what-matters-in-ml-besides-prediction.html#where-is-uncertainty-coming-from"><i class="fa fa-check"></i><b>5.3</b> Where is Uncertainty Coming From?</a></li>
+<li class="chapter" data-level="5.4" data-path="what-matters-in-ml-besides-prediction.html"><a href="what-matters-in-ml-besides-prediction.html#how-do-we-compute-uncertainty"><i class="fa fa-check"></i><b>5.4</b> How Do We Compute Uncertainty?</a></li>
+<li class="chapter" data-level="5.5" data-path="what-matters-in-ml-besides-prediction.html"><a href="what-matters-in-ml-besides-prediction.html#mathematizing-uncertainty-starting-with-bias-and-variance"><i class="fa fa-check"></i><b>5.5</b> Mathematizing Uncertainty: Starting with Bias and Variance</a></li>
+<li class="chapter" data-level="5.6" data-path="what-matters-in-ml-besides-prediction.html"><a href="what-matters-in-ml-besides-prediction.html#the-bias-variance-trade-off-in-machine-learning"><i class="fa fa-check"></i><b>5.6</b> The Bias-Variance Trade-off in Machine Learning</a>
+<ul>
+<li class="chapter" data-level="5.6.1" data-path="what-matters-in-ml-besides-prediction.html"><a href="what-matters-in-ml-besides-prediction.html#examples-of-the-bias-variance-trade-off"><i class="fa fa-check"></i><b>5.6.1</b> Examples of the Bias-Variance Trade-off</a></li>
+</ul></li>
+</ul></li>
+<li class="chapter" data-level="6" data-path="what-is-logistic-regression.html"><a href="what-is-logistic-regression.html"><i class="fa fa-check"></i><b>6</b> What is Logistic Regression?</a>
+<ul>
+<li class="chapter" data-level="6.1" data-path="what-is-logistic-regression.html"><a href="what-is-logistic-regression.html#logistic-regression-and-soft-classification"><i class="fa fa-check"></i><b>6.1</b> Logistic Regression and Soft-Classification</a></li>
+<li class="chapter" data-level="6.2" data-path="what-is-logistic-regression.html"><a href="what-is-logistic-regression.html#logistic-regression-and-bernoulli-likelihood"><i class="fa fa-check"></i><b>6.2</b> Logistic Regression and Bernoulli Likelihood</a></li>
+<li class="chapter" data-level="6.3" data-path="what-is-logistic-regression.html"><a href="what-is-logistic-regression.html#how-to-perform-maximum-likelihood-inference-for-logistic-regression"><i class="fa fa-check"></i><b>6.3</b> How to Perform Maximum Likelihood Inference for Logistic Regression</a></li>
+<li class="chapter" data-level="6.4" data-path="what-is-logistic-regression.html"><a href="what-is-logistic-regression.html#how-not-to-evaluate-classifiers"><i class="fa fa-check"></i><b>6.4</b> How (Not) to Evaluate Classifiers</a></li>
+<li class="chapter" data-level="6.5" data-path="what-is-logistic-regression.html"><a href="what-is-logistic-regression.html#how-to-interpret-logistic-regression"><i class="fa fa-check"></i><b>6.5</b> How to Interpret Logistic Regression</a></li>
+</ul></li>
+<li class="chapter" data-level="7" data-path="how-do-we-responsibly-use-conditional-models.html"><a href="how-do-we-responsibly-use-conditional-models.html"><i class="fa fa-check"></i><b>7</b> How Do We Responsibly Use Conditional Models?</a>
+<ul>
+<li class="chapter" data-level="7.1" data-path="how-do-we-responsibly-use-conditional-models.html"><a href="how-do-we-responsibly-use-conditional-models.html#everything-weve-done-so-far-in-probabilistic-ml"><i class="fa fa-check"></i><b>7.1</b> Everything We’ve Done So Far in Probabilistic ML</a></li>
+</ul></li>
+<li class="divider"></li>
+<li><a href="https://github.com/rstudio/bookdown" target="blank">Published with bookdown</a></li>
+
+</ul>
+
+      </nav>
+    </div>
+
+    <div class="book-body">
+      <div class="body-inner">
+        <div class="book-header" role="navigation">
+          <h1>
+            <i class="fa fa-circle-o-notch fa-spin"></i><a href="./">Notes for CS181: Machine Learning</a>
+          </h1>
+        </div>
+
+        <div class="page-wrapper" tabindex="-1" role="main">
+          <div class="page-inner">
+
+            <section class="normal" id="section-">
+<div id="intro" class="section level1 hasAnchor" number="2">
+<h1><span class="header-section-number">Chapter 2</span> What is CS181?<a href="intro.html#intro" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<p><img src="https://i.imgur.com/xDR9VQd.png" /></p>
+<div id="why-is-ai-a-big-deal" class="section level2 hasAnchor" number="2.1">
+<h2><span class="header-section-number">2.1</span> Why Is AI a Big Deal?<a href="intro.html#why-is-ai-a-big-deal" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p><strong><em>Artifcial intellegence</em></strong> or <strong><em>machine learning</em></strong> models are becoming increasinglly ubiquitous in modern life. These models have already made meaningful impact on many of the most pressing problems we face today.</p>
+<p><img src="https://i.imgur.com/2jOTUVh.jpg" /></p>
+<p>Most impactfully, AI has enabled me to <a href="(https://land.prisma-ai.com/magic-avatars/)">generate endless alternate reality depictions</a> of my animal co-conspirators:</p>
+<p><img src="https://i.imgur.com/MeknADT.jpg" /></p>
+<div id="but-is-accuracy-enough" class="section level3 hasAnchor" number="2.1.1">
+<h3><span class="header-section-number">2.1.1</span> But Is Accuracy Enough?<a href="intro.html#but-is-accuracy-enough" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>When machine learning models are applied to safety-critical, risk-adverse domains such as health care, reliable measurements of a model’s <em>justifications for a prediction</em> as well as its <em>predictive uncertainty</em> may be as crucial as correctness of its predictions.</p>
+<p>Predictive uncertainty helps us quantify risk in down-stream tasks:</p>
+<p><img src="https://i.imgur.com/lLXEa8K.png" /></p>
+<p>We also care about the <strong><em>source of uncertainty</em></strong>:
+<img src="https://i.imgur.com/9HjaAa3.png" /></p>
+<p>Reducible uncertainty due to the lack of data is often called <strong><em>epistemic uncertainty</em></strong>, whereas irreducible uncertainty due to the inherent noisiness of the prediciton is called <strong><em>aleatoric uncertainty</em></strong>. Knowing where our uncertainty comes from helps us make decisions about how to mitigate risk.</p>
+</div>
+<div id="what-happens-when-machine-learning-models-are-catastrophically-wrong" class="section level3 hasAnchor" number="2.1.2">
+<h3><span class="header-section-number">2.1.2</span> What Happens When Machine Learning Models are Catastrophically Wrong?<a href="intro.html#what-happens-when-machine-learning-models-are-catastrophically-wrong" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>Unfortunately, many of the machine learning models that achieve the most impressive performances do not provide any indications to users when they are operating “out of their depth”. In fact, when ML models break, they often do so silently and their failures may go unnoticed for a long time.</p>
+<p><img src="https://i.imgur.com/SXK4TKT.jpg" /></p>
+<p><strong><em>Image from:</em></strong> <a href="https://arxiv.org/pdf/1812.05720.pdf">Why ReLU Networks Yield High-Confidence Predictions Far Away From the Training Data and How to Mitigate the Problem</a></p>
+<div id="example-detecting-when-the-model-is-operating-in-unfamiliar-territories" class="section level4 hasAnchor" number="2.1.2.1">
+<h4><span class="header-section-number">2.1.2.1</span> Example: Detecting When the Model is Operating in Unfamiliar Territories<a href="intro.html#example-detecting-when-the-model-is-operating-in-unfamiliar-territories" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<p>In <a href=""><em>Efficient Out-of-Distribution Detection in Digital Pathology Using Multi-Head Convolutional Neural Networks</em></a> (Linmans et al, Medical Imaging with Deep Learning 2020), the authors train an uncertainty-aware neural network model to detect breast cancer metastasis.</p>
+<p>The epistemic uncertainty is used during test time to detect new types of breast tissue images that were not included in the training data. Classification of these novel types of images can be deferred to a human.</p>
+<p>Unfamiliar types were caught at test time with <strong>AUC of .98</strong>.
+<img src="https://i.imgur.com/d0OSJEN.jpg" /></p>
+</div>
+</div>
+<div id="are-machine-models-right-for-the-right-reasons" class="section level3 hasAnchor" number="2.1.3">
+<h3><span class="header-section-number">2.1.3</span> Are Machine Models Right for the Right Reasons?<a href="intro.html#are-machine-models-right-for-the-right-reasons" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>In order for human decision makers to interact with machine learning models meaningfully – for example, in order to verify their correctness – we need these models to be <strong>interpretable</strong>. But explaning complex models is difficult.</p>
+<p><img src="https://i.imgur.com/o5aSN67.png" /></p>
+<div id="example-explainable-ml-diagnostic-model" class="section level4 hasAnchor" number="2.1.3.1">
+<h4><span class="header-section-number">2.1.3.1</span> Example: Explainable ML Diagnostic Model<a href="intro.html#example-explainable-ml-diagnostic-model" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<p>In <a href=""><em>An explainable deep-learning algorithm for the detection of acute intracranial haemorrhage from small datasets</em></a> (Lee et al, Nature Biomedical Engineering, 2019), the authors build a neural network model to detect acute intracranial haemorrhage (ICH) and classifies five ICH subtypes.</p>
+<p>Model classifications are explained by highlighting the pixels that contributed the most to the decision. The highligthed regions tends to overlapped with ‘bleeding points’ annotated by neuroradiologists on the images.</p>
+<p><img src="https://i.imgur.com/tVVyiPK.png" /></p>
+</div>
+</div>
+<div id="what-is-the-role-of-the-human-decision-maker" class="section level3 hasAnchor" number="2.1.4">
+<h3><span class="header-section-number">2.1.4</span> What is the Role of the Human Decision Maker?<a href="intro.html#what-is-the-role-of-the-human-decision-maker" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>We tend to think of modeling as a purely mathematical or engineering feat, but in many cases the model has a complex interaction with a human decision maker.</p>
+<p>We not only need to worry about the performance of the model, we also need to worry about the performance the combined system of Human + AI.</p>
+<p><img src="https://i.imgur.com/PJGRh9Z.png" /></p>
+<p><strong>Image from:</strong> <a href="https://bryanw.medium.com/does-higher-prediction-accuracy-guarantee-better-human-ai-collaboration-f072ae63415b">Does Higher Prediction Accuracy Guarantee Better Human-AI Collaboration?</a></p>
+<p>Of course, disasterous combinations of AI and humans have long been fodder for cinematic imagination.</p>
+<p><img src="https://i.imgur.com/lJgqO6m.jpg" /></p>
+<div id="example-the-promises-of-human-ai-systems" class="section level4 hasAnchor" number="2.1.4.1">
+<h4><span class="header-section-number">2.1.4.1</span> Example: The Promises of Human + AI Systems<a href="intro.html#example-the-promises-of-human-ai-systems" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<p>In <a href=""><em>Consistent Estimators for Learning to Defer to an Expert</em></a> (Mozannar et al, International Conference on Machine Learning, 2020), the authors trains a model that decides when (and how) to classify an input and when to defer the decision to an human expert.</p>
+<p>The joint Human + AI system can be superior to both components.
+<img src="https://i.imgur.com/X3Ha82t.png" /></p>
+</div>
+<div id="example-the-perils-of-human-ai-systems" class="section level4 hasAnchor" number="2.1.4.2">
+<h4><span class="header-section-number">2.1.4.2</span> Example: The Perils of Human + AI Systems<a href="intro.html#example-the-perils-of-human-ai-systems" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<p>In <a href=""><em>How machine-learning recommendations influence clinician treatment selections: the example of antidepressant selection</em></a> (Jacobs et al, Translational Psychiatry, 2021), the authors found that clinicians interacting with incorrect recommendations paired with simple explanations experienced significant reduction in treatment selection accuracy.</p>
+<p><img src="https://i.imgur.com/z3Q11bn.png" /></p>
+<p>Incorrect ML recommendations may adversely impact clinician treatment selections and that explanations are insufficient for addressing overreliance on imperfect ML algorithms.</p>
+</div>
+</div>
+<div id="what-are-the-broader-impacts-of-tech" class="section level3 hasAnchor" number="2.1.5">
+<h3><span class="header-section-number">2.1.5</span> What are the Broader Impacts of Tech?<a href="intro.html#what-are-the-broader-impacts-of-tech" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>The days where we’d looked at Sillicon Valley unicorns and the promise of their tech through the rose-colored glasses of unbridled optimism are long gone. These days tech are still grabbing headlines, but often not for the right reasons.</p>
+<p><img src="https://i.imgur.com/Biwmg7Y.jpg" /></p>
+<p>Increasing in prominence are calls for more diverse (in terms of domain expertise, discipline and lived-experiences) lenses to be applied to AI technology.</p>
+<p><img src="https://i.imgur.com/q9VKM5A.jpg" /></p>
+</div>
+</div>
+<div id="machine-learning-is-much-more-than-accuracy" class="section level2 hasAnchor" number="2.2">
+<h2><span class="header-section-number">2.2</span> Machine Learning is Much More Than Accuracy<a href="intro.html#machine-learning-is-much-more-than-accuracy" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>Machine learning is much more than engineering for abstract performance metrics. Increasingly the field is grappling with the role digital technology is playing in our entire socio-technical system.</p>
+<p>Machine learning and data science are <strong>interdisciplinary</strong> fields that require people with <strong>diverse skill-sets/backgrounds</strong> to work closely and <strong>cooperatively</strong>.</p>
+<p>There is also increasing calls for machine learning/data science researchers to engage meaningfully with <strong>social, economic, political, cultural and ethical impacts</strong> of their work when embedded in complex human institutions.</p>
+<p><img src="https://i.imgur.com/5sXAF7N.jpg" /></p>
+<hr />
+</div>
+<div id="what-is-cs181" class="section level2 hasAnchor" number="2.3">
+<h2><span class="header-section-number">2.3</span> What is CS181?<a href="intro.html#what-is-cs181" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<ol style="list-style-type: decimal">
+<li>Build statistical (Bayesian and non-Bayesian) models for: continuous, ordinal and categorical data</li>
+<li>Study algorithms for model fitting and inference</li>
+<li>Study paradigms for model evaluation and critique</li>
+<li>Understand ways models can fail or produce unintended negative impact in real-life settings</li>
+</ol>
+<p><strong>Goal:</strong> students become familiar with standard statistical models and modern techniques of inference. At the end of the course you should be able to productively engage with current machine learning developments and apply a number of models to solve real-life problems. You should also be able to anticipate model failure modes and perform nuanced analyses of the broader social impact of your model.</p>
+<p><strong>Focus:</strong>
+- <strong>Why:</strong> theory should serve a concrete purpose.
+- <strong>How:</strong> emphasize computational aspects of inference.
+- <strong>But Should I?:</strong> anticipate failure modes and negative social impacts.</p>
+</div>
+<div id="what-we-are-offering-you" class="section level2 hasAnchor" number="2.4">
+<h2><span class="header-section-number">2.4</span> What We are Offering You<a href="intro.html#what-we-are-offering-you" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>We have structured CS181 to accomodate a number of different learning goals and learning styles.</p>
+<ol style="list-style-type: decimal">
+<li>We have videos in traditional lecture format, textbooks, notes and additional resources for those of you who learn best in traditional classrooms.</li>
+<li>We have plenty of interactive, synchronous course components where you can ask questions, practice what you learn and extend your knowledge.</li>
+<li>There is content for both students looking for a higher level overview of ML as well as links to resources for students looking for more depth on particular topics.</li>
+<li>There are access points to different types of research areas in ML (the “Beyond Sections” sections).</li>
+</ol>
+</div>
+<div id="what-we-are-asking-from-you" class="section level2 hasAnchor" number="2.5">
+<h2><span class="header-section-number">2.5</span> What We are Asking From You<a href="intro.html#what-we-are-asking-from-you" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>We’ve put in a substantial amount of work to structure CS181 to support your learning. We are asking you also put in work in order to make this a successful learning experience:</p>
+<ol style="list-style-type: decimal">
+<li><p>Talk to course humans:</p>
+<ul>
+<li>Come to instructor and TF office hours</li>
+<li>Come to Sections to review and reinforce learning</li>
+<li>Come to Beyond Sections to contextualize and broaden your knowledge</li>
+</ul></li>
+<li><p>Ask questions:</p>
+<ul>
+<li><strong>Ask questions to understand</strong>. There is no such thing as an obvious fact or a trivial question. Don’t let shyness of intimidation prevent you from asking for help to understand something.</li>
+<li><strong>Ask questions to dig deeper</strong>. Every single concept in this course serves a purpose and has a justification. Don’t settle for knowing facts, there’s always a questions you can ask about something you already know that will show you something new and something deep.</li>
+</ul></li>
+<li><p>Focus on creating connections, relationships between and syntheses of different concepts. Don’t worry about memorizing lines of math.</p></li>
+<li><p>Challenge yourself! Machine learning is currently challenging our understanding of sentience/intelligence, ethics, law, labor, social/cultural dynamics. Machine learning should be challenging you!</p>
+<ul>
+<li>Make space for everyone’s perspective – there is no “solving machine learning”, “winning at machine learning” and no such thing as the “best solution” or “right answer”.</li>
+<li>Make space for your own perspective – your background, whatever it is, is an important perspective for machine learning.</li>
+<li>Look beyond the class – the goal of the class isn’t to get you to be fluent in math, stats or <code>pytorch</code>; the goal is to help you see how ML figures into your life (e.g. research, academic/professional interests/plans, empowered citizenship)</li>
+</ul></li>
+</ol>
+</div>
+<div id="grading-evaluation" class="section level2 hasAnchor" number="2.6">
+<h2><span class="header-section-number">2.6</span> Grading &amp; Evaluation<a href="intro.html#grading-evaluation" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>Generally speaking, the grading in this course is <em>formative</em> not punitive. We are looking to see that you’ve grasped basic skills and fundamental concepts, we are not looking to deduct points for various mistakes.</p>
+<p>Our evaluation philosophy is standard-based. That is, just as there is a basic level of fluency and familiarity you neeed with operation of motor vehicles to obtain a driver’s license, there is a basic level of fluency and familiarity with theory/implementation/impact analysis you are expected to gain in order to responsibly operate machine learning models in the real world. Course staff is here to support your learning in order to meet these standards and engage with ML meaningfully in your own way. In particular, we are not interested in:
+1. competition
+2. ranking of students along arbitrary axes
+3. making anything hard for “hardness” sake</p>
+
+</div>
+</div>
+            </section>
+
+          </div>
+        </div>
+      </div>
+<a href="index.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="what-is-regression.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+    </div>
+  </div>
+<script src="libs/gitbook-2.6.7/js/app.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/clipboard.min.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-search.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-sharing.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-fontsettings.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-bookdown.js"></script>
+<script src="libs/gitbook-2.6.7/js/jquery.highlight.js"></script>
+<script src="libs/gitbook-2.6.7/js/plugin-clipboard.js"></script>
+<script>
+gitbook.require(["gitbook"], function(gitbook) {
+gitbook.start({
+"sharing": {
+"github": false,
+"facebook": true,
+"twitter": true,
+"linkedin": false,
+"weibo": false,
+"instapaper": false,
+"vk": false,
+"whatsapp": false,
+"all": ["facebook", "twitter", "linkedin", "weibo", "instapaper"]
+},
+"fontsettings": {
+"theme": "white",
+"family": "sans",
+"size": 2
+},
+"edit": {
+"link": "https://github.com/rstudio/bookdown-demo/edit/master/01-What-is-CS181.Rmd",
+"text": "Edit"
+},
+"history": {
+"link": null,
+"text": null
+},
+"view": {
+"link": null,
+"text": null
+},
+"download": ["bookdown-demo.pdf", "bookdown-demo.epub"],
+"search": {
+"engine": "fuse",
+"options": null
+},
+"toc": {
+"collapse": "subsection"
+}
+});
+});
+</script>
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    var src = "true";
+    if (src === "" || src === "true") src = "https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.9/latest.js?config=TeX-MML-AM_CHTML";
+    if (location.protocol !== "file:")
+      if (/^https?:/.test(src))
+        src = src.replace(/^https?:/, '');
+    script.src = src;
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+</body>
+
+</html>
