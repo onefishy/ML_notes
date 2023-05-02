@@ -12,6 +12,4 @@ github-repo: rstudio/bookdown-demo
 description: "This is a set of note for CS181: Machine Learning (Spring 2023)"
 ---
 
-This is a set of notes from the Spring 2023 iteration of CS181: Machine Learning
-
 ![](https://i.imgur.com/xDR9VQd.png)
