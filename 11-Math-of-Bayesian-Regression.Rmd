@@ -1,0 +1,81 @@
+# The Math Behind Bayesian Regression
+
+![](https://i.imgur.com/xDR9VQd.png)
+
+
+Let say we have a training data set $\mathcal{D} = \{(\mathbf{x}_1, y_1), \ldots, (\mathbf{x}_N, y_N)\}$ of $N$ number of observations where $\mathbf{x}_n\in \mathbb{R}^D$.  
+
+## Bayesian Linear Regression
+**Our Likelihood:** We will assume a probabilistic model for regression
+$$
+y\vert \mathbf{x}, \mathbf{w} \sim \mathcal{N}(\mathbf{w}^\top \mathbf{x}, \sigma^2).
+$$
+
+We will use $\mathbf{y}$ to denote the vector of the $N$ number of $y$'s in the training set, and $\mathbf{X}$ denote the $N\times D$ dimensional matrix whose $n$-th row is $\mathbf{x}_n$. Using matrix notation, we can simplify our expression of the joint likelihood:
+
+\begin{aligned}
+\prod_{n=1}^Np(y_n | \mathbf{x}_n, \mathbf{w}) &= \prod_{n=1}^N\frac{1}{\sqrt{2\pi\sigma^2}} \mathrm{exp}\left\{  -\frac{1}{2\sigma^2}(y_n - (\mathbf{w}^\top \mathbf{x}_n)^2)\right\}\\
+&= \frac{1}{\sqrt{2\pi\sigma^2}^N} \mathrm{exp}\left\{  -\frac{1}{2\sigma^2}\sum_{n=1}^N(y_n - (\mathbf{w}^\top \mathbf{x}_n)^2)\right\}\\
+&= \frac{1}{\sqrt{2\pi\sigma^2}^N} \mathrm{exp}\left\{  -\frac{1}{2\sigma^2}(\mathbf{y} - \mathbf{X}\mathbf{w})^\top (\mathbf{y} - \mathbf{X}\mathbf{w})\right\}\\
+&= \frac{1}{\sqrt{2\pi\sigma^2}^N} \mathrm{exp}\left\{  -\frac{1}{2}(\mathbf{y} - \mathbf{X}\mathbf{w})^\top(\sigma^2I_{N\times N})^{-1} (\mathbf{y} - \mathbf{X}\mathbf{w})\right\}\\
+&= \mathcal{N}(\mathbf{y}; \mathbf{X}\mathbf{w}, \sigma^2I_{2\times 2})
+\end{aligned}
+where $I_{N\times N}$ is the $N\times N$ identity matrix. The expression in the second line is derived from the first by applying the rule $e^{a}e^{b} = e^{a+b}$; the expression in the third line is derived from the second by expanding out $\mathbf{X}\mathbf{w}$ as a sum of inner products $\mathbf{w}^\top \mathbf{x}_n$; the fourth line is derived from the third by noting that inserting the inverse of an identity matrix (which is equal to the identity matrix) does not change the computation.
+
+We see that instead of treating the joint likelihood as a product of univariate Gaussian pdfs, we can rewrite it as a multivariate Gaussian with mean vector $\mathbf{X}w \in \mathbb{R}^N$ and a $N\times N$ diagonal covariance matrix (the entries on the diagonal of this matrix is $\sigma^2$). Let's denote $\sigma^2I_{N\times N}$ by $\Sigma_0$, so that the likelihood is:
+$$
+p(\mathbf{y} | \mathbf{X}, \mathbf{w}) = \frac{1}{\sqrt{2\pi|\Sigma_0|}^N} \mathrm{exp}\left\{-\frac{1}{2} (\mathbf{X}\mathbf{w} - \mathbf{y})^\top\Sigma_0^{-1}(\mathbf{X}\mathbf{w} - \mathbf{y})\right\}
+$$
+
+**Our Prior:** Let's add a prior to our model
+$$
+\mathbf{w} \sim \mathcal{N}(\mathbf{m}, \mathbf{S})
+$$
+where $\mathbf{m} \in \mathbb{R}^D$ is the mean vector and $\mathbf{S}\in \mathbb{R}^{D\times D}$ is the covariance matrix. Typically, we assume that $\mathbf{m}$ is the zero vector and $\mathbf{S}$ is of the form $\sigma_\mathbf{w}^2 I_{D\times D}$.
+
+**Our Posterior:** The posterior distribution is now given by the Bayes Rule
+$$
+p(\mathbf{w} | \mathbf{y}, \mathbf{X}) = \frac{p(\mathbf{y} | \mathbf{X}, \mathbf{w})p(\mathbf{w})}{p(\mathbf{y} | \mathbf{X})}
+$$
+
+In this case, we can write out the analytical form of the posterior pdf using matrix algebra:
+\begin{aligned}
+p(\mathbf{w} | \mathbf{y}, \mathbf{X}) &= \frac{p(\mathbf{y} | \mathbf{X}, \mathbf{w})p(\mathbf{w})}{p(\mathbf{y} | \mathbf{X})}\\
+&= \frac{\frac{1}{\sqrt{2\pi|\Sigma_0|}^N} \mathrm{exp}\left\{-\frac{1}{2} (\mathbf{X}\mathbf{w} - \mathbf{y})^\top\Sigma_0^{-1}(\mathbf{X}\mathbf{w} - \mathbf{y})\right\} \frac{1}{\sqrt{2\pi|\mathbf{S}|}^2} \mathrm{exp}\left\{-\frac{1}{2} (\mathbf{w} - \mathbf{m})^\top \mathbf{S}^{-1}(\mathbf{w} - \mathbf{m})\right\}}{p(\mathbf{y} | \mathbf{X})}\\
+&= \frac{const * \mathrm{exp}\left\{-\frac{1}{2} (\mathbf{X}\mathbf{w} - \mathbf{y})^\top\Sigma_0^{-1}(\mathbf{X}\mathbf{w} - \mathbf{y}) + -\frac{1}{2} (\mathbf{w} - \mathbf{m})^\top S^{-1}(\mathbf{w} - \mathbf{m})\right\}}{const}\\
+&=const * \mathrm{exp}\left\{-\frac{1}{2}\left(\mathbf{y}^\top\Sigma_0^{-1}\mathbf{y} - 2\mathbf{y}^\top \Sigma_0^{-1}\mathbf{X}\mathbf{w} + \mathbf{w}^\top\mathbf{X}^\top\Sigma_0^{-1}\mathbf{X}\mathbf{w} + \mathbf{w}^\top \mathbf{S}^{-1}\mathbf{w} - 2\mathbf{m}^\top \mathbf{S}^{-1} \mathbf{w} + \mathbf{m}^\top \mathbf{S}^{-1}\mathbf{m} \right)  \right\}\\
+&= const * \mathrm{exp}\left\{ \mathbf{y}^\top\Sigma^{-1}\mathbf{y} + \mathbf{m}^\top \mathbf{S}^{-1}\mathbf{m} \right\}\mathrm{exp}\left\{ \mathbf{w}^\top \left(\mathbf{S}^{-1} + \mathbf{X}^\top\Sigma^{-1}\mathbf{X}\right) \mathbf{w} - 2\left(\mathbf{y}^\top \Sigma^{-1}\mathbf{X} + \mathbf{m}^\top \mathbf{S}^{-1} \right) \mathbf{w}\right\}\\
+&= const * \mathrm{exp}\left\{ \mathbf{w}^\top \left(\mathbf{S}^{-1} + \mathbf{X}^\top\Sigma^{-1}\mathbf{X}\right) \mathbf{w} - 2\left(\mathbf{y}^\top \Sigma^{-1}\mathbf{X} + \mathbf{m}^\top S^{-1} \right) \mathbf{w}\right\}\\
+&= const * \mathrm{exp}\left\{ \mathbf{w}^\top A \mathbf{w} - 2b \mathbf{w}\right\}
+\end{aligned}
+where $A = \left(\mathbf{S}^{-1} + \mathbf{X}^\top\Sigma^{-1}\mathbf{X}\right)$ and $b = \left(\mathbf{y}^\top \Sigma^{-1}\mathbf{X} + \mathbf{m}^\top \mathbf{S}^{-1} \right)$.
+
+In the last line of the above, we see that the inside of the exponential function is almost a matrix square, to ***complete the square*** (and factor the expression) we need to add and subtract the term $bA b^\top$:
+\begin{aligned}
+p(\mathbf{w} | \mathbf{y}, \mathbf{X}) &= const * \mathrm{exp}\left\{ \mathbf{w}^\top A \mathbf{w} - 2b \mathbf{w}\right\}\\
+&= const * \mathrm{exp}\left\{ \mathbf{w}^\top A \mathbf{w} - 2b \mathbf{w} + bA^{-1} b^\top- bA^{-1} b^\top\right\}\\
+&= const * \mathrm{exp}\left\{ (\mathbf{w} - A^{-1}b^\top)^\top A(\mathbf{w} - A^{-1}b^\top) - bA^{-1} b^\top\right\}\\
+&= const * \mathrm{exp}\left\{ - b^\top A b^\top\right\}\mathrm{exp}\left\{ (\mathbf{w} - A^{-1}b^\top)^\top A(\mathbf{w} - A^{-1}b^\top)\right\}\\
+&= const * \mathrm{exp}\left\{ (\mathbf{w} - A^{-1}b^\top)^\top A(\mathbf{w} - A^{-1}b^\top)\right\}.
+\end{aligned}
+
+Finally, we see that the posterior $p(\mathbf{w} | \mathbf{y}, \mathbf{X})$ has the form of a multivariate Gaussian, with mean $A^{-1}b$ and covariance $A^{-1}$. That is,
+$$
+p(\mathbf{w} | \mathbf{y}, \mathbf{X}) = \mathcal{N}\left(\mu, \Sigma\right),
+$$
+where $\Sigma = \left(\mathbf{S}^{-1} + \mathbf{X}^\top\Sigma_0^{-1}\mathbf{X}\right)^{-1}$ and $\mu=\Sigma \left(\mathbf{y}^\top \Sigma_0^{-1}\mathbf{X} + \mathbf{m}^\top \mathbf{S}^{-1} \right)^\top$
+
+## Bayesian Linear Regression over Arbitrary Bases
+
+The math of Bayesian linear regression applies to Bayesian linear regression for any feature map $\phi:\mathbb{R}^D \to \mathbb{R}^{D'}$ applied to the training inputs. Let $\mathbf{\Phi}$ denote the feature map $\phi$ applied to the matrix $\mathbf{X}$.
+
+Then we can set up a Bayesian linear model over $\phi(\mathbf{x})$:
+\begin{aligned}
+\mathbf{y}\vert \mathbf{w}, \mathbf{X} &\sim \mathcal{N}(\mathbf{\Phi}\mathbf{w}, \Sigma_0)&\text{(Likelihood)}\\
+\mathbf{w} &\sim \mathcal{N}(\mathbf{m}, \mathbf{S})& \text{(Prior)}
+\end{aligned}
+and the posterior is exactly that of Bayesian linear regression with $\mathbf{\Phi}$ in place of $\mathbf{X}$:
+$$
+p(\mathbf{w} | \mathbf{y}, \mathbf{X}) = \mathcal{N}\left(\mu, \Sigma\right),
+$$
+where $\Sigma = \left(\mathbf{S}^{-1} + \mathbf{\Phi}^\top\Sigma_0^{-1}\mathbf{\Phi}\right)^{-1}$ and $\mu=\Sigma \left(\mathbf{y}^\top \Sigma_0^{-1}\mathbf{\Phi} + \mathbf{m}^\top \mathbf{S}^{-1} \right)^\top$.
