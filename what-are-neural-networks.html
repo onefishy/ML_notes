@@ -4,18 +4,18 @@
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>Chapter 5 What Matters in ML Besides Prediction? | Notes for CS181: Machine Learning</title>
+  <title>Chapter 10 What are Neural Networks? | Notes for CS181: Machine Learning</title>
   <meta name="description" content="This is a set of note for CS181: Machine Learning (Spring 2023)" />
   <meta name="generator" content="bookdown 0.33 and GitBook 2.6.7" />
 
-  <meta property="og:title" content="Chapter 5 What Matters in ML Besides Prediction? | Notes for CS181: Machine Learning" />
+  <meta property="og:title" content="Chapter 10 What are Neural Networks? | Notes for CS181: Machine Learning" />
   <meta property="og:type" content="book" />
   
   <meta property="og:description" content="This is a set of note for CS181: Machine Learning (Spring 2023)" />
   <meta name="github-repo" content="rstudio/bookdown-demo" />
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="Chapter 5 What Matters in ML Besides Prediction? | Notes for CS181: Machine Learning" />
+  <meta name="twitter:title" content="Chapter 10 What are Neural Networks? | Notes for CS181: Machine Learning" />
   
   <meta name="twitter:description" content="This is a set of note for CS181: Machine Learning (Spring 2023)" />
   
@@ -30,8 +30,8 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   
   
-<link rel="prev" href="what-are-probablistic-and-non-probablistic-regression.html"/>
-<link rel="next" href="what-is-logistic-regression.html"/>
+<link rel="prev" href="the-math-of-training-and-interpreting-logistic-regression-models.html"/>
+<link rel="next" href="the-math-and-interpretation-of-neural-network-models.html"/>
 <script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
@@ -315,89 +315,170 @@
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="what-matters-in-ml-besides-prediction" class="section level1 hasAnchor" number="5">
-<h1><span class="header-section-number">Chapter 5</span> What Matters in ML Besides Prediction?<a href="what-matters-in-ml-besides-prediction.html#what-matters-in-ml-besides-prediction" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<div id="what-are-neural-networks" class="section level1 hasAnchor" number="10">
+<h1><span class="header-section-number">Chapter 10</span> What are Neural Networks?<a href="what-are-neural-networks.html#what-are-neural-networks" class="anchor-section" aria-label="Anchor link to header"></a></h1>
 <p><img src="https://i.imgur.com/xDR9VQd.png" /></p>
-<div id="what-is-machine-learning-revisited" class="section level2 hasAnchor" number="5.1">
-<h2><span class="header-section-number">5.1</span> What is Machine Learning? Revisited<a href="what-matters-in-ml-besides-prediction.html#what-is-machine-learning-revisited" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p>In Lecture #2 we defined machine learning as learning the parameters of function (or of a distribution, if we are being probabilistic) that best fits with observed data. This definition needs refinement! In reality, finding parameters is just sub-goal of a much more complex goal:</p>
-<p><img src="https://i.imgur.com/ecU0DQS.png" /></p>
-<p><strong>What does “doing Machine Learning” look like?</strong> The short answer: it looks like making and justifying a sequence of <strong><em>choices</em></strong>, while making our assumptions and biases as explicit as possible:</p>
-<ol style="list-style-type: decimal">
-<li><p><em>Choosing</em> a training data set <span class="math inline">\(\mathcal{D}\)</span>.
-<strong>Question:</strong> What assumptions do we make when we make this choice?</p></li>
-<li><p><em>Choosing</em> a model for the trend in the data <span class="math inline">\(f\)</span> or for the distribution of the data (trend and noise), i.e. the likelihood, <span class="math inline">\(p(y \vert f, \theta)\)</span>
-<strong>Question:</strong> What assumptions do we make when we make this choice?</p></li>
-<li><p><em>Choosing</em> a loss function – i.e. a way to measure the fit of <span class="math inline">\(f\)</span> (and potentially <span class="math inline">\(\theta\)</span>)
-<strong>Question:</strong> What assumptions do we make when we make this choice?</p></li>
-<li><p><em>Choosing</em> a way to optimize the loss function
-<strong>Question:</strong> What assumptions do we make when we make this choice?</p></li>
-<li><p><em>Choosing</em> a way to evaluate the model we learned – we may choose to evaluate the model using a different metric than the loss function!
-<strong>Question:</strong> What assumptions do we make when we make this choice?</p></li>
-</ol>
-<p><strong>What does a Machine Learning product look like?</strong> The short answer: it looks like a technical artifact as well as a recommended policy to guide the appropriate, ethical and responsible usage of it (and potentially much more!).</p>
-<p><img src="https://i.imgur.com/Wa7xvGm.png" /></p>
-<p>For example, see <a href="https://arxiv.org/pdf/1810.03993.pdf">Model Cards for Model Reporting</a></p>
+<div id="neural-network-as-universal-function-approximators" class="section level2 hasAnchor" number="10.1">
+<h2><span class="header-section-number">10.1</span> Neural Network as Universal Function Approximators<a href="what-are-neural-networks.html#neural-network-as-universal-function-approximators" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>Neural networks are not exotic or that interesting – they are just a way to <strong><em>approximate a complex function by adding and composing a bunch of super simple non-linear functions</em></strong>.</p>
+<p>This composition of simple functions is represented <strong><em>graphically</em></strong>.</p>
+<p>Neural network training is done by gradient descent, where the gradient is computed by <strong><em>iteratively applying the chain rule</em></strong>.</p>
+<p>We can show that <em>feedforward</em> networks can approximate any continuous function on a bounded domain! This is why we like to use neural networks for a wide range of ML tasks where <strong><em>we don’t know the right functional form for the trend in the data</em></strong>.</p>
+<p>See <a href="https://mcneela.github.io/machine_learning/2017/03/21/Universal-Approximation-Theorem.html">More on the Universal Approximation Theorem for Feedforward Neural Networks</a>.</p>
+<p><img src="https://i.imgur.com/9Sj94F5.jpg" /></p>
 </div>
-<div id="what-are-we-uncertain-about" class="section level2 hasAnchor" number="5.2">
-<h2><span class="header-section-number">5.2</span> What Are We Uncertain About?<a href="what-matters-in-ml-besides-prediction.html#what-are-we-uncertain-about" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p>If we really work with the idea that everything in machine learning is a choice, including the training data, this means that we could have chosen a different training data set. For example: if we collected our training data from patients in one hospital, we can ask what would have happened if we collected data from a different hospital?</p>
-<p>Generally speaking, data sets collected at different times, from different locations or from different populations will be slightly (or significantly) different. Thus, the functions <span class="math inline">\(f\)</span> we learn on these datasets will differ and these different functions will produce different predictions for the same test point!</p>
-<p>So, we should be uncertain about:
-1. <strong>(Math)</strong> the function <span class="math inline">\(f\)</span> we learned (e.g. the parameters <span class="math inline">\(\mathbf{w}\)</span> for <span class="math inline">\(f\)</span> or the function <span class="math inline">\(f\)</span> itself when our model is non-parametric)
-2. <strong>(Application)</strong> our interpretation of <span class="math inline">\(f\)</span>
-3. <strong>(Math)</strong> our prediction <span class="math inline">\(\hat{y}\)</span> for a new point <span class="math inline">\(\mathbf{x}\)</span>
-4. <strong>(Application)</strong> our recommendation for how to make decisions based on our model</p>
-<p><strong>Question:</strong> Why do we care about uncertainty?</p>
+<div id="neural-networks-as-regression-on-learned-feature-map" class="section level2 hasAnchor" number="10.2">
+<h2><span class="header-section-number">10.2</span> Neural Networks as Regression on Learned Feature Map<a href="what-are-neural-networks.html#neural-networks-as-regression-on-learned-feature-map" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>In fact, you’ve see neural network models in this class already – linear or logistic regression on top of a fixed <em>feature map</em> <span class="math inline">\(\phi\)</span> is a type of neural nework model!</p>
+<p>Conversely, neural nework regression or classification is just linear or logistic regression on top of a learned <em>feature map</em> <span class="math inline">\(\phi\)</span> (the hidden layers of the network learns the feature map and the output node, assuming a linear activation, combines the features linearly)!</p>
+<p><img src="https://i.imgur.com/hWAVae8.png" /></p>
+<p>But actually, neural networks are pretty interesting! Because learning the feature map <span class="math inline">\(\phi\)</span> for a task (regression or classification) rather than fixing <span class="math inline">\(\phi\)</span> can show us which aspects of the data is helpful for this task!</p>
+<p>Extracting aspects of the data that are task-relevant is called <em>feature learning</em> or <em>representation learning</em>. The feature maps learnt by neural networks are called <em>representations</em> or <em>embeddings</em>.</p>
+<p><img src="https://i.imgur.com/utuY1Pm.jpg" /></p>
 </div>
-<div id="where-is-uncertainty-coming-from" class="section level2 hasAnchor" number="5.3">
-<h2><span class="header-section-number">5.3</span> Where is Uncertainty Coming From?<a href="what-matters-in-ml-besides-prediction.html#where-is-uncertainty-coming-from" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p>Generally speaking:
-1. uncertainty in <span class="math inline">\(f\)</span> comes from us not having enough data to uniquely determine a function <span class="math inline">\(f\)</span>, this could be because of a combination of the below
-- <span class="math inline">\(f\)</span> is a complex model (e.g. lots of parameters) compared to the number of training data points (the model is under determined)
-- the data is very noisy and there are very few observations (so that the trend isn’t clear)
-2. uncertainty in our prediction <span class="math inline">\(\hat{y}\)</span> comes from a combination of the above:
-- uncertainty in <span class="math inline">\(f\)</span> – if we aren’t sure about <span class="math inline">\(f\)</span> we can’t be sure about <span class="math inline">\(\hat{y}\)</span>
-- noise in data – even if we are 100% certain that we have the right <span class="math inline">\(f\)</span>, we can still be uncertain about the prediction <span class="math inline">\(\hat{y}\)</span> due to observation noise</p>
-<p><strong>Question:</strong> Why do we care about what’s causing uncertainty?</p>
+<div id="everything-is-a-neural-network" class="section level2 hasAnchor" number="10.3">
+<h2><span class="header-section-number">10.3</span> Everything is a Neural Network<a href="what-are-neural-networks.html#everything-is-a-neural-network" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>Many of the ML models you’re hearing about in the news are neural network based models. However, note that outside of the tech industry, it is still <strong><em>not</em></strong> common practice to use neural network based models (because these models pose a number of new challenges for practitioners, see discussion later in this document).</p>
+<p>Generative AI is all the rage now, for a list of current popular generative models see <a href="https://arxiv.org/pdf/2301.04655.pdf">ChatGPT is not all you need. A State of the Art Review of large Generative AI models</a>. We will study <em>generative models</em> after Midterm #1.</p>
+<div id="architecture-zoo" class="section level3 hasAnchor" number="10.3.1">
+<h3><span class="header-section-number">10.3.1</span> Architecture Zoo<a href="what-are-neural-networks.html#architecture-zoo" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>One does not design or reason about neural networks one node or one weight at a time! Design of neural networks are done at the global level by playing around with different <em>architectures</em> – i.e. different graphical representations and different activations – and different objective functions.</p>
+<p><img src="https://i.imgur.com/8D8NJDc.png" /></p>
 </div>
-<div id="how-do-we-compute-uncertainty" class="section level2 hasAnchor" number="5.4">
-<h2><span class="header-section-number">5.4</span> How Do We Compute Uncertainty?<a href="what-matters-in-ml-besides-prediction.html#how-do-we-compute-uncertainty" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p>If we make some strong assumptions about <span class="math inline">\(f\)</span>, as well as the distribution of the data, we can analytically compute the uncertainty in <span class="math inline">\(f\)</span> as well as the uncertainty in <span class="math inline">\(\hat{y}\)</span>.</p>
-<p>Realistically, we often empirically estimate the uncertainty in <span class="math inline">\(f\)</span> and <span class="math inline">\(\hat{y}\)</span> through simulating drawing new training data sets by resampling our existing data – this is called <em>bootstrapping</em>.</p>
-<p>For the different bootstrap training data sets, we learn different functions <span class="math inline">\(f\)</span> and make different predictions <span class="math inline">\(\hat{y}\)</span>. The empirical variance of learnt parameters <span class="math inline">\(\mathbf{w}\)</span> of <span class="math inline">\(f\)</span> gives us an estimate of the <em>confidence interval</em> of our estimate of <span class="math inline">\(\mathbf{w}\)</span>.
-The empirical variance of our prediction <span class="math inline">\(\hat{y}\)</span> gives us an estimate of the <em>predictive interval</em>.</p>
+<div id="chatgpt" class="section level3 hasAnchor" number="10.3.2">
+<h3><span class="header-section-number">10.3.2</span> ChatGPT<a href="what-are-neural-networks.html#chatgpt" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p><em>“We’ve trained a model called ChatGPT which interacts in a conversational way. The dialogue format makes it possible for ChatGPT to answer followup questions, admit its mistakes, challenge incorrect premises, and reject inappropriate requests.”</em> – OpenAI</p>
+<p>ChatGPT is based on a large language model, Generative Pre-trained Transformer (GPT), built from <em><a href="https://jalammar.github.io/illustrated-transformer/">transformers</a></em> – a type of neural network, recurrent neural network with a fancy architecture called “attention”– that takes an input and predicts likely words (or tokens) that should follow the input.</p>
+<p><strong>Just so you know:</strong> the highly technical part of transformers involves the architecture (the different types of layers we stack together) and our intuitive as well as empirical understanding of what each part of the architecture does. I.e. it’s not math based.</p>
+<p><img src="https://i.imgur.com/ecNHdka.png" /></p>
+<p>The language model, GPT, is then tuned to output appropriate responses during “chat”, by using <em>Reinforcement Learning</em> and human input. See <a href="https://arxiv.org/pdf/2203.02155.pdf">Training language models to follow instructions with human feedback</a>.</p>
+<p>So what can large language models like ChatGPT3 do? We are just beginning to explore the potential of these models:
+1. <a href="https://medium.com/geekculture/chatgpt-the-end-of-programming-as-we-know-it-ac7e3619e706">Is Learning <code>python</code> for ML Obsolete? ChatGPT Can Write Code!</a>
+2. <a href="https://medium.com/eni-digitalks/prompt-and-predict-what-can-you-do-with-large-language-models-7290153b9e7b">The End of Programming Is the Beginning of Something Cool: Programming for All</a>
+3. <a href="https://www.cs.cmu.edu/~sherryw/assets/pubs/2022-promptchainer.pdf">An Easy and Visual Way to Program Using Large Language Models</a>
+4. <a href="https://www.businessinsider.com/chatgpt-essays-college-cheating-professors-caught-students-ai-plagiarism-2023-1">It’s Also the End of Essay Assignments</a>
+5. <a href="https://securitytoday.com/articles/2023/02/08/see-how-reddit-users-have-unlocked-the-dark-side-of-chatgpt.aspx">How to Hack Large Language Models (and Is It Ethical to Torture and Threaten AI?)</a>
+6. <a href="https://www.rollingstone.com/culture/culture-features/ai-chat-bots-misinformation-hate-speech-1234677574/">Now You Can Generate Hate Speech and Misinforamtion at Scale</a>
+7. <a href="https://www.rollingstone.com/culture/culture-news/chatgtp-moderators-labeling-violent-content-ptsd-1234662975/">Are We Making Ethical Choices When Making AI Ethical?</a></p>
 </div>
-<div id="mathematizing-uncertainty-starting-with-bias-and-variance" class="section level2 hasAnchor" number="5.5">
-<h2><span class="header-section-number">5.5</span> Mathematizing Uncertainty: Starting with Bias and Variance<a href="what-matters-in-ml-besides-prediction.html#mathematizing-uncertainty-starting-with-bias-and-variance" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p>So far we’ve been describing uncertainty purely in intuitive terms. In order to quantify and analyze uncertainty, we need mathematical formalism!</p>
-<p>One way to formalize our uncertainty over our prediction is to reason about why our prediction might be wrong. We do so by defining and decomposing the <em>generalization error</em> of our model.</p>
-<span class="math display">\[\begin{aligned}
-\underbrace{\mathbb{E}_{(\mathbf{x}, y), \mathcal{D}}\left[ (y- f_\mathbf{w}(\mathbf{x}))^2\right]}_{\text{Generalization Error}} =&amp; \mathbb{E}_{\mathbf{x}}\underbrace{\mathrm{Var}[y|\mathbf{x}]}_{\text{Observation Noise}}\\
-&amp; + \mathbb{E}_{\mathbf{x}}[(\underbrace{\mathbb{E}_{y|\mathbf{x}}[y|\mathbf{x}]}_{\text{Average true $y$}\\ \text{over noisy observations}} - \underbrace{\mathbb{E}_\mathcal{D}[f_\mathbf{w}(\mathbf{x})]}_{\text{Average prediction}\\\text{over all possible training sets}})^2]\\
-&amp;+\mathbb{E}_{\mathbf{x}} \underbrace{\mathrm{Var}[f_\mathbf{w}(\mathbf{x})]}_{\text{Variance of Model}}\\
-&amp;= \text{Observation Noise} + \text{Model Bias} + \text{Model Variance}
-\end{aligned}\]</span>
-<p>From the math, we see that we have three reasons to be uncertain about our model predictions:
-1. <strong>the observation noise</strong> – even if we are 100% certain that we have the right model, our prediction can still be wrong due to noise
-2. <strong>model bias</strong> – we could have been wildly wrong in our guess of the form of the model (e.g. assuming linear function when modeling quadratic data)
-3. <strong>model variance</strong> – the number of data points is insufficient to uniquely determine the model</p>
+<div id="stable-diffusion" class="section level3 hasAnchor" number="10.3.3">
+<h3><span class="header-section-number">10.3.3</span> Stable Diffusion<a href="what-are-neural-networks.html#stable-diffusion" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>Apps like Lensa are built on the backs of the <a href="https://jalammar.github.io/illustrated-stable-diffusion/">Stable Diffusion model</a>. Stable Diffusion is a type of <a href="https://lilianweng.github.io/posts/2021-07-11-diffusion-models/">diffusion models</a>, which are a type of neural network model that have bi-directional connections. The network is trained by adding noise to the input and then requiring the network to denoise it, with the goal of teaching the network to model the distribution of realistic data.</p>
+<p><strong>Just so you know:</strong> The hard part of diffusion models is the math! We will see a simple instantiation of this type of math when we study latent variable models after Midterm #1.</p>
+<p><img src="https://i.imgur.com/xz1mWcG.png" /></p>
+<p><img src="https://i.imgur.com/LwLpC0x.png" /></p>
 </div>
-<div id="the-bias-variance-trade-off-in-machine-learning" class="section level2 hasAnchor" number="5.6">
-<h2><span class="header-section-number">5.6</span> The Bias-Variance Trade-off in Machine Learning<a href="what-matters-in-ml-besides-prediction.html#the-bias-variance-trade-off-in-machine-learning" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p>One reason we want to work with the formalism of the generalization error is that by decomposing the generalization error, we see how we can reduce our uncertainty in our predictions.</p>
-<p>Immediately, we see that there is nothing we can do to reduce generalization error arising from observation noise – this error is <strong><em>irreducible</em></strong>.</p>
-<p>We can, however, choose our model so we have some control over model bias and model variance – these errors are <strong><em>reducible</em></strong>.</p>
-<p>Unfortunately, generally speaking, when we reduce model bias by making our models more complex, the complexity increases model variance (and vice versa):</p>
-<p><img src="https://i.imgur.com/lUDZq5r.jpg" /></p>
-<div id="examples-of-the-bias-variance-trade-off" class="section level3 hasAnchor" number="5.6.1">
-<h3><span class="header-section-number">5.6.1</span> Examples of the Bias-Variance Trade-off<a href="what-matters-in-ml-besides-prediction.html#examples-of-the-bias-variance-trade-off" class="anchor-section" aria-label="Anchor link to header"></a></h3>
-<p>Many modification we perform on machine models are frequently just ways to manage the Bias-Variance Trade-off.</p>
-<ol style="list-style-type: decimal">
-<li><strong>Regularization:</strong> adding a penalty term to the MSE loss introduces bias (reduces the ability of the model to fit the data), in order to reduce variance (by biasing the optimization towards simpler models)</li>
-<li><strong>Ensembling:</strong> creating a large set of very different complex models (low bias but high variance), and then reducing the variance by average the model predictions</li>
-<li><strong>Boosting:</strong> iteratively making a simple base model (high bias but low variance) more complex and thereby reducing the bias without significantly increasing the variance</li>
-</ol>
+</div>
+<div id="neural-network-optimization" class="section level2 hasAnchor" number="10.4">
+<h2><span class="header-section-number">10.4</span> Neural Network Optimization<a href="what-are-neural-networks.html#neural-network-optimization" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>Training neural network models (or any modern ML models) means spending 80% of your time diagnosing issues with gradient descent and tuning the hyperparameters: learning rate, stopping condition.</p>
+<p>It’s a necessary skill to be able to read a plot of the loss function during training and extract insight about how to improve optimization.</p>
+<p><img src="https://i.imgur.com/Ua7YW5F.png" /></p>
+<p>You need to learn to recognize common signs of gradient descent failure: (1) divergence (above graph) (2) slow/non convergence (below).
+<img src="https://i.imgur.com/1pnECKC.png" /></p>
+<p>You also need to know intuitively the “right” shape of a training loss plot.
+<img src="https://i.imgur.com/Qadi4gg.png" /></p>
+<p>Neural network optimization is non-convex for <strong><em>any</em></strong> loss function that only depends on the output of the network. There is a simple proof of this (<em>Hint:</em> what happens when you flip the hidden layers of a neural network horizontally?), it’s worth memorizing!</p>
+<p>In fact, neural network optimization is as non-convex as optimization can get! For most networks, there are so many different settings of weights that parametrize the SAME function on a finite data set!</p>
+<p><img src="https://i.imgur.com/oiMmc3n.png" /></p>
+<p>Often times, careful architecture design can make NN optimization more “convex-like”.</p>
+<p><img src="https://i.imgur.com/mUbbCYo.png" /></p>
+<p>In practice, we find a <strong><em>set</em></strong> of different weights through training and choose amongst them the best model:
+1. Random restart
+2. Cyclic learning rates
+3. More fancy techniques…</p>
+<p><img src="https://i.imgur.com/AhpgnYo.png" /></p>
+</div>
+<div id="bias-variance-trade-off-for-neural-networks" class="section level2 hasAnchor" number="10.5">
+<h2><span class="header-section-number">10.5</span> Bias-Variance Trade-off for Neural Networks<a href="what-are-neural-networks.html#bias-variance-trade-off-for-neural-networks" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<div id="overparametrization-is-bad" class="section level4 hasAnchor" number="10.5.0.1">
+<h4><span class="header-section-number">10.5.0.1</span> Overparametrization is Bad<a href="what-are-neural-networks.html#overparametrization-is-bad" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<p>Complex models like NNs have <strong><em>low bias</em></strong> – they can model a wide range of functions, given enough samples.</p>
+<p>But complex models have <strong><em>high variance</em></strong> – they are very sensitive to small changes in the data distribution, leading to drastic performance decrease from train to test settings.</p>
+<table>
+<colgroup>
+<col width="50%" />
+<col width="50%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Polynomial Model with Modest Degree</th>
+<th>Neural Network Model</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><img src="https://i.imgur.com/xM4mYAR.png" /></td>
+<td><img src="https://i.imgur.com/lfFrxDa.png" /></td>
+</tr>
+</tbody>
+</table>
+<p>Just as in the case of linear and polynomial models, we can prevent nerual networks from overfitting (i.e. poor generalization due to high variance) by:
+1. Regularization
+- <span class="math inline">\(\ell_1, \ell_2\)</span> on weights
+- <span class="math inline">\(\ell_1, \ell_2\)</span> on layer outputs
+- <a href="https://machinelearningmastery.com/early-stopping-to-avoid-overtraining-neural-network-models/">early-stopping</a>
+3. Ensembling
+- ensembling by random restart (and potentially bootstrapping)
+- <a href="https://prvnk10.medium.com/ensemble-methods-and-the-dropout-technique-95f36e4ae9be">dropout ensembling</a></p>
+</div>
+<div id="overparametrization-can-be-good" class="section level4 hasAnchor" number="10.5.0.2">
+<h4><span class="header-section-number">10.5.0.2</span> Overparametrization Can be Good<a href="what-are-neural-networks.html#overparametrization-can-be-good" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<p>However, a new body of work like <a href="https://arxiv.org/abs/1903.01997">Implicit Regularization in Over-parameterized Neural Networks</a> show that very wide neural networks (with far more parameters than there are data observations) actually ceases to overfit as the width surpasses a certain threshold. In fact, as the width of a neural network approaches infinity, training the neural network becomes kernel regression (this kernel is called the <strong><em>neural tangent kernel</em></strong>)!</p>
+<p><img src="https://i.imgur.com/NgYAbBl.png" /></p>
+</div>
+<div id="overparametrization-is-complicated" class="section level4 hasAnchor" number="10.5.0.3">
+<h4><span class="header-section-number">10.5.0.3</span> Overparametrization is Complicated<a href="what-are-neural-networks.html#overparametrization-is-complicated" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<p>In <a href="https://mltheory.org/deep.pdf">Deep Double Descent: Where Bigger Models and More Data Hurt</a></p>
+<p><img src="https://i.imgur.com/zSfddTo.png" /></p>
+<p>For more works on comparing the behaviors of NNs with different sizes, see <a href="https://arxiv.org/abs/2211.09184">An Empirical Analysis of the Advantages of Finite- v.s. Infinite-Width Bayesian Neural Networks</a> and <a href="https://proceedings.mlr.press/v151/coker22a/coker22a.pdf">Wide Mean-Field Bayesian Neural Networks Ignore the Data</a>.</p>
+</div>
+</div>
+<div id="interpretation-of-neural-networks" class="section level2 hasAnchor" number="10.6">
+<h2><span class="header-section-number">10.6</span> Interpretation of Neural Networks<a href="what-are-neural-networks.html#interpretation-of-neural-networks" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>In <a href="https://arxiv.org/abs/1606.03490">The Mythos of Model Interpretability</a>, the authors survey a large number of methods for interpreting deep models.</p>
+<p><img src="https://i.imgur.com/Y54ONVL.jpg" /></p>
+<p>In fact, interpretable machine learning is a growing and extremely interesting subfield of ML. For example, see works like <a href="https://arxiv.org/abs/1702.08608">Towards A Rigorous Science of Interpretable Machine Learning</a>. There’s even a textbook for interpretable ML now – <a href="https://christophm.github.io/interpretable-ml-book/">Interpretable Machine Learning: A Guide for Making Black Box Models Explainable</a>!</p>
+<div id="example-1-can-neural-network-models-make-use-of-human-concepts" class="section level3 hasAnchor" number="10.6.1">
+<h3><span class="header-section-number">10.6.1</span> Example 1: Can Neural Network Models Make Use of Human Concepts?<a href="what-are-neural-networks.html#example-1-can-neural-network-models-make-use-of-human-concepts" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p><strong><em>(with Anita Mahinpei, Justin Clark, Ike Lage, Finale Doshi-Velez)</em></strong></p>
+<p>What if instead building complex non-linear models based on raw inputs, we instead build simple linear models based on human interpretable <strong>concepts</strong>? We use a neural network to predict concepts from inputs and then use a linear model to predict the outcome from the concepts. We interpret the relationship between the outcome and the concepts via the linear model. These models are called <strong>concept bottleneck models</strong>.</p>
+<p>In <a href="https://arxiv.org/abs/2106.13314">The Promises and Pitfalls of Black-box Concept Learning Models</a>, we examine the advantages and drawbacks of these models.</p>
+<p><img src="https://i.imgur.com/CAfjxo8.jpg" /></p>
+</div>
+<div id="example-2-can-neural-network-models-learn-to-explore-hypothetical-scenarios" class="section level3 hasAnchor" number="10.6.2">
+<h3><span class="header-section-number">10.6.2</span> Example 2: Can Neural Network Models Learn to Explore Hypothetical Scenarios?<a href="what-are-neural-networks.html#example-2-can-neural-network-models-learn-to-explore-hypothetical-scenarios" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p><strong><em>(with Michael Downs, Jonathan Chu, Wisoo Song, Yaniv Yacoby, Finale Doshi-Velez)</em></strong></p>
+<p>Rather than explaining why the model made a decision, it’s often more helpful to explain how to change the data in order to change the model’s decision. This modified input is a <strong>counter-factual</strong>. In <a href="https://finale.seas.harvard.edu/files/finale/files/cruds-_counterfactual_recourse_using_disentangled_subspaces.pdf">CRUDS: Counterfactual Recourse Using Disentangled Subspaces</a>, we study how to automatically generate counter-factual explanations that can help users achieve a favorable outcome from a decision system.</p>
+<p><img src="https://i.imgur.com/HHDoieL.jpg" /></p>
+</div>
+<div id="example-3-a-powerful-generalization-of-feature-importance-for-neural-network-models" class="section level3 hasAnchor" number="10.6.3">
+<h3><span class="header-section-number">10.6.3</span> Example 3: A Powerful Generalization of Feature Importance for Neural Network Models<a href="what-are-neural-networks.html#example-3-a-powerful-generalization-of-feature-importance-for-neural-network-models" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>In <a href=""><em>An explainable deep-learning algorithm for the detection of acute intracranial haemorrhage from small datasets</em></a>, the authors build a neural network model to detect acute intracranial haemorrhage (ICH) and classifies five ICH subtypes.</p>
+<p>Model classifications are explained by highlighting the pixels that contributed the most to the decision. The highligthed regions tends to overlapped with ‘bleeding points’ annotated by neuroradiologists on the images.</p>
+<p><img src="https://i.imgur.com/WIq7FT3.png" /></p>
+</div>
+</div>
+<div id="the-difficulty-with-interpretable-machine-learning" class="section level2 hasAnchor" number="10.7">
+<h2><span class="header-section-number">10.7</span> The Difficulty with Interpretable Machine Learning<a href="what-are-neural-networks.html#the-difficulty-with-interpretable-machine-learning" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>The sheer number of methods for interpreting neural network (and other ML) models is overwhelming and poses a significant challenge for model selection: which explanation method should I choose for my model and how do I know if the explanation is good?</p>
+<div id="example-4-not-all-explanations-are-created-equal" class="section level3 hasAnchor" number="10.7.1">
+<h3><span class="header-section-number">10.7.1</span> Example 4: Not All Explanations are Created Equal<a href="what-are-neural-networks.html#example-4-not-all-explanations-are-created-equal" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p><strong><em>(with Zixi Chen, Varshini Subhash, Marton Havasi, Finale Doshi-Velez)</em></strong></p>
+<p>Not only is there an overwhelming number of ways to explain ML models, there is also an overwhelming number of ways to formalize whether or not an explanation is “good”. In <a href="https://arxiv.org/pdf/2211.05667.pdf">What Makes a Good Explanation?: A Harmonized View of Properties of Explanations</a>, we attempt to provide a much needed taxonomy of existing metrics to quantify the “goodness” of ML explanations. We use the taxonomy to differentiate between metrics and provide guidance for how to choose a metric that’s task-appropriate.</p>
+<p><img src="https://i.imgur.com/m7vtdvs.png" /></p>
+</div>
+<div id="example-5-explanations-can-lie" class="section level3 hasAnchor" number="10.7.2">
+<h3><span class="header-section-number">10.7.2</span> Example 5: Explanations Can Lie<a href="what-are-neural-networks.html#example-5-explanations-can-lie" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>Just as not accounting for confounding, causal relationships and colinearity can make our interpretations of linear and logistic regression misleading, intrepretations of neural networks are prone to lie to us!</p>
+<p>In works like <a href="https://openreview.net/pdf?id=H1xJjlbAZ">Interpretation of Neural Networks is Fragile</a>, we see that <em>saliency maps</em> (i.e. visualizations of feature importance based on gradients) can be unreliable indicators of how the model is really making decisions.</p>
+<p><img src="https://i.imgur.com/hcKKRoP.jpg" /></p>
+</div>
+<div id="example-6-the-perils-of-explanations-in-socio-technical-systems" class="section level3 hasAnchor" number="10.7.3">
+<h3><span class="header-section-number">10.7.3</span> Example 6: The Perils of Explanations in Socio-Technical Systems<a href="what-are-neural-networks.html#example-6-the-perils-of-explanations-in-socio-technical-systems" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>In <a href=""><em>How machine-learning recommendations influence clinician treatment selections: the example of antidepressant selection</em></a>, the authors found that clinicians interacting with incorrect recommendations paired with simple explanations experienced significant reduction in treatment selection accuracy.</p>
+<p><img src="https://i.imgur.com/HsoNGDe.png" /></p>
+<p><strong>Take-away:</strong> Incorrect ML recommendations may adversely impact clinician treatment selections and that explanations are insufficient for addressing overreliance on imperfect ML algorithms.</p>
 
 </div>
 </div>
@@ -407,8 +488,8 @@ The empirical variance of our prediction <span class="math inline">\(\hat{y}\)</
           </div>
         </div>
       </div>
-<a href="what-are-probablistic-and-non-probablistic-regression.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
-<a href="what-is-logistic-regression.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+<a href="the-math-of-training-and-interpreting-logistic-regression-models.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="the-math-and-interpretation-of-neural-network-models.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>
@@ -439,7 +520,7 @@ gitbook.start({
 "size": 2
 },
 "edit": {
-"link": "https://github.com/rstudio/bookdown-demo/edit/master/04-What-Matters-in_ML.Rmd",
+"link": "https://github.com/rstudio/bookdown-demo/edit/master/09-What-are-NNs.Rmd",
 "text": "Edit"
 },
 "history": {

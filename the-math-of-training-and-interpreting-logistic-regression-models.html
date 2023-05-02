@@ -4,18 +4,18 @@
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>Chapter 5 What Matters in ML Besides Prediction? | Notes for CS181: Machine Learning</title>
+  <title>Chapter 9 The Math of Training and Interpreting Logistic Regression Models | Notes for CS181: Machine Learning</title>
   <meta name="description" content="This is a set of note for CS181: Machine Learning (Spring 2023)" />
   <meta name="generator" content="bookdown 0.33 and GitBook 2.6.7" />
 
-  <meta property="og:title" content="Chapter 5 What Matters in ML Besides Prediction? | Notes for CS181: Machine Learning" />
+  <meta property="og:title" content="Chapter 9 The Math of Training and Interpreting Logistic Regression Models | Notes for CS181: Machine Learning" />
   <meta property="og:type" content="book" />
   
   <meta property="og:description" content="This is a set of note for CS181: Machine Learning (Spring 2023)" />
   <meta name="github-repo" content="rstudio/bookdown-demo" />
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="Chapter 5 What Matters in ML Besides Prediction? | Notes for CS181: Machine Learning" />
+  <meta name="twitter:title" content="Chapter 9 The Math of Training and Interpreting Logistic Regression Models | Notes for CS181: Machine Learning" />
   
   <meta name="twitter:description" content="This is a set of note for CS181: Machine Learning (Spring 2023)" />
   
@@ -30,8 +30,8 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   
   
-<link rel="prev" href="what-are-probablistic-and-non-probablistic-regression.html"/>
-<link rel="next" href="what-is-logistic-regression.html"/>
+<link rel="prev" href="case-study-responsibly-using-logistic-regression.html"/>
+<link rel="next" href="what-are-neural-networks.html"/>
 <script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
@@ -315,91 +315,137 @@
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="what-matters-in-ml-besides-prediction" class="section level1 hasAnchor" number="5">
-<h1><span class="header-section-number">Chapter 5</span> What Matters in ML Besides Prediction?<a href="what-matters-in-ml-besides-prediction.html#what-matters-in-ml-besides-prediction" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<div id="the-math-of-training-and-interpreting-logistic-regression-models" class="section level1 hasAnchor" number="9">
+<h1><span class="header-section-number">Chapter 9</span> The Math of Training and Interpreting Logistic Regression Models<a href="the-math-of-training-and-interpreting-logistic-regression-models.html#the-math-of-training-and-interpreting-logistic-regression-models" class="anchor-section" aria-label="Anchor link to header"></a></h1>
 <p><img src="https://i.imgur.com/xDR9VQd.png" /></p>
-<div id="what-is-machine-learning-revisited" class="section level2 hasAnchor" number="5.1">
-<h2><span class="header-section-number">5.1</span> What is Machine Learning? Revisited<a href="what-matters-in-ml-besides-prediction.html#what-is-machine-learning-revisited" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p>In Lecture #2 we defined machine learning as learning the parameters of function (or of a distribution, if we are being probabilistic) that best fits with observed data. This definition needs refinement! In reality, finding parameters is just sub-goal of a much more complex goal:</p>
-<p><img src="https://i.imgur.com/ecU0DQS.png" /></p>
-<p><strong>What does “doing Machine Learning” look like?</strong> The short answer: it looks like making and justifying a sequence of <strong><em>choices</em></strong>, while making our assumptions and biases as explicit as possible:</p>
+<div id="the-math-of-convex-optimization" class="section level2 hasAnchor" number="9.1">
+<h2><span class="header-section-number">9.1</span> The Math of Convex Optimization<a href="the-math-of-training-and-interpreting-logistic-regression-models.html#the-math-of-convex-optimization" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>A <strong><em>convex set</em></strong> <span class="math inline">\(S\subset \mathbb{R}^D\)</span> is a set that contains the line segment between any two points in <span class="math inline">\(S\)</span>. Formally, if <span class="math inline">\(x, y \in S\)</span> then <span class="math inline">\(S\)</span> contains all convex combinations of <span class="math inline">\(x\)</span> and <span class="math inline">\(y\)</span>:
+<span class="math display">\[
+tx + (1-t) y \in S,\quad t\in [0, 1].
+\]</span>
+This definition is illustrated intuitively in the below:
+<img src="https://i.imgur.com/pu8TTOw.jpg" /></p>
+<p>A function <span class="math inline">\(f\)</span> is a <strong><em>convex function</em></strong> if domain of <span class="math inline">\(f\)</span> is a convex set, and the line segment between the points <span class="math inline">\((x, f(x))\)</span> and <span class="math inline">\((y, f(y))\)</span> lie above the graph of <span class="math inline">\(f\)</span>. Formally, for any <span class="math inline">\(x, y\in \mathrm{dom}(f)\)</span>, we have
+<span class="math display">\[
+\underbrace{f(tx + (1-t)y)}_{\text{height of graph of $f$}\\  \text{at a point between $x$ and $y$}} \quad \leq \underbrace{tf(x) + (1-t)f(y)}_{\text{height of point on line segment}\\ \text{between $(x, f(x))$ and $(y, f(y))$}},\quad t\in [0, 1]
+\]</span></p>
+<p>This definition is intuitively illustrated below:
+<img src="https://i.imgur.com/3AXnm2n.jpg" /></p>
+<p>How do we check that a function <span class="math inline">\(f\)</span> is convex? If <span class="math inline">\(f\)</span> is differentiable then <span class="math inline">\(f\)</span> is convex if the graph of <span class="math inline">\(f\)</span> lies above every tangent plane.</p>
+<p><strong>Theorem:</strong> If <span class="math inline">\(f\)</span> is differentiable then <span class="math inline">\(f\)</span> is convex if and only if for every <span class="math inline">\(x \in \mathrm{dom}(f)\)</span>, we have</p>
+<p><span class="math display">\[
+\underbrace{f(y)}_{\text{height of graph of $f$ over $y$}} \geq \underbrace{f(x) + \nabla f(x)^\top (y - x)}_{\text{height of plane tangent to $f$ at $x$, evaluated over $y$}},\quad \forall y\in \mathrm{dom}(f)
+\]</span></p>
+<p>This theorem is illustrated below. The theorem can be made intuitive, but takes a bit of unwrapping. Don’t worry about the exact statement, it suffices to know that there is a condition we can check to see if a function is convex.</p>
+<p><img src="https://i.imgur.com/OhoxOkl.jpg" /></p>
+<p>Luckily, checking a twice-differentiable function is convex is (relatively) easier! If <span class="math inline">\(f\)</span> is twice-differentiable then <span class="math inline">\(f\)</span> is convex if the “second derivative is positive”.</p>
+<p><strong>Theorem:</strong> If <span class="math inline">\(f\)</span> is twice-differentiable then <span class="math inline">\(f\)</span> is convex if and only if the Hessian <span class="math inline">\(\nabla^2 f(x)\)</span> is positive semi-definite for every <span class="math inline">\(x\in \mathrm{dom}(f)\)</span>.</p>
+<p>Verifying that a complex function <span class="math inline">\(f\)</span> is complex can be difficult (even if <span class="math inline">\(f\)</span> is twice-differentiable). More commonly, we show that a complex function is convex because it is made from simple convex functions using a set of allowed operations.</p>
+<p><strong>Properties of Convex Functions.</strong> How to build complex convex functions from simple convex functions:</p>
 <ol style="list-style-type: decimal">
-<li><p><em>Choosing</em> a training data set <span class="math inline">\(\mathcal{D}\)</span>.
-<strong>Question:</strong> What assumptions do we make when we make this choice?</p></li>
-<li><p><em>Choosing</em> a model for the trend in the data <span class="math inline">\(f\)</span> or for the distribution of the data (trend and noise), i.e. the likelihood, <span class="math inline">\(p(y \vert f, \theta)\)</span>
-<strong>Question:</strong> What assumptions do we make when we make this choice?</p></li>
-<li><p><em>Choosing</em> a loss function – i.e. a way to measure the fit of <span class="math inline">\(f\)</span> (and potentially <span class="math inline">\(\theta\)</span>)
-<strong>Question:</strong> What assumptions do we make when we make this choice?</p></li>
-<li><p><em>Choosing</em> a way to optimize the loss function
-<strong>Question:</strong> What assumptions do we make when we make this choice?</p></li>
-<li><p><em>Choosing</em> a way to evaluate the model we learned – we may choose to evaluate the model using a different metric than the loss function!
-<strong>Question:</strong> What assumptions do we make when we make this choice?</p></li>
+<li><p>if <span class="math inline">\(w_1, w_2 \geq 0\)</span> and <span class="math inline">\(f_1, f_2\)</span> are convex, then <span class="math inline">\(h = w_1 f_1 + w_2 f_2\)</span> is convex<br><br></p></li>
+<li><p>if <span class="math inline">\(f\)</span> and <span class="math inline">\(g\)</span> are convex, and <span class="math inline">\(g\)</span> is univariate and non-decreasing then <span class="math inline">\(h = g \circ f\)</span> is convex<br><br></p></li>
+<li><p>Log-sum-exp functions are convex: <span class="math inline">\(f(x) = \log \sum_{k=1}^K e^{x}\)</span></p></li>
 </ol>
-<p><strong>What does a Machine Learning product look like?</strong> The short answer: it looks like a technical artifact as well as a recommended policy to guide the appropriate, ethical and responsible usage of it (and potentially much more!).</p>
-<p><img src="https://i.imgur.com/Wa7xvGm.png" /></p>
-<p>For example, see <a href="https://arxiv.org/pdf/1810.03993.pdf">Model Cards for Model Reporting</a></p>
-</div>
-<div id="what-are-we-uncertain-about" class="section level2 hasAnchor" number="5.2">
-<h2><span class="header-section-number">5.2</span> What Are We Uncertain About?<a href="what-matters-in-ml-besides-prediction.html#what-are-we-uncertain-about" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p>If we really work with the idea that everything in machine learning is a choice, including the training data, this means that we could have chosen a different training data set. For example: if we collected our training data from patients in one hospital, we can ask what would have happened if we collected data from a different hospital?</p>
-<p>Generally speaking, data sets collected at different times, from different locations or from different populations will be slightly (or significantly) different. Thus, the functions <span class="math inline">\(f\)</span> we learn on these datasets will differ and these different functions will produce different predictions for the same test point!</p>
-<p>So, we should be uncertain about:
-1. <strong>(Math)</strong> the function <span class="math inline">\(f\)</span> we learned (e.g. the parameters <span class="math inline">\(\mathbf{w}\)</span> for <span class="math inline">\(f\)</span> or the function <span class="math inline">\(f\)</span> itself when our model is non-parametric)
-2. <strong>(Application)</strong> our interpretation of <span class="math inline">\(f\)</span>
-3. <strong>(Math)</strong> our prediction <span class="math inline">\(\hat{y}\)</span> for a new point <span class="math inline">\(\mathbf{x}\)</span>
-4. <strong>(Application)</strong> our recommendation for how to make decisions based on our model</p>
-<p><strong>Question:</strong> Why do we care about uncertainty?</p>
-</div>
-<div id="where-is-uncertainty-coming-from" class="section level2 hasAnchor" number="5.3">
-<h2><span class="header-section-number">5.3</span> Where is Uncertainty Coming From?<a href="what-matters-in-ml-besides-prediction.html#where-is-uncertainty-coming-from" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p>Generally speaking:
-1. uncertainty in <span class="math inline">\(f\)</span> comes from us not having enough data to uniquely determine a function <span class="math inline">\(f\)</span>, this could be because of a combination of the below
-- <span class="math inline">\(f\)</span> is a complex model (e.g. lots of parameters) compared to the number of training data points (the model is under determined)
-- the data is very noisy and there are very few observations (so that the trend isn’t clear)
-2. uncertainty in our prediction <span class="math inline">\(\hat{y}\)</span> comes from a combination of the above:
-- uncertainty in <span class="math inline">\(f\)</span> – if we aren’t sure about <span class="math inline">\(f\)</span> we can’t be sure about <span class="math inline">\(\hat{y}\)</span>
-- noise in data – even if we are 100% certain that we have the right <span class="math inline">\(f\)</span>, we can still be uncertain about the prediction <span class="math inline">\(\hat{y}\)</span> due to observation noise</p>
-<p><strong>Question:</strong> Why do we care about what’s causing uncertainty?</p>
-</div>
-<div id="how-do-we-compute-uncertainty" class="section level2 hasAnchor" number="5.4">
-<h2><span class="header-section-number">5.4</span> How Do We Compute Uncertainty?<a href="what-matters-in-ml-besides-prediction.html#how-do-we-compute-uncertainty" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p>If we make some strong assumptions about <span class="math inline">\(f\)</span>, as well as the distribution of the data, we can analytically compute the uncertainty in <span class="math inline">\(f\)</span> as well as the uncertainty in <span class="math inline">\(\hat{y}\)</span>.</p>
-<p>Realistically, we often empirically estimate the uncertainty in <span class="math inline">\(f\)</span> and <span class="math inline">\(\hat{y}\)</span> through simulating drawing new training data sets by resampling our existing data – this is called <em>bootstrapping</em>.</p>
-<p>For the different bootstrap training data sets, we learn different functions <span class="math inline">\(f\)</span> and make different predictions <span class="math inline">\(\hat{y}\)</span>. The empirical variance of learnt parameters <span class="math inline">\(\mathbf{w}\)</span> of <span class="math inline">\(f\)</span> gives us an estimate of the <em>confidence interval</em> of our estimate of <span class="math inline">\(\mathbf{w}\)</span>.
-The empirical variance of our prediction <span class="math inline">\(\hat{y}\)</span> gives us an estimate of the <em>predictive interval</em>.</p>
-</div>
-<div id="mathematizing-uncertainty-starting-with-bias-and-variance" class="section level2 hasAnchor" number="5.5">
-<h2><span class="header-section-number">5.5</span> Mathematizing Uncertainty: Starting with Bias and Variance<a href="what-matters-in-ml-besides-prediction.html#mathematizing-uncertainty-starting-with-bias-and-variance" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p>So far we’ve been describing uncertainty purely in intuitive terms. In order to quantify and analyze uncertainty, we need mathematical formalism!</p>
-<p>One way to formalize our uncertainty over our prediction is to reason about why our prediction might be wrong. We do so by defining and decomposing the <em>generalization error</em> of our model.</p>
+<p><strong>Note:</strong> there are many other convexity preserving operations on functions.</p>
+<p>A <strong><em>convex optimization problem</em></strong> is an optimization of the following form:</p>
 <span class="math display">\[\begin{aligned}
-\underbrace{\mathbb{E}_{(\mathbf{x}, y), \mathcal{D}}\left[ (y- f_\mathbf{w}(\mathbf{x}))^2\right]}_{\text{Generalization Error}} =&amp; \mathbb{E}_{\mathbf{x}}\underbrace{\mathrm{Var}[y|\mathbf{x}]}_{\text{Observation Noise}}\\
-&amp; + \mathbb{E}_{\mathbf{x}}[(\underbrace{\mathbb{E}_{y|\mathbf{x}}[y|\mathbf{x}]}_{\text{Average true $y$}\\ \text{over noisy observations}} - \underbrace{\mathbb{E}_\mathcal{D}[f_\mathbf{w}(\mathbf{x})]}_{\text{Average prediction}\\\text{over all possible training sets}})^2]\\
-&amp;+\mathbb{E}_{\mathbf{x}} \underbrace{\mathrm{Var}[f_\mathbf{w}(\mathbf{x})]}_{\text{Variance of Model}}\\
-&amp;= \text{Observation Noise} + \text{Model Bias} + \text{Model Variance}
+\mathrm{min}\; &amp;f(x) &amp; (\text{convex objective function})\\
+\text{subject to}\; &amp; h_i(x) \leq 0, i=1, \ldots, i &amp; (\text{convex inequality constraints}) \\
+&amp; a_j^\top x - b_j = 0, j=1, \ldots, J &amp; (\text{affine equality constraints}) \\
 \end{aligned}\]</span>
-<p>From the math, we see that we have three reasons to be uncertain about our model predictions:
-1. <strong>the observation noise</strong> – even if we are 100% certain that we have the right model, our prediction can still be wrong due to noise
-2. <strong>model bias</strong> – we could have been wildly wrong in our guess of the form of the model (e.g. assuming linear function when modeling quadratic data)
-3. <strong>model variance</strong> – the number of data points is insufficient to uniquely determine the model</p>
+<p>The set of points that satisfy the constraints is called the <strong><em>feasible set</em></strong>.</p>
+<p>You can prove that the a convex optimization problem optimizes a convex objective function over a convex feasible set. But why should we care about convex optimization problems?</p>
+<p><strong>Theorem:</strong> Let <span class="math inline">\(f\)</span> be a convex function defined over a convex feasible set <span class="math inline">\(\Omega\)</span>. Then if <span class="math inline">\(f\)</span> has a local minimum at <span class="math inline">\(x\in \Omega\)</span> – <span class="math inline">\(f(y) \geq f(x)\)</span> for <span class="math inline">\(y\)</span> in a small neighbourhood of <span class="math inline">\(x\)</span> – then <span class="math inline">\(f\)</span> has a global minimum at <span class="math inline">\(x\)</span>.</p>
+<p><strong>Corollary:</strong> Let <span class="math inline">\(f\)</span> be a differentiable convex function:
+1. if <span class="math inline">\(f\)</span> is unconstrained, then <span class="math inline">\(f\)</span> has a <strong>local minimum</strong> and hence <strong>global minimum</strong> at <span class="math inline">\(x\)</span> if <span class="math inline">\(\nabla f(x) = 0\)</span>.
+2. if <span class="math inline">\(f\)</span> is constrained by equalities, then <span class="math inline">\(f\)</span> has a global minimum at <span class="math inline">\(x\)</span> if <span class="math inline">\(\nabla J(x, \lambda) = 0\)</span>, where <span class="math inline">\(J(x, \lambda)\)</span> is the Lagrangian of the constrained optimization problem.</p>
+<p><strong>Note:</strong> we can also characterize the global minimum of inequalities constrained convex optimization problems using the Lagrangian, but the formulation is more complicated.</p>
+<div id="convexity-of-the-logistic-regression-negative-log-likelihood" class="section level3 hasAnchor" number="9.1.1">
+<h3><span class="header-section-number">9.1.1</span> Convexity of the Logistic Regression Negative Log-Likelihood<a href="the-math-of-training-and-interpreting-logistic-regression-models.html#convexity-of-the-logistic-regression-negative-log-likelihood" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>But why do we care about convex optimization problems? Let’s connect the theory of convex optimization to MLE inference for logistic regression. Recall that the negative log-likelihood of the logistic regression model is</p>
+<span class="math display">\[\begin{aligned}
+-\ell(\mathbf{w}) &amp;= -\sum_{n=1}^N y^{(n)}\,\log\,\mathrm{sigm}(\mathbf{w}^\top \mathbf{x}^{(n)}) + (1 - y^{(n)}) \log (1 -\mathrm{sigm}(\mathbf{w}^\top \mathbf{x}^{(n)}))\\
+&amp;= -\sum_{n=1}^N y^{(n)}\,\log\,\frac{1}{1 + e^{-\mathbf{w}^\top \mathbf{x}^{(n)}}} + (1 - y^{(n)}) \log \left(1 -\frac{1}{1 + e^{-\mathbf{w}^\top \mathbf{x}^{(n)}}}\right)\\
+&amp;= -\sum_{n=1}^N y^{(n)}\left(\log(1) - \log(1 + e^{-\mathbf{w}^\top \mathbf{x}^{(n)}})\right) + (1 - y^{(n)}) \log \left(\frac{1 + e^{-\mathbf{w}^\top \mathbf{x}^{(n)}}}{1 + e^{-\mathbf{w}^\top \mathbf{x}^{(n)}}} -\frac{1}{1 + e^{-\mathbf{w}^\top \mathbf{x}^{(n)}}}\right)\\
+&amp;= -\sum_{n=1}^N -y^{(n)} \log(1 + e^{-\mathbf{w}^\top \mathbf{x}^{(n)}}) + (1 - y^{(n)}) \log \left( \frac{e^{-\mathbf{w}^\top \mathbf{x}^{(n)}}}{1 + e^{-\mathbf{w}^\top \mathbf{x}^{(n)}}}\right)\\
+&amp;= -\sum_{n=1}^N -y^{(n)} \log(1 + e^{-\mathbf{w}^\top \mathbf{x}^{(n)}}) + (1 - y^{(n)}) \left(\log \left( {e^{-\mathbf{w}^\top \mathbf{x}^{(n)}}}\right) - \log\left({1 + e^{-\mathbf{w}^\top \mathbf{x}^{(n)}}}\right)\right)\\
+&amp;= -\sum_{n=1}^N -y^{(n)} \log(1 + e^{-\mathbf{w}^\top \mathbf{x}^{(n)}}) + (1 - y^{(n)}) \log \left( {e^{-\mathbf{w}^\top \mathbf{x}^{(n)}}}\right) - (1 - y^{(n)})\log\left({1 + e^{-\mathbf{w}^\top \mathbf{x}^{(n)}}}\right)\\
+&amp;= -\sum_{n=1}^N -y^{(n)} \log(1 + e^{-\mathbf{w}^\top \mathbf{x}^{(n)}}) + (1 - y^{(n)}) (-\mathbf{w}^\top \mathbf{x}^{(n)}) - \log\left({1 + e^{-\mathbf{w}^\top \mathbf{x}^{(n)}}}\right) + y^{(n)}\log\left({1 + e^{-\mathbf{w}^\top \mathbf{x}^{(n)}}}\right)\\
+&amp;= -\sum_{n=1}^N (1 - y^{(n)}) (-\mathbf{w}^\top \mathbf{x}^{(n)}) - \log\left({1 + e^{-\mathbf{w}^\top \mathbf{x}^{(n)}}}\right) \\
+&amp;= -\sum_{n=1}^N (1 - y^{(n)}) (-\mathbf{w}^\top \mathbf{x}^{(n)}) + \log\left(\frac{1}{1 + e^{-\mathbf{w}^\top \mathbf{x}^{(n)}}}\right) \\
+&amp;= -\sum_{n=1}^N -\mathbf{w}^\top \mathbf{x}^{(n)} + y^{(n)}\mathbf{w}^\top \mathbf{x}^{(n)} + \log\left(\frac{1}{1 + e^{-\mathbf{w}^\top \mathbf{x}^{(n)}}}\right) \\
+&amp;= -\sum_{n=1}^N \log e^{-\mathbf{w}^\top \mathbf{x}^{(n)}} + y^{(n)}\mathbf{w}^\top \mathbf{x}^{(n)} + \log\left(\frac{1}{1 + e^{-\mathbf{w}^\top \mathbf{x}^{(n)}}}\right) \\
+&amp;= -\sum_{n=1}^N  y^{(n)}\mathbf{w}^\top \mathbf{x}^{(n)} + \log\left(\frac{e^{-\mathbf{w}^\top \mathbf{x}^{(n)}}}{1 + e^{-\mathbf{w}^\top \mathbf{x}^{(n)}}}\right) \\
+&amp;= -\sum_{n=1}^N  y^{(n)}\mathbf{w}^\top \mathbf{x}^{(n)} + \log\left(\frac{1}{e^{\mathbf{w}^\top \mathbf{x}^{(n)}} + 1}\right) \\
+&amp;=-\sum_{n=1}^N  y^{(n)}\mathbf{w}^\top \mathbf{x}^{(n)} + \log\left({1}\right) - \log \left({e^{\mathbf{w}^\top \mathbf{x}^{(n)}} + 1}\right) \\
+&amp;=-\sum_{n=1}^N  y^{(n)}\mathbf{w}^\top \mathbf{x}^{(n)}  - \log \left({e^{\mathbf{w}^\top \mathbf{x}^{(n)}} + 1}\right) \\
+&amp;=\sum_{n=1}^N \log \left({e^{\mathbf{w}^\top \mathbf{x}^{(n)}} + 1}\right) - y^{(n)}\mathbf{w}^\top \mathbf{x}^{(n)} \\
+&amp;=\sum_{n=1}^N \log \left({e^{\mathbf{w}^\top \mathbf{x}^{(n)}} +e^{0}}\right) - y^{(n)}\mathbf{w}^\top \mathbf{x}^{(n)} \\
+\end{aligned}\]</span>
+<p><strong>Proposition:</strong> The negative log-likelihood of logistic regression <span class="math inline">\(-\ell(\mathbf{w})\)</span> is convex.</p>
+<p><strong>What does this mean for gradient descent?</strong> If gradient descent finds that <span class="math inline">\(\mathbf{w}^*\)</span> is a stationary point of <span class="math inline">\(-\nabla_{\mathbf{w}}\ell(\mathbf{w})\)</span> then <span class="math inline">\(-\ell(\mathbf{w})\)</span> has a global minimum at <span class="math inline">\(\mathbf{w}^*\)</span>. Hence, <span class="math inline">\(\ell(\mathbf{w})\)</span> is maximized at <span class="math inline">\(\mathbf{w}^*\)</span>.</p>
+<p><strong><em>Proof of the Proposition:</em></strong> Note that
+1. <span class="math inline">\(- \mathbf{w}^\top \mathbf{x}^{(n)}\)</span> and <span class="math inline">\(y^{(n)}(\mathbf{w}^\top \mathbf{x}^{(n)})\)</span> are convex, since they are linear
+2. <span class="math inline">\(\log(e^0 + e^{\mathbf{w}^\top \mathbf{x}^{(n)}})\)</span> is convex since it is the composition of a log-sum-exp function (which is convex) and a convex function <span class="math inline">\(\mathbf{w}^\top \mathbf{x}^{(n)}\)</span>
+3. <span class="math inline">\(\sum_{n=1}^N \log(e^0 + e^{\mathbf{w}^\top \mathbf{x}^{(n)}})\)</span> is convex since it is a nonnegative linear combination of convex functions
+4. <span class="math inline">\(-\ell(\mathbf{w})\)</span> is convex since it is the sum of two convex functions</p>
 </div>
-<div id="the-bias-variance-trade-off-in-machine-learning" class="section level2 hasAnchor" number="5.6">
-<h2><span class="header-section-number">5.6</span> The Bias-Variance Trade-off in Machine Learning<a href="what-matters-in-ml-besides-prediction.html#the-bias-variance-trade-off-in-machine-learning" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p>One reason we want to work with the formalism of the generalization error is that by decomposing the generalization error, we see how we can reduce our uncertainty in our predictions.</p>
-<p>Immediately, we see that there is nothing we can do to reduce generalization error arising from observation noise – this error is <strong><em>irreducible</em></strong>.</p>
-<p>We can, however, choose our model so we have some control over model bias and model variance – these errors are <strong><em>reducible</em></strong>.</p>
-<p>Unfortunately, generally speaking, when we reduce model bias by making our models more complex, the complexity increases model variance (and vice versa):</p>
-<p><img src="https://i.imgur.com/lUDZq5r.jpg" /></p>
-<div id="examples-of-the-bias-variance-trade-off" class="section level3 hasAnchor" number="5.6.1">
-<h3><span class="header-section-number">5.6.1</span> Examples of the Bias-Variance Trade-off<a href="what-matters-in-ml-besides-prediction.html#examples-of-the-bias-variance-trade-off" class="anchor-section" aria-label="Anchor link to header"></a></h3>
-<p>Many modification we perform on machine models are frequently just ways to manage the Bias-Variance Trade-off.</p>
+</div>
+<div id="important-mathy-details-of-gradient-descent" class="section level2 hasAnchor" number="9.2">
+<h2><span class="header-section-number">9.2</span> Important Mathy Details of Gradient Descent<a href="the-math-of-training-and-interpreting-logistic-regression-models.html#important-mathy-details-of-gradient-descent" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>Gradient descent as an algorithm is intuitive to understand: follow the arrow pointing to the fastest way down (i.e. the negative gradient). Intuitively, it seems like this heuristic would get us to at least the bottom of a valley. But can we formally prove that gradient descent has desirable properties?</p>
+<div id="does-it-converge" class="section level3 hasAnchor" number="9.2.1">
+<h3><span class="header-section-number">9.2.1</span> Does It Converge?<a href="the-math-of-training-and-interpreting-logistic-regression-models.html#does-it-converge" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>We’ve seen that if we choose the learning rate to be too large (say for example <code>1e10</code> then gradient descent can fail to converge even if the function <span class="math inline">\(f\)</span> is convex. But how large is “too large”. There are two cases to consider</p>
 <ol style="list-style-type: decimal">
-<li><strong>Regularization:</strong> adding a penalty term to the MSE loss introduces bias (reduces the ability of the model to fit the data), in order to reduce variance (by biasing the optimization towards simpler models)</li>
-<li><strong>Ensembling:</strong> creating a large set of very different complex models (low bias but high variance), and then reducing the variance by average the model predictions</li>
-<li><strong>Boosting:</strong> iteratively making a simple base model (high bias but low variance) more complex and thereby reducing the bias without significantly increasing the variance</li>
+<li>You have some prior knowledge about how smooth the function <span class="math inline">\(f\)</span> is – i.e. how quickly <span class="math inline">\(f\)</span> can increase or decrease. Then using this you can choose a learning rate that will provably guaratee convergence<br><br></li>
+<li>In most cases, the objective function (like the log-likelihood) may be too complex to reason about. In which case,</li>
+<li>we do a scientific “guess-and-check” to determine the learning rate:
+- we find a learning rate that is large enough to cause gradient descent to diverge
+- we find a leanring rate that is small enough to cause gradient descent to converge too slowly
+- we choose a range of values between the large rate and the small rate and try them all to determine the optimal rate<br><br></li>
+<li>alternatively, we can choose the step-size <span class="math inline">\(\eta\)</span> adaptively (e.g. when the gradient is large we can set <span class="math inline">\(\eta\)</span> to be moderate to small and when the gradient is small we can set <span class="math inline">\(\eta\)</span> to be larger). There are a number of adaptive step-size regimes that you may want to look up and implement for your specific problem.</li>
+</ol>
+<p>The prior knowledge required to choose <span class="math inline">\(\eta\)</span> for provable convergence is called Lipschitz continuity. If we knew that <span class="math inline">\(f\)</span> is convex, differentiable and that there is a constant <span class="math inline">\(L&gt;0\)</span> such that <span class="math inline">\(\|\nabla f(x) - \nabla f(y)\|_2 \leq L\|x -y\|_2\)</span>, then if we choose a fixed step size to be <span class="math inline">\(\eta \leq \frac{1}{L}\)</span> then gradient descent <strong>provably</strong> converges to the global minimum of <span class="math inline">\(f\)</span> as the number of iterations <span class="math inline">\(N\)</span> goes to infinity. The constant <span class="math inline">\(L\)</span> is called the <strong><em>Lipschitz constant</em></strong>.</p>
+</div>
+<div id="how-quickly-can-we-get-there" class="section level3 hasAnchor" number="9.2.2">
+<h3><span class="header-section-number">9.2.2</span> How Quickly Can We Get There?<a href="the-math-of-training-and-interpreting-logistic-regression-models.html#how-quickly-can-we-get-there" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>Just because we know gradient descent will converge it doesn’t mean that it will give us a good enough approximation of the global minimum within our time limit. This is why studying the <strong><em>rate of convergence</em></strong> of gradient descent is extremely important. Again there are two cases to consider</p>
+<ol style="list-style-type: decimal">
+<li><p>You have prior knowledge that <span class="math inline">\(f\)</span> is convex, differentiable and its Lipschitz constant is <span class="math inline">\(L\)</span> and suppose that <span class="math inline">\(f\)</span> has a global minimum at <span class="math inline">\(x^*\)</span>, then for gradient descent to get within <span class="math inline">\(\epsilon\)</span> of <span class="math inline">\(f(x^*)\)</span>, we need <span class="math inline">\(O(1/\epsilon)\)</span> number of iterations.</p></li>
+<li><p>In most cases, the objective function will fail to be convex and its Lipschitz constant may be too difficult to compute. In this case, we simply stop the gradient descent when the gradient is sufficiently small.</p></li>
+</ol>
+</div>
+<div id="does-it-scale" class="section level3 hasAnchor" number="9.2.3">
+<h3><span class="header-section-number">9.2.3</span> Does It Scale?<a href="the-math-of-training-and-interpreting-logistic-regression-models.html#does-it-scale" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>Gradient descent is such a simple algorithm that can be applied to <strong>any optimization problem</strong> for which you can compute the gradient of the objective function.</p>
+<p><strong>Question:</strong> Does this mean that maximum likelihood inference for statistical models is now an easy task (i.e. just use gradient descent)?</p>
+<p>For every likelihood optimization problem, evaluating the gradient at a set of parameters <span class="math inline">\(\mathbf{w}\)</span> requires evaluating the likelihood of the entire dataset using <span class="math inline">\(\mathbf{w}\)</span>:</p>
+<p><span class="math display">\[
+\nabla_{\mathbf{w}} \ell(\mathbf{w}) = -\sum_{n=1}^N \left(y^{(n)} - \frac{1}{1 + e^{-\mathbf{w}^\top\mathbf{x}^{(n)}}} \right) \mathbf{x}^{(n)} =\mathbf{0}
+\]</span></p>
+<p>Imagine if the size of your dataset <span class="math inline">\(N\)</span> is in the millions. Naively evaluating the gardient <strong>just once</strong> may take up to seconds or minutes, thus running gradient descent until convergence may be unachievable in practice!</p>
+<p><strong>Idea:</strong> Maybe we don’t need to use the entire data set to evaluate the gradient during each step of gradient descent. Maybe we can approximate the gradient at <span class="math inline">\(\mathbf{w}\)</span> well enough with just a subset of the data.</p>
+</div>
+</div>
+<div id="interpreting-a-logistic-regression-model-log-odds" class="section level2 hasAnchor" number="9.3">
+<h2><span class="header-section-number">9.3</span> Interpreting a Logistic Regression Model: Log-Odds<a href="the-math-of-training-and-interpreting-logistic-regression-models.html#interpreting-a-logistic-regression-model-log-odds" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>A more formal way of interpreting the parameters of the logistic regression model is through the <strong><em>log-odds</em></strong>. That is, we solve for <span class="math inline">\(\mathbf{w}^\top\mathbf{x}\)</span> in terms of <span class="math inline">\(\text{Prob}(y = 1 | \mathbf{x})\)</span>.</p>
+<span class="math display">\[\begin{aligned}
+\text{Prob}(y = 1 | \mathbf{x}) &amp;= \text{sigm}(\mathbf{w}^\top\mathbf{x})\\
+\text{sigm}^{-1}(\text{Prob}(y = 1 | \mathbf{x})) &amp;= \mathbf{w}^\top\mathbf{x}\\
+\log \left( \frac{\text{Prob}(y = 1 | \mathbf{x})}{1 - \text{Prob}(y = 1 | \mathbf{x})}\right)&amp;= \mathbf{w}^\top\mathbf{x}\\
+\log \left( \frac{\text{Prob}(y = 1 | \mathbf{x})}{\text{Prob}(y = 0 | \mathbf{x})}\right)&amp;= \mathbf{w}^\top\mathbf{x}
+\end{aligned}\]</span>
+<p>where we used the fact that <span class="math inline">\(\text{sigm}^{-1}(z) = \log\left(\frac{z}{1 - z}\right)\)</span>.</p>
+<p>The term <span class="math inline">\(\log \left( \frac{\text{Prob}(y = 1 | \mathbf{x})}{\text{Prob}(y = 0 | \mathbf{x})}\right)\)</span> is essentially a ratio of the probability of <span class="math inline">\(y=1\)</span> and the probability of <span class="math inline">\(y=0\)</span>, we can interpret this quantity as the (log) odds of you winning if you’d bet that <span class="math inline">\(y=1\)</span>. Thus, we can imagine the parameter <span class="math inline">\(w_d\)</span> for the covariate <span class="math inline">\(x_d\)</span> as telling us if the odd of winning a bet on <span class="math inline">\(y=1\)</span> is good.</p>
+<ol style="list-style-type: decimal">
+<li><p>if <span class="math inline">\(w_d &lt; 0\)</span>, then by increasing <span class="math inline">\(x_d\)</span> (while holding all other covariates constant) we make <span class="math inline">\(\mathbf{w}^\top\mathbf{x}\)</span> more negative, and hence the ratio <span class="math inline">\(\frac{\text{Prob}(y = 1 | \mathbf{x})}{\text{Prob}(y = 0 | \mathbf{x})}\)</span> closer to 0. That is, when <span class="math inline">\(w_d &lt; 0\)</span>, increasing <span class="math inline">\(x_d\)</span> decreases our odds.<br><br></p></li>
+<li><p>if <span class="math inline">\(w_d &gt; 0\)</span>, then by increasing <span class="math inline">\(x_d\)</span> (while holding all other covariates constant) we make <span class="math inline">\(\mathbf{w}^\top\mathbf{x}\)</span> more positive, and hence the ratio <span class="math inline">\(\frac{\text{Prob}(y = 1 | \mathbf{x})}{\text{Prob}(y = 0 | \mathbf{x})}\)</span> larger. That is, when <span class="math inline">\(w_d &gt; 0\)</span>, increasing <span class="math inline">\(x_d\)</span> increases our odds.</p></li>
 </ol>
 
-</div>
 </div>
 </div>
             </section>
@@ -407,8 +453,8 @@ The empirical variance of our prediction <span class="math inline">\(\hat{y}\)</
           </div>
         </div>
       </div>
-<a href="what-are-probablistic-and-non-probablistic-regression.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
-<a href="what-is-logistic-regression.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+<a href="case-study-responsibly-using-logistic-regression.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="what-are-neural-networks.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>
@@ -439,7 +485,7 @@ gitbook.start({
 "size": 2
 },
 "edit": {
-"link": "https://github.com/rstudio/bookdown-demo/edit/master/04-What-Matters-in_ML.Rmd",
+"link": "https://github.com/rstudio/bookdown-demo/edit/master/08-Math-of-Logistic-Regression.Rmd",
 "text": "Edit"
 },
 "history": {

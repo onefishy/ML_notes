@@ -4,18 +4,18 @@
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>Chapter 5 What Matters in ML Besides Prediction? | Notes for CS181: Machine Learning</title>
+  <title>Chapter 16 What’s Hard About Sampling? | Notes for CS181: Machine Learning</title>
   <meta name="description" content="This is a set of note for CS181: Machine Learning (Spring 2023)" />
   <meta name="generator" content="bookdown 0.33 and GitBook 2.6.7" />
 
-  <meta property="og:title" content="Chapter 5 What Matters in ML Besides Prediction? | Notes for CS181: Machine Learning" />
+  <meta property="og:title" content="Chapter 16 What’s Hard About Sampling? | Notes for CS181: Machine Learning" />
   <meta property="og:type" content="book" />
   
   <meta property="og:description" content="This is a set of note for CS181: Machine Learning (Spring 2023)" />
   <meta name="github-repo" content="rstudio/bookdown-demo" />
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="Chapter 5 What Matters in ML Besides Prediction? | Notes for CS181: Machine Learning" />
+  <meta name="twitter:title" content="Chapter 16 What’s Hard About Sampling? | Notes for CS181: Machine Learning" />
   
   <meta name="twitter:description" content="This is a set of note for CS181: Machine Learning (Spring 2023)" />
   
@@ -30,8 +30,8 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   
   
-<link rel="prev" href="what-are-probablistic-and-non-probablistic-regression.html"/>
-<link rel="next" href="what-is-logistic-regression.html"/>
+<link rel="prev" href="the-math-of-posterior-inference.html"/>
+<link rel="next" href="the-math-of-principal-component-analysis.html"/>
 <script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
@@ -315,91 +315,54 @@
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="what-matters-in-ml-besides-prediction" class="section level1 hasAnchor" number="5">
-<h1><span class="header-section-number">Chapter 5</span> What Matters in ML Besides Prediction?<a href="what-matters-in-ml-besides-prediction.html#what-matters-in-ml-besides-prediction" class="anchor-section" aria-label="Anchor link to header"></a></h1>
-<p><img src="https://i.imgur.com/xDR9VQd.png" /></p>
-<div id="what-is-machine-learning-revisited" class="section level2 hasAnchor" number="5.1">
-<h2><span class="header-section-number">5.1</span> What is Machine Learning? Revisited<a href="what-matters-in-ml-besides-prediction.html#what-is-machine-learning-revisited" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p>In Lecture #2 we defined machine learning as learning the parameters of function (or of a distribution, if we are being probabilistic) that best fits with observed data. This definition needs refinement! In reality, finding parameters is just sub-goal of a much more complex goal:</p>
-<p><img src="https://i.imgur.com/ecU0DQS.png" /></p>
-<p><strong>What does “doing Machine Learning” look like?</strong> The short answer: it looks like making and justifying a sequence of <strong><em>choices</em></strong>, while making our assumptions and biases as explicit as possible:</p>
+<div id="whats-hard-about-sampling" class="section level1 hasAnchor" number="16">
+<h1><span class="header-section-number">Chapter 16</span> What’s Hard About Sampling?<a href="whats-hard-about-sampling.html#whats-hard-about-sampling" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<p><img src="https://i.imgur.com/HMKpGFK.png" /></p>
+<div id="bayesian-vs-frequentist-inference-1" class="section level2 hasAnchor" number="16.1">
+<h2><span class="header-section-number">16.1</span> Bayesian vs Frequentist Inference<a href="whats-hard-about-sampling.html#bayesian-vs-frequentist-inference-1" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p><strong>Frequentist Modeling:</strong> In non-Bayesian probabilistic modeling we typically perform maximum likelihood inference – that is, solve an <strong><em>optimization</em></strong> problem.</p>
+<p>Relatively speaking, optimization problems are much easier to solve:</p>
 <ol style="list-style-type: decimal">
-<li><p><em>Choosing</em> a training data set <span class="math inline">\(\mathcal{D}\)</span>.
-<strong>Question:</strong> What assumptions do we make when we make this choice?</p></li>
-<li><p><em>Choosing</em> a model for the trend in the data <span class="math inline">\(f\)</span> or for the distribution of the data (trend and noise), i.e. the likelihood, <span class="math inline">\(p(y \vert f, \theta)\)</span>
-<strong>Question:</strong> What assumptions do we make when we make this choice?</p></li>
-<li><p><em>Choosing</em> a loss function – i.e. a way to measure the fit of <span class="math inline">\(f\)</span> (and potentially <span class="math inline">\(\theta\)</span>)
-<strong>Question:</strong> What assumptions do we make when we make this choice?</p></li>
-<li><p><em>Choosing</em> a way to optimize the loss function
-<strong>Question:</strong> What assumptions do we make when we make this choice?</p></li>
-<li><p><em>Choosing</em> a way to evaluate the model we learned – we may choose to evaluate the model using a different metric than the loss function!
-<strong>Question:</strong> What assumptions do we make when we make this choice?</p></li>
+<li><strong>(Differentiation)</strong> we have <code>autograd</code></li>
+<li><strong>(Solving for Stationary Points)</strong> we have gradient descent to solve for stationary points</li>
 </ol>
-<p><strong>What does a Machine Learning product look like?</strong> The short answer: it looks like a technical artifact as well as a recommended policy to guide the appropriate, ethical and responsible usage of it (and potentially much more!).</p>
-<p><img src="https://i.imgur.com/Wa7xvGm.png" /></p>
-<p>For example, see <a href="https://arxiv.org/pdf/1810.03993.pdf">Model Cards for Model Reporting</a></p>
-</div>
-<div id="what-are-we-uncertain-about" class="section level2 hasAnchor" number="5.2">
-<h2><span class="header-section-number">5.2</span> What Are We Uncertain About?<a href="what-matters-in-ml-besides-prediction.html#what-are-we-uncertain-about" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p>If we really work with the idea that everything in machine learning is a choice, including the training data, this means that we could have chosen a different training data set. For example: if we collected our training data from patients in one hospital, we can ask what would have happened if we collected data from a different hospital?</p>
-<p>Generally speaking, data sets collected at different times, from different locations or from different populations will be slightly (or significantly) different. Thus, the functions <span class="math inline">\(f\)</span> we learn on these datasets will differ and these different functions will produce different predictions for the same test point!</p>
-<p>So, we should be uncertain about:
-1. <strong>(Math)</strong> the function <span class="math inline">\(f\)</span> we learned (e.g. the parameters <span class="math inline">\(\mathbf{w}\)</span> for <span class="math inline">\(f\)</span> or the function <span class="math inline">\(f\)</span> itself when our model is non-parametric)
-2. <strong>(Application)</strong> our interpretation of <span class="math inline">\(f\)</span>
-3. <strong>(Math)</strong> our prediction <span class="math inline">\(\hat{y}\)</span> for a new point <span class="math inline">\(\mathbf{x}\)</span>
-4. <strong>(Application)</strong> our recommendation for how to make decisions based on our model</p>
-<p><strong>Question:</strong> Why do we care about uncertainty?</p>
-</div>
-<div id="where-is-uncertainty-coming-from" class="section level2 hasAnchor" number="5.3">
-<h2><span class="header-section-number">5.3</span> Where is Uncertainty Coming From?<a href="what-matters-in-ml-besides-prediction.html#where-is-uncertainty-coming-from" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p>Generally speaking:
-1. uncertainty in <span class="math inline">\(f\)</span> comes from us not having enough data to uniquely determine a function <span class="math inline">\(f\)</span>, this could be because of a combination of the below
-- <span class="math inline">\(f\)</span> is a complex model (e.g. lots of parameters) compared to the number of training data points (the model is under determined)
-- the data is very noisy and there are very few observations (so that the trend isn’t clear)
-2. uncertainty in our prediction <span class="math inline">\(\hat{y}\)</span> comes from a combination of the above:
-- uncertainty in <span class="math inline">\(f\)</span> – if we aren’t sure about <span class="math inline">\(f\)</span> we can’t be sure about <span class="math inline">\(\hat{y}\)</span>
-- noise in data – even if we are 100% certain that we have the right <span class="math inline">\(f\)</span>, we can still be uncertain about the prediction <span class="math inline">\(\hat{y}\)</span> due to observation noise</p>
-<p><strong>Question:</strong> Why do we care about what’s causing uncertainty?</p>
-</div>
-<div id="how-do-we-compute-uncertainty" class="section level2 hasAnchor" number="5.4">
-<h2><span class="header-section-number">5.4</span> How Do We Compute Uncertainty?<a href="what-matters-in-ml-besides-prediction.html#how-do-we-compute-uncertainty" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p>If we make some strong assumptions about <span class="math inline">\(f\)</span>, as well as the distribution of the data, we can analytically compute the uncertainty in <span class="math inline">\(f\)</span> as well as the uncertainty in <span class="math inline">\(\hat{y}\)</span>.</p>
-<p>Realistically, we often empirically estimate the uncertainty in <span class="math inline">\(f\)</span> and <span class="math inline">\(\hat{y}\)</span> through simulating drawing new training data sets by resampling our existing data – this is called <em>bootstrapping</em>.</p>
-<p>For the different bootstrap training data sets, we learn different functions <span class="math inline">\(f\)</span> and make different predictions <span class="math inline">\(\hat{y}\)</span>. The empirical variance of learnt parameters <span class="math inline">\(\mathbf{w}\)</span> of <span class="math inline">\(f\)</span> gives us an estimate of the <em>confidence interval</em> of our estimate of <span class="math inline">\(\mathbf{w}\)</span>.
-The empirical variance of our prediction <span class="math inline">\(\hat{y}\)</span> gives us an estimate of the <em>predictive interval</em>.</p>
-</div>
-<div id="mathematizing-uncertainty-starting-with-bias-and-variance" class="section level2 hasAnchor" number="5.5">
-<h2><span class="header-section-number">5.5</span> Mathematizing Uncertainty: Starting with Bias and Variance<a href="what-matters-in-ml-besides-prediction.html#mathematizing-uncertainty-starting-with-bias-and-variance" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p>So far we’ve been describing uncertainty purely in intuitive terms. In order to quantify and analyze uncertainty, we need mathematical formalism!</p>
-<p>One way to formalize our uncertainty over our prediction is to reason about why our prediction might be wrong. We do so by defining and decomposing the <em>generalization error</em> of our model.</p>
-<span class="math display">\[\begin{aligned}
-\underbrace{\mathbb{E}_{(\mathbf{x}, y), \mathcal{D}}\left[ (y- f_\mathbf{w}(\mathbf{x}))^2\right]}_{\text{Generalization Error}} =&amp; \mathbb{E}_{\mathbf{x}}\underbrace{\mathrm{Var}[y|\mathbf{x}]}_{\text{Observation Noise}}\\
-&amp; + \mathbb{E}_{\mathbf{x}}[(\underbrace{\mathbb{E}_{y|\mathbf{x}}[y|\mathbf{x}]}_{\text{Average true $y$}\\ \text{over noisy observations}} - \underbrace{\mathbb{E}_\mathcal{D}[f_\mathbf{w}(\mathbf{x})]}_{\text{Average prediction}\\\text{over all possible training sets}})^2]\\
-&amp;+\mathbb{E}_{\mathbf{x}} \underbrace{\mathrm{Var}[f_\mathbf{w}(\mathbf{x})]}_{\text{Variance of Model}}\\
-&amp;= \text{Observation Noise} + \text{Model Bias} + \text{Model Variance}
-\end{aligned}\]</span>
-<p>From the math, we see that we have three reasons to be uncertain about our model predictions:
-1. <strong>the observation noise</strong> – even if we are 100% certain that we have the right model, our prediction can still be wrong due to noise
-2. <strong>model bias</strong> – we could have been wildly wrong in our guess of the form of the model (e.g. assuming linear function when modeling quadratic data)
-3. <strong>model variance</strong> – the number of data points is insufficient to uniquely determine the model</p>
-</div>
-<div id="the-bias-variance-trade-off-in-machine-learning" class="section level2 hasAnchor" number="5.6">
-<h2><span class="header-section-number">5.6</span> The Bias-Variance Trade-off in Machine Learning<a href="what-matters-in-ml-besides-prediction.html#the-bias-variance-trade-off-in-machine-learning" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p>One reason we want to work with the formalism of the generalization error is that by decomposing the generalization error, we see how we can reduce our uncertainty in our predictions.</p>
-<p>Immediately, we see that there is nothing we can do to reduce generalization error arising from observation noise – this error is <strong><em>irreducible</em></strong>.</p>
-<p>We can, however, choose our model so we have some control over model bias and model variance – these errors are <strong><em>reducible</em></strong>.</p>
-<p>Unfortunately, generally speaking, when we reduce model bias by making our models more complex, the complexity increases model variance (and vice versa):</p>
-<p><img src="https://i.imgur.com/lUDZq5r.jpg" /></p>
-<div id="examples-of-the-bias-variance-trade-off" class="section level3 hasAnchor" number="5.6.1">
-<h3><span class="header-section-number">5.6.1</span> Examples of the Bias-Variance Trade-off<a href="what-matters-in-ml-besides-prediction.html#examples-of-the-bias-variance-trade-off" class="anchor-section" aria-label="Anchor link to header"></a></h3>
-<p>Many modification we perform on machine models are frequently just ways to manage the Bias-Variance Trade-off.</p>
+<p><strong>Bayesian Modeling:</strong> Bayesian modeling is, in comparison, orders of magnitude more mathematically and computationally challenging:</p>
 <ol style="list-style-type: decimal">
-<li><strong>Regularization:</strong> adding a penalty term to the MSE loss introduces bias (reduces the ability of the model to fit the data), in order to reduce variance (by biasing the optimization towards simpler models)</li>
-<li><strong>Ensembling:</strong> creating a large set of very different complex models (low bias but high variance), and then reducing the variance by average the model predictions</li>
-<li><strong>Boosting:</strong> iteratively making a simple base model (high bias but low variance) more complex and thereby reducing the bias without significantly increasing the variance</li>
+<li><strong>(Inference)</strong> sampling (from priors, posteriors, prior predictives and posterior predictives) is hard, especially for non-conjugate likelihood, prior pairs!</li>
+<li><strong>(Evaluation)</strong> computing integrals (for the log-likelihood of train and test data under the posterior) is intractable, when likelihoods and priors are not conjugate!</li>
+</ol>
+</div>
+<div id="what-is-sampling-and-why-do-we-care" class="section level2 hasAnchor" number="16.2">
+<h2><span class="header-section-number">16.2</span> What is Sampling and Why do We Care?<a href="whats-hard-about-sampling.html#what-is-sampling-and-why-do-we-care" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<ol style="list-style-type: decimal">
+<li>We first need to generating truly random iid sequence of numbers.
+<ul>
+<li><strong>(Uniform Distribution)</strong> Linear Congruence</li>
+</ul></li>
+<li>We use simple distributions (that we know how to sample from) to help us sample from complex target distributions.
+<ul>
+<li><strong>(Inverse CDF)</strong> Requires us to compute integrals (i.e. know the CDF)</li>
+<li><strong>(Rejection Sampling)</strong> Uses simple distributions to “propose samples” and uses the complex target distribution to accept or rejct the samples’</li>
+<li><strong>(MCMC Samplers)</strong> Uses “local rejection sampling”.</li>
+</ul></li>
+<li>We need to evaluate samplers.
+<ul>
+<li><strong>(Correctness)</strong> There is no way to verify that a sampling algorithm is correct except through proof</li>
+<li><strong>(Efficiency)</strong> Correctness is useless if it takes too many iterations to produce one valid sample</li>
+</ul></li>
+<li>Everything requires Sampling!
+<ul>
+<li><strong>(Integration Involves Sampling)</strong> In ML, intractable integrals are approximated via sampling, this is called <a href="https://onefishy.github.io/am207/week4.html"><strong><em>Monte Carlo Integration</em></strong></a>.</li>
+<li><strong>(Sampling Can Help Optimization)</strong> In ML, we can sometimes find better optima for non-convex optimization problems by incorporating <em>sampling</em> into our gradient descent. This is called <a href="https://onefishy.github.io/am207/week7.html"><strong><em>simulated annealing</em></strong></a>.</li>
+</ul></li>
+<li>Sometimes sampling requires optimization!
+<ul>
+<li><p><strong>(Variational Inference)</strong> In ML, we often choose to approximate a complex distribution with a simple one (e.g. Gaussian), rather than sample directly from the target.</p>
+<p>Finding the best simple approximation of a complex target distribution is called <a href="https://onefishy.github.io/am207/week9.html"><strong><em>variational inference</em></strong></a> and it’s an optimization problem!</p></li>
+<li><p><strong>(Hamiltonian Monte Carlo Sampling)</strong> Sometimes incorporating gradient descent during sampling can help increase the efficiency of our samplers – i.e. speed up the time we need to wait for a valid sample. These methods are called <a href="https://onefishy.github.io/am207/week8.html"><strong><em>Hamiltonian Monte Carlo Samplers</em></strong></a>.</p></li>
+</ul></li>
 </ol>
 
-</div>
 </div>
 </div>
             </section>
@@ -407,8 +370,8 @@ The empirical variance of our prediction <span class="math inline">\(\hat{y}\)</
           </div>
         </div>
       </div>
-<a href="what-are-probablistic-and-non-probablistic-regression.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
-<a href="what-is-logistic-regression.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+<a href="the-math-of-posterior-inference.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="the-math-of-principal-component-analysis.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>
@@ -439,7 +402,7 @@ gitbook.start({
 "size": 2
 },
 "edit": {
-"link": "https://github.com/rstudio/bookdown-demo/edit/master/04-What-Matters-in_ML.Rmd",
+"link": "https://github.com/rstudio/bookdown-demo/edit/master/15-Sampling.Rmd",
 "text": "Edit"
 },
 "history": {

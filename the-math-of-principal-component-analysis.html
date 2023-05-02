@@ -4,18 +4,18 @@
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>Chapter 5 What Matters in ML Besides Prediction? | Notes for CS181: Machine Learning</title>
+  <title>Chapter 17 The Math of Principal Component Analysis | Notes for CS181: Machine Learning</title>
   <meta name="description" content="This is a set of note for CS181: Machine Learning (Spring 2023)" />
   <meta name="generator" content="bookdown 0.33 and GitBook 2.6.7" />
 
-  <meta property="og:title" content="Chapter 5 What Matters in ML Besides Prediction? | Notes for CS181: Machine Learning" />
+  <meta property="og:title" content="Chapter 17 The Math of Principal Component Analysis | Notes for CS181: Machine Learning" />
   <meta property="og:type" content="book" />
   
   <meta property="og:description" content="This is a set of note for CS181: Machine Learning (Spring 2023)" />
   <meta name="github-repo" content="rstudio/bookdown-demo" />
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="Chapter 5 What Matters in ML Besides Prediction? | Notes for CS181: Machine Learning" />
+  <meta name="twitter:title" content="Chapter 17 The Math of Principal Component Analysis | Notes for CS181: Machine Learning" />
   
   <meta name="twitter:description" content="This is a set of note for CS181: Machine Learning (Spring 2023)" />
   
@@ -30,8 +30,8 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   
   
-<link rel="prev" href="what-are-probablistic-and-non-probablistic-regression.html"/>
-<link rel="next" href="what-is-logistic-regression.html"/>
+<link rel="prev" href="whats-hard-about-sampling.html"/>
+<link rel="next" href="the-math-of-expectation-maximization.html"/>
 <script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
@@ -315,91 +315,147 @@
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="what-matters-in-ml-besides-prediction" class="section level1 hasAnchor" number="5">
-<h1><span class="header-section-number">Chapter 5</span> What Matters in ML Besides Prediction?<a href="what-matters-in-ml-besides-prediction.html#what-matters-in-ml-besides-prediction" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<div id="the-math-of-principal-component-analysis" class="section level1 hasAnchor" number="17">
+<h1><span class="header-section-number">Chapter 17</span> The Math of Principal Component Analysis<a href="the-math-of-principal-component-analysis.html#the-math-of-principal-component-analysis" class="anchor-section" aria-label="Anchor link to header"></a></h1>
 <p><img src="https://i.imgur.com/xDR9VQd.png" /></p>
-<div id="what-is-machine-learning-revisited" class="section level2 hasAnchor" number="5.1">
-<h2><span class="header-section-number">5.1</span> What is Machine Learning? Revisited<a href="what-matters-in-ml-besides-prediction.html#what-is-machine-learning-revisited" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p>In Lecture #2 we defined machine learning as learning the parameters of function (or of a distribution, if we are being probabilistic) that best fits with observed data. This definition needs refinement! In reality, finding parameters is just sub-goal of a much more complex goal:</p>
-<p><img src="https://i.imgur.com/ecU0DQS.png" /></p>
-<p><strong>What does “doing Machine Learning” look like?</strong> The short answer: it looks like making and justifying a sequence of <strong><em>choices</em></strong>, while making our assumptions and biases as explicit as possible:</p>
-<ol style="list-style-type: decimal">
-<li><p><em>Choosing</em> a training data set <span class="math inline">\(\mathcal{D}\)</span>.
-<strong>Question:</strong> What assumptions do we make when we make this choice?</p></li>
-<li><p><em>Choosing</em> a model for the trend in the data <span class="math inline">\(f\)</span> or for the distribution of the data (trend and noise), i.e. the likelihood, <span class="math inline">\(p(y \vert f, \theta)\)</span>
-<strong>Question:</strong> What assumptions do we make when we make this choice?</p></li>
-<li><p><em>Choosing</em> a loss function – i.e. a way to measure the fit of <span class="math inline">\(f\)</span> (and potentially <span class="math inline">\(\theta\)</span>)
-<strong>Question:</strong> What assumptions do we make when we make this choice?</p></li>
-<li><p><em>Choosing</em> a way to optimize the loss function
-<strong>Question:</strong> What assumptions do we make when we make this choice?</p></li>
-<li><p><em>Choosing</em> a way to evaluate the model we learned – we may choose to evaluate the model using a different metric than the loss function!
-<strong>Question:</strong> What assumptions do we make when we make this choice?</p></li>
-</ol>
-<p><strong>What does a Machine Learning product look like?</strong> The short answer: it looks like a technical artifact as well as a recommended policy to guide the appropriate, ethical and responsible usage of it (and potentially much more!).</p>
-<p><img src="https://i.imgur.com/Wa7xvGm.png" /></p>
-<p>For example, see <a href="https://arxiv.org/pdf/1810.03993.pdf">Model Cards for Model Reporting</a></p>
-</div>
-<div id="what-are-we-uncertain-about" class="section level2 hasAnchor" number="5.2">
-<h2><span class="header-section-number">5.2</span> What Are We Uncertain About?<a href="what-matters-in-ml-besides-prediction.html#what-are-we-uncertain-about" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p>If we really work with the idea that everything in machine learning is a choice, including the training data, this means that we could have chosen a different training data set. For example: if we collected our training data from patients in one hospital, we can ask what would have happened if we collected data from a different hospital?</p>
-<p>Generally speaking, data sets collected at different times, from different locations or from different populations will be slightly (or significantly) different. Thus, the functions <span class="math inline">\(f\)</span> we learn on these datasets will differ and these different functions will produce different predictions for the same test point!</p>
-<p>So, we should be uncertain about:
-1. <strong>(Math)</strong> the function <span class="math inline">\(f\)</span> we learned (e.g. the parameters <span class="math inline">\(\mathbf{w}\)</span> for <span class="math inline">\(f\)</span> or the function <span class="math inline">\(f\)</span> itself when our model is non-parametric)
-2. <strong>(Application)</strong> our interpretation of <span class="math inline">\(f\)</span>
-3. <strong>(Math)</strong> our prediction <span class="math inline">\(\hat{y}\)</span> for a new point <span class="math inline">\(\mathbf{x}\)</span>
-4. <strong>(Application)</strong> our recommendation for how to make decisions based on our model</p>
-<p><strong>Question:</strong> Why do we care about uncertainty?</p>
-</div>
-<div id="where-is-uncertainty-coming-from" class="section level2 hasAnchor" number="5.3">
-<h2><span class="header-section-number">5.3</span> Where is Uncertainty Coming From?<a href="what-matters-in-ml-besides-prediction.html#where-is-uncertainty-coming-from" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p>Generally speaking:
-1. uncertainty in <span class="math inline">\(f\)</span> comes from us not having enough data to uniquely determine a function <span class="math inline">\(f\)</span>, this could be because of a combination of the below
-- <span class="math inline">\(f\)</span> is a complex model (e.g. lots of parameters) compared to the number of training data points (the model is under determined)
-- the data is very noisy and there are very few observations (so that the trend isn’t clear)
-2. uncertainty in our prediction <span class="math inline">\(\hat{y}\)</span> comes from a combination of the above:
-- uncertainty in <span class="math inline">\(f\)</span> – if we aren’t sure about <span class="math inline">\(f\)</span> we can’t be sure about <span class="math inline">\(\hat{y}\)</span>
-- noise in data – even if we are 100% certain that we have the right <span class="math inline">\(f\)</span>, we can still be uncertain about the prediction <span class="math inline">\(\hat{y}\)</span> due to observation noise</p>
-<p><strong>Question:</strong> Why do we care about what’s causing uncertainty?</p>
-</div>
-<div id="how-do-we-compute-uncertainty" class="section level2 hasAnchor" number="5.4">
-<h2><span class="header-section-number">5.4</span> How Do We Compute Uncertainty?<a href="what-matters-in-ml-besides-prediction.html#how-do-we-compute-uncertainty" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p>If we make some strong assumptions about <span class="math inline">\(f\)</span>, as well as the distribution of the data, we can analytically compute the uncertainty in <span class="math inline">\(f\)</span> as well as the uncertainty in <span class="math inline">\(\hat{y}\)</span>.</p>
-<p>Realistically, we often empirically estimate the uncertainty in <span class="math inline">\(f\)</span> and <span class="math inline">\(\hat{y}\)</span> through simulating drawing new training data sets by resampling our existing data – this is called <em>bootstrapping</em>.</p>
-<p>For the different bootstrap training data sets, we learn different functions <span class="math inline">\(f\)</span> and make different predictions <span class="math inline">\(\hat{y}\)</span>. The empirical variance of learnt parameters <span class="math inline">\(\mathbf{w}\)</span> of <span class="math inline">\(f\)</span> gives us an estimate of the <em>confidence interval</em> of our estimate of <span class="math inline">\(\mathbf{w}\)</span>.
-The empirical variance of our prediction <span class="math inline">\(\hat{y}\)</span> gives us an estimate of the <em>predictive interval</em>.</p>
-</div>
-<div id="mathematizing-uncertainty-starting-with-bias-and-variance" class="section level2 hasAnchor" number="5.5">
-<h2><span class="header-section-number">5.5</span> Mathematizing Uncertainty: Starting with Bias and Variance<a href="what-matters-in-ml-besides-prediction.html#mathematizing-uncertainty-starting-with-bias-and-variance" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p>So far we’ve been describing uncertainty purely in intuitive terms. In order to quantify and analyze uncertainty, we need mathematical formalism!</p>
-<p>One way to formalize our uncertainty over our prediction is to reason about why our prediction might be wrong. We do so by defining and decomposing the <em>generalization error</em> of our model.</p>
+<p>In these notes, we show you how to formalize Principal Component Analysis (PCA) as two equivalent optimization problems.</p>
+<div id="pca-as-dimensionality-reduction-to-maximize-variance" class="section level2 hasAnchor" number="17.1">
+<h2><span class="header-section-number">17.1</span> PCA as Dimensionality Reduction to Maximize Variance<a href="the-math-of-principal-component-analysis.html#pca-as-dimensionality-reduction-to-maximize-variance" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>In the lecture vidoes, we said that PCA is the process of finding a small set of orthogonal (and normal) vectors that indicate the directions of greatest variation in the data. So that when we project the data onto this small set of new features, we capture the most amount of interesting variations in the original data.</p>
+<p>How do we formalize PCA mathematically?</p>
+<p><img src="https://i.imgur.com/d3ewmbI.png" /></p>
+<div id="finding-a-single-pca-component" class="section level3 hasAnchor" number="17.1.1">
+<h3><span class="header-section-number">17.1.1</span> Finding a Single PCA Component<a href="the-math-of-principal-component-analysis.html#finding-a-single-pca-component" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>Let’s start by defining what we mean by “variations” in the data when projected onto a single <em>component</em>. Remember that in stats, we measure the spread of data with <em>sample variance</em>:
+<span class="math display">\[
+\text{sample variance} = \frac{1}{N-1}\sum_{n=1}^N (z_n - \overline{z})^2
+\]</span></p>
+<p>Now we can formalize our objective: <em>find a direction given by <span class="math inline">\(v\in \mathbb{R}^D\)</span> such that the sample variance of the projection of <span class="math inline">\(\mathbf{X}\)</span> onto the line (1D linear subspace) determined by <span class="math inline">\(v\)</span> is maximized</em>.</p>
+In other words, we want:
 <span class="math display">\[\begin{aligned}
-\underbrace{\mathbb{E}_{(\mathbf{x}, y), \mathcal{D}}\left[ (y- f_\mathbf{w}(\mathbf{x}))^2\right]}_{\text{Generalization Error}} =&amp; \mathbb{E}_{\mathbf{x}}\underbrace{\mathrm{Var}[y|\mathbf{x}]}_{\text{Observation Noise}}\\
-&amp; + \mathbb{E}_{\mathbf{x}}[(\underbrace{\mathbb{E}_{y|\mathbf{x}}[y|\mathbf{x}]}_{\text{Average true $y$}\\ \text{over noisy observations}} - \underbrace{\mathbb{E}_\mathcal{D}[f_\mathbf{w}(\mathbf{x})]}_{\text{Average prediction}\\\text{over all possible training sets}})^2]\\
-&amp;+\mathbb{E}_{\mathbf{x}} \underbrace{\mathrm{Var}[f_\mathbf{w}(\mathbf{x})]}_{\text{Variance of Model}}\\
-&amp;= \text{Observation Noise} + \text{Model Bias} + \text{Model Variance}
+v^* &amp;= \mathrm{argmax}_v \frac{1}{N-1}\sum_{n=1}^N \left(v^\top \mathbf{x}_n - \frac{1}{N} \sum_{i=1}^N v^\top \mathbf{x}_i\right)^2\\
+&amp;= \mathrm{argmax}_v \frac{1}{N-1}\sum_{n=1}^N \left(v^\top \mathbf{x}_n - v^\top \left(\frac{1}{N} \sum_{i=1}^N \mathbf{x}_i\right)\right)^2\\
+&amp;= \mathrm{argmax}_v \frac{1}{N-1}\sum_{n=1}^N (v^\top \mathbf{x}_n - v^\top \overline{\mathbf{x}})^2
 \end{aligned}\]</span>
-<p>From the math, we see that we have three reasons to be uncertain about our model predictions:
-1. <strong>the observation noise</strong> – even if we are 100% certain that we have the right model, our prediction can still be wrong due to noise
-2. <strong>model bias</strong> – we could have been wildly wrong in our guess of the form of the model (e.g. assuming linear function when modeling quadratic data)
-3. <strong>model variance</strong> – the number of data points is insufficient to uniquely determine the model</p>
+<p>subject to the <em>constraint</em> that <span class="math inline">\(v\)</span> is a normal vector
+<span class="math display">\[
+\|v\|_2 = 1
+\]</span></p>
+To summarize the <em>first principle component</em>, <span class="math inline">\(v^*\)</span> of PCA is the solution to the following:
+<span class="math display">\[\begin{aligned}
+&amp;\mathrm{argmax}_v \frac{1}{N-1}\sum_{n=1}^N (v^\top \mathbf{x}_n - v^\top \overline{\mathbf{x}})^2 \\
+&amp;\text{such that } \|v\|_2 = 1
+\end{aligned}\]</span>
+<p>Optimization problems like the one above are called <em>constrained optimization problems</em>, since we want to optimize our objective while satisfying a condition.</p>
+<div id="the-good-news" class="section level4 hasAnchor" number="17.1.1.1">
+<h4><span class="header-section-number">17.1.1.1</span> The Good News<a href="the-math-of-principal-component-analysis.html#the-good-news" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<p>The good news is that we’ve seen optimization before, quite a lot, in the first 1/2 of the semester. We know that the general procedure is to:
+1. find the stationary points of the objective function: set the gradient to zero
+2. check for convexity of objective function: make sure the stationary points are actually global optima</p>
 </div>
-<div id="the-bias-variance-trade-off-in-machine-learning" class="section level2 hasAnchor" number="5.6">
-<h2><span class="header-section-number">5.6</span> The Bias-Variance Trade-off in Machine Learning<a href="what-matters-in-ml-besides-prediction.html#the-bias-variance-trade-off-in-machine-learning" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p>One reason we want to work with the formalism of the generalization error is that by decomposing the generalization error, we see how we can reduce our uncertainty in our predictions.</p>
-<p>Immediately, we see that there is nothing we can do to reduce generalization error arising from observation noise – this error is <strong><em>irreducible</em></strong>.</p>
-<p>We can, however, choose our model so we have some control over model bias and model variance – these errors are <strong><em>reducible</em></strong>.</p>
-<p>Unfortunately, generally speaking, when we reduce model bias by making our models more complex, the complexity increases model variance (and vice versa):</p>
-<p><img src="https://i.imgur.com/lUDZq5r.jpg" /></p>
-<div id="examples-of-the-bias-variance-trade-off" class="section level3 hasAnchor" number="5.6.1">
-<h3><span class="header-section-number">5.6.1</span> Examples of the Bias-Variance Trade-off<a href="what-matters-in-ml-besides-prediction.html#examples-of-the-bias-variance-trade-off" class="anchor-section" aria-label="Anchor link to header"></a></h3>
-<p>Many modification we perform on machine models are frequently just ways to manage the Bias-Variance Trade-off.</p>
-<ol style="list-style-type: decimal">
-<li><strong>Regularization:</strong> adding a penalty term to the MSE loss introduces bias (reduces the ability of the model to fit the data), in order to reduce variance (by biasing the optimization towards simpler models)</li>
-<li><strong>Ensembling:</strong> creating a large set of very different complex models (low bias but high variance), and then reducing the variance by average the model predictions</li>
-<li><strong>Boosting:</strong> iteratively making a simple base model (high bias but low variance) more complex and thereby reducing the bias without significantly increasing the variance</li>
-</ol>
+<div id="the-bad-news" class="section level4 hasAnchor" number="17.1.1.2">
+<h4><span class="header-section-number">17.1.1.2</span> The Bad News<a href="the-math-of-principal-component-analysis.html#the-bad-news" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<p>The problem is that we’ve never worked with constrained optimization problems before! It turns out, for constrained problems, there are analogue steps to solving them:
+1. find the stationary points of an “augmented” objective function (the <em>Lagrangian</em>)
+2. check for global optimality – this involves a much more complex set of checks</p>
+<p>Generally speaking, solving constrained optimization problems is way harder than solving unconstrained optimization problems!</p>
+</div>
+<div id="the-solution-relating-pca-and-singular-value-decomposition-svd" class="section level4 hasAnchor" number="17.1.1.3">
+<h4><span class="header-section-number">17.1.1.3</span> The Solution: Relating PCA and Singular Value Decomposition (SVD)<a href="the-math-of-principal-component-analysis.html#the-solution-relating-pca-and-singular-value-decomposition-svd" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<p>Luckily, the PCA constrained optimization problem has additional structure/knowledge we can exploit. In particular, we can rewrite the PCA objective function as follows:</p>
+<span class="math display">\[\begin{aligned}
+\mathrm{argmax}_v\; \frac{1}{N-1}\sum_{n=1}^N (v^\top \mathbf{x}_n - v^\top \overline{\mathbf{x}})^2 &amp;= \mathrm{argmax}_v\; v^\top \mathbf{S} v
+\end{aligned}\]</span>
+where the matrix <span class="math inline">\(\mathbf{S}\)</span> is the empirical covariance matrix:
+<span class="math display">\[
+\mathbf{S} = \frac{1}{N}\sum_{n=1}^N (\mathbf{x}_n - \overline{\mathbf{x}})(\mathbf{x}_n - \overline{\mathbf{x}})^\top.
+\]</span>
+In this case, when we find the stationary points of the <em>Lagrangian</em> of the constrained optimization problem,
+<span class="math display">\[
+\mathcal{L}(v, \alpha) = v^\top \mathbf{S} v - \alpha (1- v^\top v)
+\]</span>
+we get that stationary points must satisfy
+<span class="math display">\[\begin{aligned}
+\frac{\partial \mathcal{L}}{\partial v} = \mathbf{S}v - \alpha v &amp;=0\\
+\mathbf{S}v &amp;= \alpha v
+\end{aligned}\]</span>
+for some constant <span class="math inline">\(\alpha\in \mathbf{R}\)</span>. That is, a stationary point of the <em>Lagrangian</em> must be an <em>eigenvector</em> of the matrix <span class="math inline">\(\mathbf{S}\)</span>. Moreover, we see that at every stationary point, the PCA objective can be rewritten as:
+<span class="math display">\[\begin{aligned}
+v^\top \mathbf{S} v = \alpha v^\top v = \alpha
+\end{aligned}\]</span>
+<p>Thus, the stationary point of the Lagrangian that maximizes the PCA objective must be the eigenvector <span class="math inline">\(v\)</span> of <span class="math inline">\(\mathbf{S}\)</span> such that the associated eigenvalue <span class="math inline">\(\alpha\)</span> is the largest.</p>
+<p>That is, finding the top PCA component <span class="math inline">\(v\)</span> reduces to finding the eigenvector with the largest eigenvalue of the empirical covariance matrix <span class="math inline">\(\mathbf{S}\)</span>.</p>
+<p>Iterating this math analysis <span class="math inline">\(K\)</span> number of times, shows us that finding the top <span class="math inline">\(K\)</span> PCA components is equivalent to finding the <span class="math inline">\(K\)</span> eigenvectors of <span class="math inline">\(\mathbf{S}\)</span> that have the largest eigenvalues. Thus, <em>singular value decomposition</em> (SVD) – a linear algebra method for finding all the eigenvectors and eigenvalues of a given matrix <span class="math inline">\(\mathbf{S}\)</span> – is often used to identify the top <span class="math inline">\(K\)</span> PCA components.</p>
+</div>
+</div>
+</div>
+<div id="pca-as-dimensionality-reduction-to-minimize-reconstruction-loss" class="section level2 hasAnchor" number="17.2">
+<h2><span class="header-section-number">17.2</span> PCA as Dimensionality Reduction to Minimize Reconstruction Loss<a href="the-math-of-principal-component-analysis.html#pca-as-dimensionality-reduction-to-minimize-reconstruction-loss" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>But why do we care about finding low-dimensional projections of our data that preserves as much variance in the data as possible?</p>
+<p>One could argue that preserving variations in the data allows us to potentially reconstruct important properties of the original data. But why not formalize <em>data reconstruction</em> as our objective in the first place?</p>
+That is, we could have formalized our problem as “find <span class="math inline">\(v\)</span> such that the projection of <span class="math inline">\(\mathbf{X}\)</span> onto the line determined by <span class="math inline">\(v\)</span> minimizes reconstruction error”:
+<span class="math display">\[\begin{aligned}
+&amp;\mathrm{argmin}_v \frac{1}{N}\sum_{n=1}^N \|\mathbf{x}_n - \widehat{\mathbf{x}}_n \|_2^2\\
+&amp;\text{such that} \|v\|_2 = 1
+\end{aligned}\]</span>
+<p>where <span class="math inline">\(\widehat{\mathbf{x}}_n\)</span> is related to the projection of <span class="math inline">\(\mathbf{x}_n\)</span> onto the line determined by <span class="math inline">\(v\)</span>, interpreted as a “reconstruction” of <span class="math inline">\(\mathbf{x}_n\)</span>.</p>
+<div id="centered-data" class="section level4 hasAnchor" number="17.2.0.1">
+<h4><span class="header-section-number">17.2.0.1</span> Centered Data<a href="the-math-of-principal-component-analysis.html#centered-data" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<p>If the data is centered, i.e. <span class="math inline">\(\overline{\mathbf{x}} = \mathbf{0}\)</span>, then we can set <span class="math inline">\(\widehat{\mathbf{x}}_n\)</span> to be directly the projection of <span class="math inline">\(\mathbf{x}_n\)</span> onto <span class="math inline">\(v\)</span>,
+<span class="math display">\[
+\widehat{\mathbf{x}}_n = v(v^\top \mathbf{x}_n)
+\]</span>
+then it turns out that minimizing the reconstruction error is equivalent to maximizing the sample variance after projection! That is, minimizing “reconstruction error” is another way to formalize our PCA objective! <strong><em>See Chapter 7 of your textbook for the proof (note that in the textbook, we use <span class="math inline">\(w\)</span> for principle components instead of <span class="math inline">\(v\)</span>).</em></strong></p>
+</div>
+<div id="what-if-the-data-is-not-centered" class="section level4 hasAnchor" number="17.2.0.2">
+<h4><span class="header-section-number">17.2.0.2</span> What If the Data is Not Centered?<a href="the-math-of-principal-component-analysis.html#what-if-the-data-is-not-centered" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<p>If the data is centered, i.e. <span class="math inline">\(\overline{\mathbf{x}} \neq \mathbf{0}\)</span>, then we set <span class="math inline">\(\widehat{\mathbf{x}}_n = v(v^\top (\mathbf{x}_n - \overline{\mathbf{x}})) + \overline{\mathbf{x}}\)</span>, i.e. we “center” the data and add the mean back after projection. The reason we need to center the data is that the vector <span class="math inline">\(v\)</span> determines a line through the origin! So if the data is not centered at the origin, no <span class="math inline">\(v\)</span> can do a good job of reconstructing our data.</p>
+<p>For <span class="math inline">\(\widehat{\mathbf{x}}_n = v(v^\top (\mathbf{x}_n - \overline{\mathbf{x}})) + \overline{\mathbf{x}}\)</span>, we can again show that minimizing the reconstruction error is equivalent to maximizing the sample variance after projection!</p>
+</div>
+<div id="so-should-i-center-my-data" class="section level4 hasAnchor" number="17.2.0.3">
+<h4><span class="header-section-number">17.2.0.3</span> So Should I Center My Data???<a href="the-math-of-principal-component-analysis.html#so-should-i-center-my-data" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<p>If you are implementing your own version of PCA from scratch by doing SVD on the empirical covariance matrix <span class="math inline">\(\mathbf{S}\)</span>, then you don’t need to do anything extra to pre-process your data.</p>
+<p>If you are using someone else’s PCA code (including staff code), check the documentation to see if centering your data is necessary!</p>
+</div>
+</div>
+<div id="a-latent-variable-model-for-pca" class="section level2 hasAnchor" number="17.3">
+<h2><span class="header-section-number">17.3</span> A Latent Variable Model for PCA<a href="the-math-of-principal-component-analysis.html#a-latent-variable-model-for-pca" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>The main motivation for using PCA is data compression: we think that our data doesn’t occupy the entire <span class="math inline">\(D\)</span>-number of dimensions of the input space; instead, it occupies a smaller <span class="math inline">\(K\)</span>-dimensional linear manifold inside <span class="math inline">\(\mathbb{R}^D\)</span>.</p>
+<div id="one-principle-component" class="section level3 hasAnchor" number="17.3.1">
+<h3><span class="header-section-number">17.3.1</span> One Principle Component<a href="the-math-of-principal-component-analysis.html#one-principle-component" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>When <span class="math inline">\(K=1\)</span>, another way to formalize PCA is to suppose the following (non-probabilistic) <em>model</em> for our data:
+<span class="math display">\[
+\widehat{\mathbf{x}}_n = f_v(z_n) = v z_n
+\]</span>
+where <span class="math inline">\(v\in \mathbb{R}^D\)</span> and <span class="math inline">\(z_n \in \mathbb{R}\)</span>, <span class="math inline">\(f_v\)</span> is a function mapping <span class="math inline">\(\mathbb{R}\)</span> to <span class="math inline">\(\mathbb{R}^D\)</span>.</p>
+<p>The PCA objective can be rederived for this model:</p>
+<span class="math display">\[\begin{aligned}
+&amp;\mathrm{argmin}_v \frac{1}{N}\sum_{n=1}^N \|\mathbf{x}_n - f_v(z_n) \|_2^2\\
+&amp;\text{such that } z_n = g_v(\mathbf{x}_n) = v^\top \mathbf{x}_n, \; \|v\|_2=1
+\end{aligned}\]</span>
+<p>Under this model of PCA, we see that PCA is just a special form of <strong>linear regression</strong> where we know the target <span class="math inline">\(\mathbf{x}_n\)</span> but we don’t know the covariate <span class="math inline">\(v_n\)</span>! Since the covariate <span class="math inline">\(v_n\)</span> is unobserved, we call it a <em>latent variable</em>. The PCA objective gets around the fact that we are not given <span class="math inline">\(z_n\)</span>, by imposing that we can infer <span class="math inline">\(z_n\)</span> by “reversing” the map <span class="math inline">\(f\)</span> (that is, we find <span class="math inline">\(z_n\)</span> and <span class="math inline">\(f\)</span> simultaneously).</p>
+</div>
+</div>
+<div id="autoencoders-and-nonlinear-pca" class="section level2 hasAnchor" number="17.4">
+<h2><span class="header-section-number">17.4</span> Autoencoders and Nonlinear PCA<a href="the-math-of-principal-component-analysis.html#autoencoders-and-nonlinear-pca" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>The above formulation of PCA is extremely important, since if we replace <span class="math inline">\(f\)</span> and <span class="math inline">\(g\)</span> by arbitrary functions represented by neural networks, then we have derived the <strong><em>autoencoder model</em></strong>:</p>
+<span class="math display">\[\begin{aligned}
+&amp;\mathrm{argmin}_{\mathbf{V}, \mathbf{W}} \frac{1}{N}\sum_{n=1}^N \|\mathbf{x}_n - f_\mathbf{V}(\mathbf{z}_n) \|_2^2\\
+&amp;\text{such that } \mathbf{z}_n = g_\mathbf{W}(\mathbf{x}_n)
+\end{aligned}\]</span>
+<p>where <span class="math inline">\(f_\mathbf{V}: \mathbf{R}^K \to \mathbf{R}^D\)</span> is called the <em>decoder</em> and <span class="math inline">\(g_\mathbf{W}: \mathbf{R}^D \to \mathbf{R}^K\)</span> is called the <em>encoder</em>.</p>
+<p>In other words, the autoencoder can be considered to be a nonlinear version of PCA.</p>
+<p><img src="https://i.imgur.com/S671CWe.png" /></p>
+</div>
+<div id="a-probabilistic-latent-variable-model-for-pca" class="section level2 hasAnchor" number="17.5">
+<h2><span class="header-section-number">17.5</span> A Probabilistic Latent Variable Model for PCA<a href="the-math-of-principal-component-analysis.html#a-probabilistic-latent-variable-model-for-pca" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>Remember for linear regression we created probabilistic models by positing a source of observation noise. We can derive a probabilistic model for PCA in a similar fashion. That is, we suppose that our data started as some distribution in the low-dimensional latent space and was mapped to noisy observations:</p>
+<span class="math display">\[\begin{aligned}
+\mathbf{z}_n &amp;\sim \mathcal{N}(\mathbf{0}, I_{K\times K})\\
+\mathbf{x}_n &amp;= f_\mathbf{V}(\mathbf{z}_n) + \epsilon = \mathbf{V} \mathbf{z}_n + \epsilon,\;\; \epsilon \sim \mathcal{N}(\mathbf{0}, \sigma^2 I_{D\times D})
+\end{aligned}\]</span>
+<p>This model is called <em>probabilistic PCA (pPCA)</em>.</p>
 
-</div>
 </div>
 </div>
             </section>
@@ -407,8 +463,8 @@ The empirical variance of our prediction <span class="math inline">\(\hat{y}\)</
           </div>
         </div>
       </div>
-<a href="what-are-probablistic-and-non-probablistic-regression.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
-<a href="what-is-logistic-regression.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+<a href="whats-hard-about-sampling.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="the-math-of-expectation-maximization.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>
@@ -439,7 +495,7 @@ gitbook.start({
 "size": 2
 },
 "edit": {
-"link": "https://github.com/rstudio/bookdown-demo/edit/master/04-What-Matters-in_ML.Rmd",
+"link": "https://github.com/rstudio/bookdown-demo/edit/master/16-Math-of-PCA.Rmd",
 "text": "Edit"
 },
 "history": {

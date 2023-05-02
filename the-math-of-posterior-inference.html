@@ -4,18 +4,18 @@
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>Chapter 5 What Matters in ML Besides Prediction? | Notes for CS181: Machine Learning</title>
+  <title>Chapter 15 The Math of Posterior Inference | Notes for CS181: Machine Learning</title>
   <meta name="description" content="This is a set of note for CS181: Machine Learning (Spring 2023)" />
   <meta name="generator" content="bookdown 0.33 and GitBook 2.6.7" />
 
-  <meta property="og:title" content="Chapter 5 What Matters in ML Besides Prediction? | Notes for CS181: Machine Learning" />
+  <meta property="og:title" content="Chapter 15 The Math of Posterior Inference | Notes for CS181: Machine Learning" />
   <meta property="og:type" content="book" />
   
   <meta property="og:description" content="This is a set of note for CS181: Machine Learning (Spring 2023)" />
   <meta name="github-repo" content="rstudio/bookdown-demo" />
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="Chapter 5 What Matters in ML Besides Prediction? | Notes for CS181: Machine Learning" />
+  <meta name="twitter:title" content="Chapter 15 The Math of Posterior Inference | Notes for CS181: Machine Learning" />
   
   <meta name="twitter:description" content="This is a set of note for CS181: Machine Learning (Spring 2023)" />
   
@@ -30,8 +30,8 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   
   
-<link rel="prev" href="what-are-probablistic-and-non-probablistic-regression.html"/>
-<link rel="next" href="what-is-logistic-regression.html"/>
+<link rel="prev" href="bayesain-vs-frequentist-inference.html"/>
+<link rel="next" href="whats-hard-about-sampling.html"/>
 <script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
@@ -315,91 +315,154 @@
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="what-matters-in-ml-besides-prediction" class="section level1 hasAnchor" number="5">
-<h1><span class="header-section-number">Chapter 5</span> What Matters in ML Besides Prediction?<a href="what-matters-in-ml-besides-prediction.html#what-matters-in-ml-besides-prediction" class="anchor-section" aria-label="Anchor link to header"></a></h1>
-<p><img src="https://i.imgur.com/xDR9VQd.png" /></p>
-<div id="what-is-machine-learning-revisited" class="section level2 hasAnchor" number="5.1">
-<h2><span class="header-section-number">5.1</span> What is Machine Learning? Revisited<a href="what-matters-in-ml-besides-prediction.html#what-is-machine-learning-revisited" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p>In Lecture #2 we defined machine learning as learning the parameters of function (or of a distribution, if we are being probabilistic) that best fits with observed data. This definition needs refinement! In reality, finding parameters is just sub-goal of a much more complex goal:</p>
-<p><img src="https://i.imgur.com/ecU0DQS.png" /></p>
-<p><strong>What does “doing Machine Learning” look like?</strong> The short answer: it looks like making and justifying a sequence of <strong><em>choices</em></strong>, while making our assumptions and biases as explicit as possible:</p>
-<ol style="list-style-type: decimal">
-<li><p><em>Choosing</em> a training data set <span class="math inline">\(\mathcal{D}\)</span>.
-<strong>Question:</strong> What assumptions do we make when we make this choice?</p></li>
-<li><p><em>Choosing</em> a model for the trend in the data <span class="math inline">\(f\)</span> or for the distribution of the data (trend and noise), i.e. the likelihood, <span class="math inline">\(p(y \vert f, \theta)\)</span>
-<strong>Question:</strong> What assumptions do we make when we make this choice?</p></li>
-<li><p><em>Choosing</em> a loss function – i.e. a way to measure the fit of <span class="math inline">\(f\)</span> (and potentially <span class="math inline">\(\theta\)</span>)
-<strong>Question:</strong> What assumptions do we make when we make this choice?</p></li>
-<li><p><em>Choosing</em> a way to optimize the loss function
-<strong>Question:</strong> What assumptions do we make when we make this choice?</p></li>
-<li><p><em>Choosing</em> a way to evaluate the model we learned – we may choose to evaluate the model using a different metric than the loss function!
-<strong>Question:</strong> What assumptions do we make when we make this choice?</p></li>
+<div id="the-math-of-posterior-inference" class="section level1 hasAnchor" number="15">
+<h1><span class="header-section-number">Chapter 15</span> The Math of Posterior Inference<a href="the-math-of-posterior-inference.html#the-math-of-posterior-inference" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<p><img src="https://i.imgur.com/HMKpGFK.png" /></p>
+<div id="the-bayesian-modeling-process-1" class="section level2 hasAnchor" number="15.1">
+<h2><span class="header-section-number">15.1</span> The Bayesian Modeling Process<a href="the-math-of-posterior-inference.html#the-bayesian-modeling-process-1" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>The key insight about Bayesian modeling is that <strong><em>we treat all unknown quantities as random variables</em></strong>.</p>
+<p>Thus, in order to make statements about the data, <span class="math inline">\((\mathbf{x}, y)\)</span>, and the model parameters <span class="math inline">\(\mathbf{w}\)</span> (as well as potentially parameters of the likelihood <span class="math inline">\(\theta\)</span>), we form the <em>joint distribution</em> over all variables and use the various marginal and conditional distributions to reason about the data <span class="math inline">\((\mathbf{x}, y)\)</span> and <span class="math inline">\(\mathbf{w}\)</span>.</p>
+<p>That is, the steps of Bayesian modeling are as follows:</p>
+<ol start="0" style="list-style-type: decimal">
+<li><p><strong>(Everything Is an RV)</strong> We need to define how the data, as a RV, depends on <span class="math inline">\(\mathbf{w}\)</span> and what kind of RV is <span class="math inline">\(\mathbf{w}\)</span>:</p>
+<ul>
+<li><strong>(Likelihood)</strong> <span class="math inline">\(p(y | \mathbf{x}, \mathbf{w})\)</span>
+<em>Choose whatever distribution you want!!!</em></li>
+<li><strong>(Prior)</strong> <span class="math inline">\(p(\mathbf{w})\)</span>
+<em>Choose whatever distribution you want!!!</em></li>
+</ul></li>
+<li><p><strong>(Make the Joint Distribution)</strong> we form the <strong><em>joint distribution</em></strong> over all RVs – this usually involves multiplying all the pdf’s together
+<span class="math display">\[p(y, \mathbf{w} | \mathbf{x}) = p(y | \mathbf{x}, \mathbf{w}) p(\mathbf{w})\]</span></p></li>
+<li><p><strong>(Make Inferences About the Unknown Variable)</strong> we can condition on the observed RVs to make inferences about unknown RVs,
+<span class="math display">\[
+p(\mathbf{w}| y, \mathbf{x}) = \frac{p(y, \mathbf{w}|\mathbf{x})}{p(y|\mathbf{x})}
+\]</span>
+where <span class="math inline">\(p(\mathbf{w}| y, \mathbf{x})\)</span> is called the <strong><em>posterior distribution</em></strong> and <span class="math inline">\(p(y|\mathbf{x})\)</span> is called the <strong><em>evidence</em></strong>.
+<img src="https://i.imgur.com/D2RDFh2.jpg" /></p></li>
+<li><p><strong>(Make Inferences About New Data, Under Our Prior)</strong> before any data is observed, we can use our prior and likelihood to reason about unobserved data:
+<span class="math display">\[
+p(y^* |\mathbf{x}^*) = \int_\mathbf{w} p(y^*, \mathbf{w} |\mathbf{x}^*) d\mathbf{w} = \int_\mathbf{w} p(y^* | \mathbf{w}, \mathbf{x}^*) p(\mathbf{w}) d\mathbf{w}
+\]</span>
+where <span class="math inline">\((\mathbf{x}^*, y^*)\)</span> represents new data. In the above <span class="math inline">\(p(y^* |\mathbf{x}^*)\)</span> is called the <strong><em>prior predictive</em></strong>, and tells us how likely any data point is under our prior belief. This is a measure of the appropriateness of the inductive bias (or prior belief) of our model.</p></li>
+<li><p><strong>(Make Inferences About New Data, Under Our Posterior)</strong> after observing data <span class="math inline">\(\mathcal{D} = \{(\mathbf{x}, y)\}\)</span>, we can use our posterior to reason about unobserved data:
+<span class="math display">\[
+p(y^* |\mathbf{x}^*, \mathcal{D}) = \int_\mathbf{w} p(y^*, \mathbf{w}|\mathbf{x}^*, \mathcal{D}) d\mathbf{w} = \int_\mathbf{w} p(y^*|\mathbf{w}, \mathbf{x}^*)p(\mathbf{w} | \mathcal{D}) d\mathbf{w}
+\]</span>
+where <span class="math inline">\((\mathbf{x}^*, y^*)\)</span> represents new data. In the above <span class="math inline">\(p(y^* |\mathbf{x}^*, \mathcal{D})\)</span> is called the <strong><em>posterior predictive</em></strong>, and tells us how likely any data point is under our posterior belief. This is a measure of the goodness of the learnt model (or posterior belief).</p></li>
+<li><p><strong>(Evaluating Bayesian Models)</strong> computing the posterior predictive likelihood of the data is the main way to evaluate how well our model fits the data:
+<span class="math display">\[
+\sum_{m=1}^M \log p(y_m |\mathbf{x}_m, \mathcal{D}) = \sum_{m=1}^M \log \int_\mathbf{w} p(y_m|\mathbf{w}, \mathbf{x}_m)p(\mathbf{w} | \mathcal{D}) d\mathbf{w}
+\]</span>
+where <span class="math inline">\(\{ (\mathbf{x}_m, y_m) \}\)</span> is the test data set. This quantity is called the <strong><em>test log-likelihood</em></strong>.</p></li>
 </ol>
-<p><strong>What does a Machine Learning product look like?</strong> The short answer: it looks like a technical artifact as well as a recommended policy to guide the appropriate, ethical and responsible usage of it (and potentially much more!).</p>
-<p><img src="https://i.imgur.com/Wa7xvGm.png" /></p>
-<p>For example, see <a href="https://arxiv.org/pdf/1810.03993.pdf">Model Cards for Model Reporting</a></p>
 </div>
-<div id="what-are-we-uncertain-about" class="section level2 hasAnchor" number="5.2">
-<h2><span class="header-section-number">5.2</span> What Are We Uncertain About?<a href="what-matters-in-ml-besides-prediction.html#what-are-we-uncertain-about" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p>If we really work with the idea that everything in machine learning is a choice, including the training data, this means that we could have chosen a different training data set. For example: if we collected our training data from patients in one hospital, we can ask what would have happened if we collected data from a different hospital?</p>
-<p>Generally speaking, data sets collected at different times, from different locations or from different populations will be slightly (or significantly) different. Thus, the functions <span class="math inline">\(f\)</span> we learn on these datasets will differ and these different functions will produce different predictions for the same test point!</p>
-<p>So, we should be uncertain about:
-1. <strong>(Math)</strong> the function <span class="math inline">\(f\)</span> we learned (e.g. the parameters <span class="math inline">\(\mathbf{w}\)</span> for <span class="math inline">\(f\)</span> or the function <span class="math inline">\(f\)</span> itself when our model is non-parametric)
-2. <strong>(Application)</strong> our interpretation of <span class="math inline">\(f\)</span>
-3. <strong>(Math)</strong> our prediction <span class="math inline">\(\hat{y}\)</span> for a new point <span class="math inline">\(\mathbf{x}\)</span>
-4. <strong>(Application)</strong> our recommendation for how to make decisions based on our model</p>
-<p><strong>Question:</strong> Why do we care about uncertainty?</p>
-</div>
-<div id="where-is-uncertainty-coming-from" class="section level2 hasAnchor" number="5.3">
-<h2><span class="header-section-number">5.3</span> Where is Uncertainty Coming From?<a href="what-matters-in-ml-besides-prediction.html#where-is-uncertainty-coming-from" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p>Generally speaking:
-1. uncertainty in <span class="math inline">\(f\)</span> comes from us not having enough data to uniquely determine a function <span class="math inline">\(f\)</span>, this could be because of a combination of the below
-- <span class="math inline">\(f\)</span> is a complex model (e.g. lots of parameters) compared to the number of training data points (the model is under determined)
-- the data is very noisy and there are very few observations (so that the trend isn’t clear)
-2. uncertainty in our prediction <span class="math inline">\(\hat{y}\)</span> comes from a combination of the above:
-- uncertainty in <span class="math inline">\(f\)</span> – if we aren’t sure about <span class="math inline">\(f\)</span> we can’t be sure about <span class="math inline">\(\hat{y}\)</span>
-- noise in data – even if we are 100% certain that we have the right <span class="math inline">\(f\)</span>, we can still be uncertain about the prediction <span class="math inline">\(\hat{y}\)</span> due to observation noise</p>
-<p><strong>Question:</strong> Why do we care about what’s causing uncertainty?</p>
-</div>
-<div id="how-do-we-compute-uncertainty" class="section level2 hasAnchor" number="5.4">
-<h2><span class="header-section-number">5.4</span> How Do We Compute Uncertainty?<a href="what-matters-in-ml-besides-prediction.html#how-do-we-compute-uncertainty" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p>If we make some strong assumptions about <span class="math inline">\(f\)</span>, as well as the distribution of the data, we can analytically compute the uncertainty in <span class="math inline">\(f\)</span> as well as the uncertainty in <span class="math inline">\(\hat{y}\)</span>.</p>
-<p>Realistically, we often empirically estimate the uncertainty in <span class="math inline">\(f\)</span> and <span class="math inline">\(\hat{y}\)</span> through simulating drawing new training data sets by resampling our existing data – this is called <em>bootstrapping</em>.</p>
-<p>For the different bootstrap training data sets, we learn different functions <span class="math inline">\(f\)</span> and make different predictions <span class="math inline">\(\hat{y}\)</span>. The empirical variance of learnt parameters <span class="math inline">\(\mathbf{w}\)</span> of <span class="math inline">\(f\)</span> gives us an estimate of the <em>confidence interval</em> of our estimate of <span class="math inline">\(\mathbf{w}\)</span>.
-The empirical variance of our prediction <span class="math inline">\(\hat{y}\)</span> gives us an estimate of the <em>predictive interval</em>.</p>
-</div>
-<div id="mathematizing-uncertainty-starting-with-bias-and-variance" class="section level2 hasAnchor" number="5.5">
-<h2><span class="header-section-number">5.5</span> Mathematizing Uncertainty: Starting with Bias and Variance<a href="what-matters-in-ml-besides-prediction.html#mathematizing-uncertainty-starting-with-bias-and-variance" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p>So far we’ve been describing uncertainty purely in intuitive terms. In order to quantify and analyze uncertainty, we need mathematical formalism!</p>
-<p>One way to formalize our uncertainty over our prediction is to reason about why our prediction might be wrong. We do so by defining and decomposing the <em>generalization error</em> of our model.</p>
+<div id="point-estimates-from-the-posterior" class="section level2 hasAnchor" number="15.2">
+<h2><span class="header-section-number">15.2</span> Point Estimates from the Posterior<a href="the-math-of-posterior-inference.html#point-estimates-from-the-posterior" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>If you absolutely wanted to derive a point estimate for the parameters <span class="math inline">\(\theta\)</span> in the likelihood from your Bayesian model, there are two common ways to do it:</p>
+<ol style="list-style-type: decimal">
+<li><strong><em>The Posterior Mean Estimate</em></strong>: the “average” estimate of <span class="math inline">\(\mathbf{w}\)</span> under the posterior distribution:
+<span class="math display">\[
+\mathbf{w}_{\text{post mean}} = \mathbb{E}_{\mathbf{w}\sim p(\mathbf{w}|\mathcal{D})}\left[ \mathbf{w}|\mathcal{D} \right] = \int_\mathbf{w} \mathbf{w} \;p(\mathbf{w}|\mathcal{D}) d\mathbf{w}
+\]</span></li>
+<li><strong><em>The Posterior Mode</em></strong> or <strong><em>Maximum a Posterior (MAP) Estimate</em></strong>: the most likely estimate of <span class="math inline">\(\mathbf{w}\)</span> under the posterior distribution:
+<span class="math display">\[
+\mathbf{w}_{\text{MAP}} = \mathrm{argmax}_{\mathbf{w}} p(\mathbf{w}|\mathcal{D})
+\]</span></li>
+</ol>
+<p><strong>Question:</strong> Which point estimate of the posterior do you think is more common to compute in machine learning (<em>Hint:</em> which point estimate would you rather compute, if you were forced to compute one)?</p>
+<p><strong>Question:</strong> is it better to summarize the entire posterior using a point estimate? I.e. why should we keep the posterior distribution around?</p>
+<p><strong>Answer:</strong> point estimates can be extremely misleading!</p>
+<ol style="list-style-type: decimal">
+<li>The posterior mode can be an atypical point:
+<img src="https://i.imgur.com/nqnLAhH.jpg" /></li>
+<li>The posterior mean can be an unlikely point:
+<img src="https://i.imgur.com/k4EZHe8.jpg" /></li>
+</ol>
+<div id="comparison-of-posterior-point-estimates-and-mle" class="section level3 hasAnchor" number="15.2.1">
+<h3><span class="header-section-number">15.2.1</span> Comparison of Posterior Point Estimates and MLE<a href="the-math-of-posterior-inference.html#comparison-of-posterior-point-estimates-and-mle" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>It turns out that point estimates of Bayesian posteriors can often be interpreted as some kind of regularized MLE! For example, for Bayesian linear regression with Gaussian prior, the posterior mode estimate is <span class="math inline">\(\ell_2\)</span>-regularized MLE!</p>
+<p>Let’s recall the loss function for <span class="math inline">\(\ell_2\)</span>-regularized MLE:
+<span class="math display">\[
+\ell(\mathbf{w}) = - \left(\underbrace{\sum_{n=1}^N \log p(y_n | \mathbf{x}_n, \mathbf{w})}_{\text{joint log-likelihood}} - \lambda\underbrace{\| \mathbf{w}\|_2^2}_{\text{regularization}}\right)
+\]</span></p>
+<p>Let’s also recall the posterior pdf of Bayesian regression with Gaussian prior:
+<span class="math display">\[
+p(\mathbf{w}|y, \mathbf{x}) \propto p(y |\mathbf{w}, \mathbf{x}) p(\mathbf{w})
+\]</span>
+Remember that the posterior mode is defined as:
+<span class="math display">\[
+\textrm{argmax}_\mathbf{w} p(\mathbf{w}|\mathcal{D}) =  \textrm{argmax}_\mathbf{w} \prod_{n=1}^N p(y_n |\mathbf{w}, \mathbf{x}_n) p(\mathbf{w})
+\]</span>
+In the above equation, we are using that fact that multiplicative constants do not affect the position of global optima.</p>
+Remember also that in ML we always prefer to work with the log-likelihood because the log simplifies many pdf expressions. Luckily applying logs to our probabilistic loss function also does not affect the position of the global optima. That is, we have that:
+<span class="math display">\[
+\textrm{argmax}_\mathbf{w} \log p(\mathbf{w}|\mathcal{D}) =  \textrm{argmax}_\mathbf{w} \underbrace{\sum_{n=1}^N \log p(y_n | \mathbf{x}_n, \mathbf{w})}_{\text{joint log-likelihood}} + \log p(\mathbf{w}),
+\]</span>
+Now if the prior is Gaussian, let’s say:
+<span class="math display">\[
+\mathbf{w}\sim \mathcal{N}(\mathbf{m}, \mathbf{S})
+\]</span>
+where <span class="math inline">\(\mathbf{w}\in \mathbb{R}^D\)</span>, then the log prior will simplify nicely:
 <span class="math display">\[\begin{aligned}
-\underbrace{\mathbb{E}_{(\mathbf{x}, y), \mathcal{D}}\left[ (y- f_\mathbf{w}(\mathbf{x}))^2\right]}_{\text{Generalization Error}} =&amp; \mathbb{E}_{\mathbf{x}}\underbrace{\mathrm{Var}[y|\mathbf{x}]}_{\text{Observation Noise}}\\
-&amp; + \mathbb{E}_{\mathbf{x}}[(\underbrace{\mathbb{E}_{y|\mathbf{x}}[y|\mathbf{x}]}_{\text{Average true $y$}\\ \text{over noisy observations}} - \underbrace{\mathbb{E}_\mathcal{D}[f_\mathbf{w}(\mathbf{x})]}_{\text{Average prediction}\\\text{over all possible training sets}})^2]\\
-&amp;+\mathbb{E}_{\mathbf{x}} \underbrace{\mathrm{Var}[f_\mathbf{w}(\mathbf{x})]}_{\text{Variance of Model}}\\
-&amp;= \text{Observation Noise} + \text{Model Bias} + \text{Model Variance}
+\textrm{argmax}_\mathbf{w} \log p(\mathbf{w}|\mathcal{D}) =&amp;  \textrm{argmax}_\mathbf{w} \underbrace{\sum_{n=1}^N \log p(y_n | \mathbf{x}_n, \mathbf{w})}_{\text{joint log-likelihood}} + \log p(\mathbf{w})\\
+=&amp;\textrm{argmax}_\mathbf{w} \underbrace{\sum_{n=1}^N \log p(y_n | \mathbf{x}_n, \mathbf{w})}_{\text{joint log-likelihood}} \\
+&amp;+ \log \frac{1}{\sqrt{(2\pi)^D \mathbf{det}(\Sigma)}} + \log\mathrm{exp}\left\{ - \frac{1}{2}(\mathbf{w} - \mathbf{m})^\top \mathbf{S}^{-1}(\mathbf{w} - \mathbf{m})\right\}\\
+=&amp;\textrm{argmax}_\mathbf{w} \underbrace{\sum_{n=1}^N \log p(y_n | \mathbf{x}_n, \mathbf{w})}_{\text{joint log-likelihood}} + \log C  - \frac{1}{2}(\mathbf{w} - \mathbf{m})^\top \mathbf{S}^{-1}(\mathbf{w} - \mathbf{m})
 \end{aligned}\]</span>
-<p>From the math, we see that we have three reasons to be uncertain about our model predictions:
-1. <strong>the observation noise</strong> – even if we are 100% certain that we have the right model, our prediction can still be wrong due to noise
-2. <strong>model bias</strong> – we could have been wildly wrong in our guess of the form of the model (e.g. assuming linear function when modeling quadratic data)
-3. <strong>model variance</strong> – the number of data points is insufficient to uniquely determine the model</p>
+Now if we further assume that the mean <span class="math inline">\(\mathbf{m}\)</span> is zero and the covariance matrix <span class="math inline">\(\mathbf{S}\)</span> is diagonal, i.e. <span class="math inline">\(\mathbf{S} = \left[\begin{array}{cc} s &amp; 0\\ 0 &amp; s \end{array} \right]\)</span>, the the log prior will look even simpler:
+<span class="math display">\[\begin{aligned}
+\textrm{argmax}_\mathbf{w} \log p(\mathbf{w}|\mathcal{D}) &amp;= \textrm{argmax}_\mathbf{w} \underbrace{\sum_{n=1}^N \log p(y_n | \mathbf{x}_n, \mathbf{w})}_{\text{joint log-likelihood}} + \log C  - \frac{1}{2}(\mathbf{w} - \mathbf{m})^\top \mathbf{S}^{-1}(\mathbf{w} - \mathbf{m})\\
+&amp;=\textrm{argmax}_\mathbf{w} \underbrace{\sum_{n=1}^N \log p(y_n | \mathbf{x}_n, \mathbf{w})}_{\text{joint log-likelihood}} + \log C  - \frac{1}{2}(\mathbf{w})^\top\left(\frac{1}{s} I_{2\times 2}\right)(\mathbf{w})\\
+&amp;= \textrm{argmax}_\mathbf{w} \underbrace{\sum_{n=1}^N \log p(y_n | \mathbf{x}_n, \mathbf{w})}_{\text{joint log-likelihood}} + \log C  - \frac{1}{2s}(\mathbf{w})^\top(\mathbf{w})\\
+&amp;= \textrm{argmax}_\mathbf{w} \underbrace{\sum_{n=1}^N \log p(y_n | \mathbf{x}_n, \mathbf{w})}_{\text{joint log-likelihood}} + \log C  - \underbrace{\frac{1}{2s}}_{\lambda}\underbrace{\|\mathbf{w}\|_2^2}_{\text{$\ell_2$ regularization}}\\
+&amp;\equiv \textrm{argmax}_\mathbf{w} \underbrace{\sum_{n=1}^N \log p(y_n | \mathbf{x}_n, \mathbf{w})}_{\text{joint log-likelihood}} - \underbrace{\frac{1}{2s}}_{\lambda}\underbrace{\|\mathbf{w}\|_2^2}_{\text{$\ell_2$ regularization}}\\
+\end{aligned}\]</span>
+<p>In the last line of our derivation, we dropped the constant <span class="math inline">\(\log C\)</span> since additive constants do not change the location of the optima.</p>
 </div>
-<div id="the-bias-variance-trade-off-in-machine-learning" class="section level2 hasAnchor" number="5.6">
-<h2><span class="header-section-number">5.6</span> The Bias-Variance Trade-off in Machine Learning<a href="what-matters-in-ml-besides-prediction.html#the-bias-variance-trade-off-in-machine-learning" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p>One reason we want to work with the formalism of the generalization error is that by decomposing the generalization error, we see how we can reduce our uncertainty in our predictions.</p>
-<p>Immediately, we see that there is nothing we can do to reduce generalization error arising from observation noise – this error is <strong><em>irreducible</em></strong>.</p>
-<p>We can, however, choose our model so we have some control over model bias and model variance – these errors are <strong><em>reducible</em></strong>.</p>
-<p>Unfortunately, generally speaking, when we reduce model bias by making our models more complex, the complexity increases model variance (and vice versa):</p>
-<p><img src="https://i.imgur.com/lUDZq5r.jpg" /></p>
-<div id="examples-of-the-bias-variance-trade-off" class="section level3 hasAnchor" number="5.6.1">
-<h3><span class="header-section-number">5.6.1</span> Examples of the Bias-Variance Trade-off<a href="what-matters-in-ml-besides-prediction.html#examples-of-the-bias-variance-trade-off" class="anchor-section" aria-label="Anchor link to header"></a></h3>
-<p>Many modification we perform on machine models are frequently just ways to manage the Bias-Variance Trade-off.</p>
-<ol style="list-style-type: decimal">
-<li><strong>Regularization:</strong> adding a penalty term to the MSE loss introduces bias (reduces the ability of the model to fit the data), in order to reduce variance (by biasing the optimization towards simpler models)</li>
-<li><strong>Ensembling:</strong> creating a large set of very different complex models (low bias but high variance), and then reducing the variance by average the model predictions</li>
-<li><strong>Boosting:</strong> iteratively making a simple base model (high bias but low variance) more complex and thereby reducing the bias without significantly increasing the variance</li>
-</ol>
+<div id="law-of-large-numbers-for-bayesian-inference" class="section level3 hasAnchor" number="15.2.2">
+<h3><span class="header-section-number">15.2.2</span> Law of Large Numbers for Bayesian Inference<a href="the-math-of-posterior-inference.html#law-of-large-numbers-for-bayesian-inference" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>In general, in Bayesian inference we are <strong>less interested asymptotic behavior</strong>. But the properties of the asymptotic distribution of the posterior can be useful.</p>
+<p><strong>Theorem: (Berstein-von Mises</strong>)</p>
+<p>“Under some conditions, as <span class="math inline">\(N\to \infty\)</span> the posterior distribution converges to a Gaussian distribution centred at the MLE with covariance matrix given by a function of the Fisher information matrix at the true population parameter value.”</p>
+<p><strong>In English: Why Should You Care About This Theorem?</strong>
+1. The posterior point estimates (like MAP) approach the MLE, with large samples sizes.
+2. It may be valid to approximate an unknown posterior with a Gaussian, with large samples sizes. This will become a very important idea for Bayesian Logistic Regression!</p>
+</div>
+</div>
+<div id="bayesian-logistic-regression" class="section level2 hasAnchor" number="15.3">
+<h2><span class="header-section-number">15.3</span> Bayesian Logistic Regression<a href="the-math-of-posterior-inference.html#bayesian-logistic-regression" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>For Bayesian linear regression with Gaussian likelihood and Gaussian prior, we can derive all the marginal and conditional pdfs analytically – they are all Gaussians! This property – that the posterior pdf form is known and determined by the likelihood and prior – is called <strong><em>conjugacy</em></strong>, in particular, we call the pair of compatible likelihood and prior <strong><em>conjugate</em></strong>.</p>
+<p>At this point, you might be mislead into thinking that Bayesian modeling involves a bunch of analytic derivations – working with <strong><em>conjugate pairs</em></strong>. Unfortunately, this is not the case! For most Bayesian models, the marginal and conditional distributions of interest cannot be analytically derived or evey evaluated – inference in Bayesian modeling is largely <strong><em>approximate</em></strong> and <strong><em>computational</em></strong>.</p>
+<p>In fact, Bayesian versions of very common simple models can already yield intractable inference!</p>
+<p>Let’s recall the likelihood of logistic regression:
+<span class="math display">\[
+p(y|\mathbf{w}, \mathbf{x}) = \sigma(\mathbf{w}^\top\mathbf{x})^y (1 - \sigma(\mathbf{w}^\top\mathbf{x}))^{1-y}.
+\]</span>
+Now, let’s again choose a Gaussian prior for <span class="math inline">\(\mathbf{w}\)</span>:
+<span class="math display">\[
+\mathbf{w} \sim \mathcal{N}(\mathbf{m}, \mathbf{S}).
+\]</span></p>
+What would the posterior of Bayesian logistic regression look like?
+<span class="math display">\[\begin{aligned}
+p(\mathbf{w}|y, \mathbf{x}) &amp;\propto p(y|\mathbf{w}, \mathbf{x})p(\mathbf{w})\\
+=&amp; \sigma(\mathbf{w}^\top\mathbf{x})^y (1 - \sigma(\mathbf{w}^\top\mathbf{x}))^{1-y}\frac{1}{\sqrt{(2\pi)^D \mathbf{det}(\Sigma)}} \mathrm{exp}\left\{ - \frac{1}{2}(\mathbf{w} - \mathbf{m})^\top \mathbf{S}^{-1}(\mathbf{w} - \mathbf{m})\right\}\\
+=&amp; \frac{1}{\sqrt{(2\pi)^D \mathbf{det}(\Sigma)}} \left(\frac{1}{1 + \mathrm{exp}\{-\mathbf{w}^\top\mathbf{x}\}}\right)^y\left(1-\frac{1}{1 + \mathrm{exp}\{-\mathbf{w}^\top\mathbf{x}\}}\right)^{1-y}\\
+&amp;* \mathrm{exp}\left\{ - \frac{1}{2}(\mathbf{w} - \mathbf{m})^\top \mathbf{S}^{-1}(\mathbf{w} - \mathbf{m})\right\}
+\end{aligned}\]</span>
+<p>Does this look like a pdf that you know – in particular, does this look like a Gaussian pdf?</p>
+<p>It turns out, the pdf posterior of Bayesian logistic regression doens’t have an easy known form – that is, is not the pdf of a RV who’s moment generating functions we know. In this case, we say that the likelihood and prior in Bayesian Logistic Regression is <strong><em>non-conjugate</em></strong>.</p>
+<p>But why do we care that we recognize the posterior as the pdf of a “named” distribution?</p>
+<p><strong>What’s Hard About Bayesian Inference?</strong>
+In non-Bayesian probabilistic ML, your primary math task is <em>optimization</em>, that is, you spend your time writing down objective functions, finding their gradients (using <code>autograd</code>) and then making gradient descent converge to a reasonable optimum.</p>
+<p>In Bayesian ML, you have two primary math tasks:
+1. <strong>(Inference)</strong> sampling from priors, posteriors, prior predictives and posterior predictives
+2. <strong>(Evaluation)</strong> computing integrals expressing the log-likelihood of train and test data under the posterior and the log-likelihood of train and test data under the prior</p>
+<p>Each task – sampling and integration – is incredibly mathematically and computationally difficult! You will see on Tuesday that even sampling from known (“named”) distributions is an incredbily complex problem!</p>
+<p><strong>Why Should You Care?</strong>
+In practice, for every problem you have to choose a modeling paradigm that suits the characteristics and constraints of the problem as well as suits your goals.</p>
+<p>When you are choosing between Bayesian and non-Bayesian paradigms, you know that one trade-off you always have to weight is between the relative easy of optimization (<code>autograd</code> + gradient descent) and the computational complexity of sampling and the computational intractability of integration!</p>
+<p>In short, you need to know what your’re getting into when you go Bayesian and what value being Bayesian brings you!</p>
 
-</div>
 </div>
 </div>
             </section>
@@ -407,8 +470,8 @@ The empirical variance of our prediction <span class="math inline">\(\hat{y}\)</
           </div>
         </div>
       </div>
-<a href="what-are-probablistic-and-non-probablistic-regression.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
-<a href="what-is-logistic-regression.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+<a href="bayesain-vs-frequentist-inference.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="whats-hard-about-sampling.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>
@@ -439,7 +502,7 @@ gitbook.start({
 "size": 2
 },
 "edit": {
-"link": "https://github.com/rstudio/bookdown-demo/edit/master/04-What-Matters-in_ML.Rmd",
+"link": "https://github.com/rstudio/bookdown-demo/edit/master/14-Math-of-Posteriors.Rmd",
 "text": "Edit"
 },
 "history": {

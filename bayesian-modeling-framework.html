@@ -4,18 +4,18 @@
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>Chapter 5 What Matters in ML Besides Prediction? | Notes for CS181: Machine Learning</title>
+  <title>Chapter 13 Bayesian Modeling Framework | Notes for CS181: Machine Learning</title>
   <meta name="description" content="This is a set of note for CS181: Machine Learning (Spring 2023)" />
   <meta name="generator" content="bookdown 0.33 and GitBook 2.6.7" />
 
-  <meta property="og:title" content="Chapter 5 What Matters in ML Besides Prediction? | Notes for CS181: Machine Learning" />
+  <meta property="og:title" content="Chapter 13 Bayesian Modeling Framework | Notes for CS181: Machine Learning" />
   <meta property="og:type" content="book" />
   
   <meta property="og:description" content="This is a set of note for CS181: Machine Learning (Spring 2023)" />
   <meta name="github-repo" content="rstudio/bookdown-demo" />
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="Chapter 5 What Matters in ML Besides Prediction? | Notes for CS181: Machine Learning" />
+  <meta name="twitter:title" content="Chapter 13 Bayesian Modeling Framework | Notes for CS181: Machine Learning" />
   
   <meta name="twitter:description" content="This is a set of note for CS181: Machine Learning (Spring 2023)" />
   
@@ -30,8 +30,8 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   
   
-<link rel="prev" href="what-are-probablistic-and-non-probablistic-regression.html"/>
-<link rel="next" href="what-is-logistic-regression.html"/>
+<link rel="prev" href="the-math-behind-bayesian-regression.html"/>
+<link rel="next" href="bayesain-vs-frequentist-inference.html"/>
 <script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
@@ -315,91 +315,101 @@
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="what-matters-in-ml-besides-prediction" class="section level1 hasAnchor" number="5">
-<h1><span class="header-section-number">Chapter 5</span> What Matters in ML Besides Prediction?<a href="what-matters-in-ml-besides-prediction.html#what-matters-in-ml-besides-prediction" class="anchor-section" aria-label="Anchor link to header"></a></h1>
-<p><img src="https://i.imgur.com/xDR9VQd.png" /></p>
-<div id="what-is-machine-learning-revisited" class="section level2 hasAnchor" number="5.1">
-<h2><span class="header-section-number">5.1</span> What is Machine Learning? Revisited<a href="what-matters-in-ml-besides-prediction.html#what-is-machine-learning-revisited" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p>In Lecture #2 we defined machine learning as learning the parameters of function (or of a distribution, if we are being probabilistic) that best fits with observed data. This definition needs refinement! In reality, finding parameters is just sub-goal of a much more complex goal:</p>
-<p><img src="https://i.imgur.com/ecU0DQS.png" /></p>
-<p><strong>What does “doing Machine Learning” look like?</strong> The short answer: it looks like making and justifying a sequence of <strong><em>choices</em></strong>, while making our assumptions and biases as explicit as possible:</p>
+<div id="bayesian-modeling-framework" class="section level1 hasAnchor" number="13">
+<h1><span class="header-section-number">Chapter 13</span> Bayesian Modeling Framework<a href="bayesian-modeling-framework.html#bayesian-modeling-framework" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<p><img src="https://i.imgur.com/HMKpGFK.png" /></p>
+<div id="components-of-machine-learning-reasoning" class="section level2 hasAnchor" number="13.1">
+<h2><span class="header-section-number">13.1</span> Components of Machine Learning Reasoning<a href="bayesian-modeling-framework.html#components-of-machine-learning-reasoning" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>There are three important components of machine learning reasoning, regardless of whether you are a theoretician, practioner or student:</p>
 <ol style="list-style-type: decimal">
-<li><p><em>Choosing</em> a training data set <span class="math inline">\(\mathcal{D}\)</span>.
-<strong>Question:</strong> What assumptions do we make when we make this choice?</p></li>
-<li><p><em>Choosing</em> a model for the trend in the data <span class="math inline">\(f\)</span> or for the distribution of the data (trend and noise), i.e. the likelihood, <span class="math inline">\(p(y \vert f, \theta)\)</span>
-<strong>Question:</strong> What assumptions do we make when we make this choice?</p></li>
-<li><p><em>Choosing</em> a loss function – i.e. a way to measure the fit of <span class="math inline">\(f\)</span> (and potentially <span class="math inline">\(\theta\)</span>)
-<strong>Question:</strong> What assumptions do we make when we make this choice?</p></li>
-<li><p><em>Choosing</em> a way to optimize the loss function
-<strong>Question:</strong> What assumptions do we make when we make this choice?</p></li>
-<li><p><em>Choosing</em> a way to evaluate the model we learned – we may choose to evaluate the model using a different metric than the loss function!
-<strong>Question:</strong> What assumptions do we make when we make this choice?</p></li>
+<li><p><strong>Low level reasoning:</strong> you need to be technically fluent in a specific set of mathematical notation, manipulations, coding paradigms and frameworks to reason about the low level details of models.</p>
+<ul>
+<li><em>Dervivation:</em> are the math formulae correctly derived?</li>
+<li><em>Implementation:</em> is your code logical and bug free?</li>
+<li><em>Computation:</em> is your computation numerically stable, efficient and correct (e.g. did you optimize your model)?</li>
+</ul>
+<p><strong><em>Examples:</em></strong></p>
+<ul>
+<li>you need to be able to verify the correctness of the gradient formula for logistic regression instead of just copying it from somewhere.</li>
+<li>you need to be able to do backprop or reverse mode autodiff by hand (and implement it from scratch), so you debug issue that arise in <code>pytorch</code> autodifferentiation of computational graphs (they will arise!!).</li>
+<li>you need to be able to verify the correctness of the formula for the posterior distribution in Bayesian linear regression (with Gaussian noise and Gaussian likelihood) instead of copying it from somewhere.</li>
+</ul>
+<p><strong><em>Why you care:</em></strong> You need low level reasoning to make models that work <em>correctly</em> and to fix your models when they break!</p></li>
+<li><p><strong>High level reasoning:</strong> you need to be able to chain a complex sequence of concepts and facts together to deductively reason about the emergent properties of models.</p>
+<ul>
+<li><em>Inductive bias of models:</em> what types of properties are inherent or more likely in your learnt models given your model assumptions?</li>
+<li><em>Model comparison:</em> in what ways do the inductive biases of models differ?</li>
+<li><em>Model evaluation:</em> in what ways can we measure the inductive biases of models (e.g. what do our metrics really measure)?</li>
+</ul>
+<p><strong><em>Examples:</em></strong></p>
+<ul>
+<li>you need to be able to reason about how your design choices affect emergent properties of your model (bias, variance, uncertainty, overfitting, underfitting, interpretability).</li>
+<li>you need to be able to reasons about the relative strengths and weweaknesses of model in comparison.</li>
+<li>you need to be able to choose the right metric to measure the right aspects of model inductive bias</li>
+</ul>
+<p><strong><em>Why you care:</em></strong> You need high level reasoning to design new models and discover understand model behaviors.</p></li>
+<li><p><strong>Task level reasoning:</strong> you need to be able to reason about model properties in the context of a task or an end goal.</p>
+<ul>
+<li><em>Task performance:</em> what does the inductive bias of your model imply about its task performance?</li>
+<li><em>Task-based evaluation:</em> do our metrics capture important aspects of task performance?</li>
+</ul>
+<p><strong><em>Why you care:</em></strong> You need task level reasoning to make tech that people care about and won’t get you sued.</p></li>
 </ol>
-<p><strong>What does a Machine Learning product look like?</strong> The short answer: it looks like a technical artifact as well as a recommended policy to guide the appropriate, ethical and responsible usage of it (and potentially much more!).</p>
-<p><img src="https://i.imgur.com/Wa7xvGm.png" /></p>
-<p>For example, see <a href="https://arxiv.org/pdf/1810.03993.pdf">Model Cards for Model Reporting</a></p>
+<p>It’s hard to practice all three – reflect frequently on what you feel like you need to work on and we are here to help!</p>
 </div>
-<div id="what-are-we-uncertain-about" class="section level2 hasAnchor" number="5.2">
-<h2><span class="header-section-number">5.2</span> What Are We Uncertain About?<a href="what-matters-in-ml-besides-prediction.html#what-are-we-uncertain-about" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p>If we really work with the idea that everything in machine learning is a choice, including the training data, this means that we could have chosen a different training data set. For example: if we collected our training data from patients in one hospital, we can ask what would have happened if we collected data from a different hospital?</p>
-<p>Generally speaking, data sets collected at different times, from different locations or from different populations will be slightly (or significantly) different. Thus, the functions <span class="math inline">\(f\)</span> we learn on these datasets will differ and these different functions will produce different predictions for the same test point!</p>
-<p>So, we should be uncertain about:
-1. <strong>(Math)</strong> the function <span class="math inline">\(f\)</span> we learned (e.g. the parameters <span class="math inline">\(\mathbf{w}\)</span> for <span class="math inline">\(f\)</span> or the function <span class="math inline">\(f\)</span> itself when our model is non-parametric)
-2. <strong>(Application)</strong> our interpretation of <span class="math inline">\(f\)</span>
-3. <strong>(Math)</strong> our prediction <span class="math inline">\(\hat{y}\)</span> for a new point <span class="math inline">\(\mathbf{x}\)</span>
-4. <strong>(Application)</strong> our recommendation for how to make decisions based on our model</p>
-<p><strong>Question:</strong> Why do we care about uncertainty?</p>
-</div>
-<div id="where-is-uncertainty-coming-from" class="section level2 hasAnchor" number="5.3">
-<h2><span class="header-section-number">5.3</span> Where is Uncertainty Coming From?<a href="what-matters-in-ml-besides-prediction.html#where-is-uncertainty-coming-from" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p>Generally speaking:
-1. uncertainty in <span class="math inline">\(f\)</span> comes from us not having enough data to uniquely determine a function <span class="math inline">\(f\)</span>, this could be because of a combination of the below
-- <span class="math inline">\(f\)</span> is a complex model (e.g. lots of parameters) compared to the number of training data points (the model is under determined)
-- the data is very noisy and there are very few observations (so that the trend isn’t clear)
-2. uncertainty in our prediction <span class="math inline">\(\hat{y}\)</span> comes from a combination of the above:
-- uncertainty in <span class="math inline">\(f\)</span> – if we aren’t sure about <span class="math inline">\(f\)</span> we can’t be sure about <span class="math inline">\(\hat{y}\)</span>
-- noise in data – even if we are 100% certain that we have the right <span class="math inline">\(f\)</span>, we can still be uncertain about the prediction <span class="math inline">\(\hat{y}\)</span> due to observation noise</p>
-<p><strong>Question:</strong> Why do we care about what’s causing uncertainty?</p>
-</div>
-<div id="how-do-we-compute-uncertainty" class="section level2 hasAnchor" number="5.4">
-<h2><span class="header-section-number">5.4</span> How Do We Compute Uncertainty?<a href="what-matters-in-ml-besides-prediction.html#how-do-we-compute-uncertainty" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p>If we make some strong assumptions about <span class="math inline">\(f\)</span>, as well as the distribution of the data, we can analytically compute the uncertainty in <span class="math inline">\(f\)</span> as well as the uncertainty in <span class="math inline">\(\hat{y}\)</span>.</p>
-<p>Realistically, we often empirically estimate the uncertainty in <span class="math inline">\(f\)</span> and <span class="math inline">\(\hat{y}\)</span> through simulating drawing new training data sets by resampling our existing data – this is called <em>bootstrapping</em>.</p>
-<p>For the different bootstrap training data sets, we learn different functions <span class="math inline">\(f\)</span> and make different predictions <span class="math inline">\(\hat{y}\)</span>. The empirical variance of learnt parameters <span class="math inline">\(\mathbf{w}\)</span> of <span class="math inline">\(f\)</span> gives us an estimate of the <em>confidence interval</em> of our estimate of <span class="math inline">\(\mathbf{w}\)</span>.
-The empirical variance of our prediction <span class="math inline">\(\hat{y}\)</span> gives us an estimate of the <em>predictive interval</em>.</p>
-</div>
-<div id="mathematizing-uncertainty-starting-with-bias-and-variance" class="section level2 hasAnchor" number="5.5">
-<h2><span class="header-section-number">5.5</span> Mathematizing Uncertainty: Starting with Bias and Variance<a href="what-matters-in-ml-besides-prediction.html#mathematizing-uncertainty-starting-with-bias-and-variance" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p>So far we’ve been describing uncertainty purely in intuitive terms. In order to quantify and analyze uncertainty, we need mathematical formalism!</p>
-<p>One way to formalize our uncertainty over our prediction is to reason about why our prediction might be wrong. We do so by defining and decomposing the <em>generalization error</em> of our model.</p>
+<div id="bayesian-modeling-paradigm" class="section level2 hasAnchor" number="13.2">
+<h2><span class="header-section-number">13.2</span> Bayesian Modeling Paradigm<a href="bayesian-modeling-framework.html#bayesian-modeling-paradigm" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p><strong>Modeling noise:</strong> We start with modeling both the data trend and the observation noise:
+<span class="math display">\[y = f_\mathbf{w}(\mathbf{x}) + \epsilon,\; \epsilon \sim p(\epsilon),\]</span>
+giving us a likelihood <span class="math inline">\(p(y | \mathbf{x}, \mathbf{w})\)</span>.</p>
+<blockquote>
+<p><em>Example:</em> Let’s pick a Gaussian likelihood (i.e. additive Gaussian noise) for linear regression:
+<span class="math display">\[ y | \mathbf{x}, \mathbf{w} \sim \mathcal{N}(\mathbf{w}^\top \mathbf{x}, 0.5)\]</span>
+where <span class="math inline">\(\mathbf{w} = [w_0\;\; w_1]^\top\)</span> is the vector consisting of the slope <span class="math inline">\(w_1\)</span> and y-intercept <span class="math inline">\(w_0\)</span>.</p>
+</blockquote>
+<p><strong>Modeling belief:</strong> We then encode our beliefs about <span class="math inline">\(\mathbf{w}\)</span> as well as our uncertainty in a distribution, the <em>prior over <span class="math inline">\(\mathbf{w}\)</span></em>: <span class="math inline">\(p(\mathbf{w})\)</span>.</p>
+<blockquote>
+<p><em>Example:</em> Let’s pick Gaussian piors for <span class="math inline">\(w_0, w_1\)</span>.
+<span class="math display">\[w_0 \sim \mathcal{N}(0, 0.5),\;\;\; w_1 \sim \mathcal{N}(0, 1)\]</span>
+Since the <span class="math inline">\(p(w_0), p(w_1)\)</span> are both univariate Gaussians and we’ve assumed in our prior that they are independent, the joint distribution over <span class="math inline">\(w_0\)</span> and <span class="math inline">\(w_1\)</span> is a bivariate Gaussian with mean <span class="math inline">\(m = [0\;\; 0]^\top\)</span> and covariance matrix <span class="math inline">\(S = \left[\begin{array}{cc} 0.5 &amp; 0\\ 0 &amp; 1 \end{array} \right]\)</span>:
+<span class="math display">\[
+w\sim \mathcal{N}\left([0\;\; 0]^\top, \left[\begin{array}{cc} 0.5 &amp; 0\\ 0 &amp; 1 \end{array} \right] \right).
+\]</span></p>
+<p><strong>Question:</strong> What beliefs do our priors translate into?</p>
+</blockquote>
+<p><strong>Update belief using data:</strong> We use Baye’s rule to derive the <em>posterior</em> over <span class="math inline">\(\mathbf{w}\)</span>, <span class="math inline">\(p(\mathbf{w}| y, \mathbf{x})\)</span>, which gives us the likelihood of a model <span class="math inline">\(\mathbf{w}\)</span> given the observed data:
+<span class="math display">\[
+p(\mathbf{w}| y, \mathbf{x}) \propto p(y| \mathbf{w}, \mathbf{x}) p(\mathbf{w})
+\]</span></p>
+<p><img src="https://i.imgur.com/D2RDFh2.jpg" /></p>
+<blockquote>
+<p><em>Example:</em> Given a training set, we can show that the posterior <span class="math inline">\(p(\mathbf{w} | \mathbf{y}, \mathbf{X})\)</span> is a bivariate Gaussian with mean <span class="math inline">\(\mu\)</span> and covariance <span class="math inline">\(\Sigma\)</span> defined as below:</p>
 <span class="math display">\[\begin{aligned}
-\underbrace{\mathbb{E}_{(\mathbf{x}, y), \mathcal{D}}\left[ (y- f_\mathbf{w}(\mathbf{x}))^2\right]}_{\text{Generalization Error}} =&amp; \mathbb{E}_{\mathbf{x}}\underbrace{\mathrm{Var}[y|\mathbf{x}]}_{\text{Observation Noise}}\\
-&amp; + \mathbb{E}_{\mathbf{x}}[(\underbrace{\mathbb{E}_{y|\mathbf{x}}[y|\mathbf{x}]}_{\text{Average true $y$}\\ \text{over noisy observations}} - \underbrace{\mathbb{E}_\mathcal{D}[f_\mathbf{w}(\mathbf{x})]}_{\text{Average prediction}\\\text{over all possible training sets}})^2]\\
-&amp;+\mathbb{E}_{\mathbf{x}} \underbrace{\mathrm{Var}[f_\mathbf{w}(\mathbf{x})]}_{\text{Variance of Model}}\\
-&amp;= \text{Observation Noise} + \text{Model Bias} + \text{Model Variance}
+\mu &amp;= \left(S^{-1} + 2\mathbf{X}^\top\mathbf{X}\right)^{-1} \left(2\mathbf{X}^\top\mathbf{y} \right)\\
+\Sigma &amp;= \left(S^{-1} + 2\mathbf{X}^\top\mathbf{X}\right)^{-1}\\
 \end{aligned}\]</span>
-<p>From the math, we see that we have three reasons to be uncertain about our model predictions:
-1. <strong>the observation noise</strong> – even if we are 100% certain that we have the right model, our prediction can still be wrong due to noise
-2. <strong>model bias</strong> – we could have been wildly wrong in our guess of the form of the model (e.g. assuming linear function when modeling quadratic data)
-3. <strong>model variance</strong> – the number of data points is insufficient to uniquely determine the model</p>
-</div>
-<div id="the-bias-variance-trade-off-in-machine-learning" class="section level2 hasAnchor" number="5.6">
-<h2><span class="header-section-number">5.6</span> The Bias-Variance Trade-off in Machine Learning<a href="what-matters-in-ml-besides-prediction.html#the-bias-variance-trade-off-in-machine-learning" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p>One reason we want to work with the formalism of the generalization error is that by decomposing the generalization error, we see how we can reduce our uncertainty in our predictions.</p>
-<p>Immediately, we see that there is nothing we can do to reduce generalization error arising from observation noise – this error is <strong><em>irreducible</em></strong>.</p>
-<p>We can, however, choose our model so we have some control over model bias and model variance – these errors are <strong><em>reducible</em></strong>.</p>
-<p>Unfortunately, generally speaking, when we reduce model bias by making our models more complex, the complexity increases model variance (and vice versa):</p>
-<p><img src="https://i.imgur.com/lUDZq5r.jpg" /></p>
-<div id="examples-of-the-bias-variance-trade-off" class="section level3 hasAnchor" number="5.6.1">
-<h3><span class="header-section-number">5.6.1</span> Examples of the Bias-Variance Trade-off<a href="what-matters-in-ml-besides-prediction.html#examples-of-the-bias-variance-trade-off" class="anchor-section" aria-label="Anchor link to header"></a></h3>
-<p>Many modification we perform on machine models are frequently just ways to manage the Bias-Variance Trade-off.</p>
-<ol style="list-style-type: decimal">
-<li><strong>Regularization:</strong> adding a penalty term to the MSE loss introduces bias (reduces the ability of the model to fit the data), in order to reduce variance (by biasing the optimization towards simpler models)</li>
-<li><strong>Ensembling:</strong> creating a large set of very different complex models (low bias but high variance), and then reducing the variance by average the model predictions</li>
-<li><strong>Boosting:</strong> iteratively making a simple base model (high bias but low variance) more complex and thereby reducing the bias without significantly increasing the variance</li>
-</ol>
+<p>where <span class="math inline">\(\mathbf{y}\)</span> is the vector of target values, <span class="math inline">\(\mathbf{X}\)</span> is the augmented input matrix for the training data set and <span class="math inline">\(S = \left[\begin{array}{cc} 0.5 &amp; 0\\ 0 &amp; 1 \end{array} \right]\)</span>.</p>
+<p>Remember that the MLE solution is <span class="math inline">\(\mathbf{w}^\mathrm{MLE} = (\mathbf{X}^\top \mathbf{X})^{-1}\mathbf{X}^\top \mathbf{y}\)</span>.</p>
+<p><strong>Question:</strong> how does our prior (mean or variance) affect our posterior (mean or variance)? How does the number of data observations affect our posterior (mean or variance)? How does the observation noise level affect our posterior (mean or variance)?
+<em>Hint:</em> Note that <span class="math inline">\(S^{-1} = \left[\begin{array}{cc} \frac{1}{0.5} &amp; 0\\ 0 &amp; \frac{1}{1} \end{array} \right]\)</span>.</p>
+</blockquote>
+<p><strong>Make Predictions Under Uncertain Belief</strong></p>
+<p>We can use models in our posterior to make predictions and quantify uncertainty:</p>
+<p><em>Posterior Predictive Sampling:</em>
+1. Sample <span class="math inline">\(\mathbf{w}^{(s)}\)</span> from posterior <span class="math inline">\(p(\mathbf{w})\)</span>
+2. Sample prediction <span class="math inline">\(y\)</span> from likelihood <span class="math inline">\(p(y | \mathbf{w}^{(s)}, \mathbf{x})\)</span>. That is, we sample a noise <span class="math inline">\(\epsilon^{(s)}\)</span> from <span class="math inline">\(p(\epsilon)\)</span> and generate:
+<span class="math display">\[
+\hat{y} = f_{\mathbf{w}^{(s)}}(\mathbf{x}) + \epsilon^{(s)}
+\]</span></p>
+<p>We can use our posterior to reason about new data – e.g. how likely is this new data given our posterior belief? We can compute the likelihood of a new data point give our training data with the following integral:
+<span class="math display">\[
+p(y^* |\mathbf{x}^*, \mathcal{D}) = \int_\mathbf{w} p(y^*, \mathbf{w}|\mathbf{x}^*, \mathcal{D}) d\mathbf{w} = \int_\mathbf{w} p(y^*|\mathbf{w}, \mathbf{x}^*)p(\mathbf{w} | \mathcal{D}) d\mathbf{w}
+\]</span>
+where <span class="math inline">\((\mathbf{x}^*, y^*)\)</span> represents new data. In the above <span class="math inline">\(p(y^* |\mathbf{x}^*, \mathcal{D})\)</span> is called the <strong><em>posterior predictive</em></strong>.</p>
+<blockquote>
+<p><strong>Question:</strong> how does our prior (mean or variance) affect our posterior predictive (mean or variance)? How does the number of data observations affect our posterior predictive (mean or variance)? How does the observation noise level affect our posterior predictive (mean or variance)?</p>
+</blockquote>
 
-</div>
 </div>
 </div>
             </section>
@@ -407,8 +417,8 @@ The empirical variance of our prediction <span class="math inline">\(\hat{y}\)</
           </div>
         </div>
       </div>
-<a href="what-are-probablistic-and-non-probablistic-regression.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
-<a href="what-is-logistic-regression.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+<a href="the-math-behind-bayesian-regression.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="bayesain-vs-frequentist-inference.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>
@@ -439,7 +449,7 @@ gitbook.start({
 "size": 2
 },
 "edit": {
-"link": "https://github.com/rstudio/bookdown-demo/edit/master/04-What-Matters-in_ML.Rmd",
+"link": "https://github.com/rstudio/bookdown-demo/edit/master/12-Bayesian-Modeling.Rmd",
 "text": "Edit"
 },
 "history": {

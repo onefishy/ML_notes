@@ -4,18 +4,18 @@
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>Chapter 5 What Matters in ML Besides Prediction? | Notes for CS181: Machine Learning</title>
+  <title>Chapter 23 The Intuition of Markov Decision Processes | Notes for CS181: Machine Learning</title>
   <meta name="description" content="This is a set of note for CS181: Machine Learning (Spring 2023)" />
   <meta name="generator" content="bookdown 0.33 and GitBook 2.6.7" />
 
-  <meta property="og:title" content="Chapter 5 What Matters in ML Besides Prediction? | Notes for CS181: Machine Learning" />
+  <meta property="og:title" content="Chapter 23 The Intuition of Markov Decision Processes | Notes for CS181: Machine Learning" />
   <meta property="og:type" content="book" />
   
   <meta property="og:description" content="This is a set of note for CS181: Machine Learning (Spring 2023)" />
   <meta name="github-repo" content="rstudio/bookdown-demo" />
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="Chapter 5 What Matters in ML Besides Prediction? | Notes for CS181: Machine Learning" />
+  <meta name="twitter:title" content="Chapter 23 The Intuition of Markov Decision Processes | Notes for CS181: Machine Learning" />
   
   <meta name="twitter:description" content="This is a set of note for CS181: Machine Learning (Spring 2023)" />
   
@@ -30,8 +30,8 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   
   
-<link rel="prev" href="what-are-probablistic-and-non-probablistic-regression.html"/>
-<link rel="next" href="what-is-logistic-regression.html"/>
+<link rel="prev" href="math-and-intuition-of-hidden-markov-models.html"/>
+
 <script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
@@ -315,89 +315,171 @@
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="what-matters-in-ml-besides-prediction" class="section level1 hasAnchor" number="5">
-<h1><span class="header-section-number">Chapter 5</span> What Matters in ML Besides Prediction?<a href="what-matters-in-ml-besides-prediction.html#what-matters-in-ml-besides-prediction" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<div id="the-intuition-of-markov-decision-processes" class="section level1 hasAnchor" number="23">
+<h1><span class="header-section-number">Chapter 23</span> The Intuition of Markov Decision Processes<a href="the-intuition-of-markov-decision-processes.html#the-intuition-of-markov-decision-processes" class="anchor-section" aria-label="Anchor link to header"></a></h1>
 <p><img src="https://i.imgur.com/xDR9VQd.png" /></p>
-<div id="what-is-machine-learning-revisited" class="section level2 hasAnchor" number="5.1">
-<h2><span class="header-section-number">5.1</span> What is Machine Learning? Revisited<a href="what-matters-in-ml-besides-prediction.html#what-is-machine-learning-revisited" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p>In Lecture #2 we defined machine learning as learning the parameters of function (or of a distribution, if we are being probabilistic) that best fits with observed data. This definition needs refinement! In reality, finding parameters is just sub-goal of a much more complex goal:</p>
-<p><img src="https://i.imgur.com/ecU0DQS.png" /></p>
-<p><strong>What does “doing Machine Learning” look like?</strong> The short answer: it looks like making and justifying a sequence of <strong><em>choices</em></strong>, while making our assumptions and biases as explicit as possible:</p>
-<ol style="list-style-type: decimal">
-<li><p><em>Choosing</em> a training data set <span class="math inline">\(\mathcal{D}\)</span>.
-<strong>Question:</strong> What assumptions do we make when we make this choice?</p></li>
-<li><p><em>Choosing</em> a model for the trend in the data <span class="math inline">\(f\)</span> or for the distribution of the data (trend and noise), i.e. the likelihood, <span class="math inline">\(p(y \vert f, \theta)\)</span>
-<strong>Question:</strong> What assumptions do we make when we make this choice?</p></li>
-<li><p><em>Choosing</em> a loss function – i.e. a way to measure the fit of <span class="math inline">\(f\)</span> (and potentially <span class="math inline">\(\theta\)</span>)
-<strong>Question:</strong> What assumptions do we make when we make this choice?</p></li>
-<li><p><em>Choosing</em> a way to optimize the loss function
-<strong>Question:</strong> What assumptions do we make when we make this choice?</p></li>
-<li><p><em>Choosing</em> a way to evaluate the model we learned – we may choose to evaluate the model using a different metric than the loss function!
-<strong>Question:</strong> What assumptions do we make when we make this choice?</p></li>
-</ol>
-<p><strong>What does a Machine Learning product look like?</strong> The short answer: it looks like a technical artifact as well as a recommended policy to guide the appropriate, ethical and responsible usage of it (and potentially much more!).</p>
-<p><img src="https://i.imgur.com/Wa7xvGm.png" /></p>
-<p>For example, see <a href="https://arxiv.org/pdf/1810.03993.pdf">Model Cards for Model Reporting</a></p>
-</div>
-<div id="what-are-we-uncertain-about" class="section level2 hasAnchor" number="5.2">
-<h2><span class="header-section-number">5.2</span> What Are We Uncertain About?<a href="what-matters-in-ml-besides-prediction.html#what-are-we-uncertain-about" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p>If we really work with the idea that everything in machine learning is a choice, including the training data, this means that we could have chosen a different training data set. For example: if we collected our training data from patients in one hospital, we can ask what would have happened if we collected data from a different hospital?</p>
-<p>Generally speaking, data sets collected at different times, from different locations or from different populations will be slightly (or significantly) different. Thus, the functions <span class="math inline">\(f\)</span> we learn on these datasets will differ and these different functions will produce different predictions for the same test point!</p>
-<p>So, we should be uncertain about:
-1. <strong>(Math)</strong> the function <span class="math inline">\(f\)</span> we learned (e.g. the parameters <span class="math inline">\(\mathbf{w}\)</span> for <span class="math inline">\(f\)</span> or the function <span class="math inline">\(f\)</span> itself when our model is non-parametric)
-2. <strong>(Application)</strong> our interpretation of <span class="math inline">\(f\)</span>
-3. <strong>(Math)</strong> our prediction <span class="math inline">\(\hat{y}\)</span> for a new point <span class="math inline">\(\mathbf{x}\)</span>
-4. <strong>(Application)</strong> our recommendation for how to make decisions based on our model</p>
-<p><strong>Question:</strong> Why do we care about uncertainty?</p>
-</div>
-<div id="where-is-uncertainty-coming-from" class="section level2 hasAnchor" number="5.3">
-<h2><span class="header-section-number">5.3</span> Where is Uncertainty Coming From?<a href="what-matters-in-ml-besides-prediction.html#where-is-uncertainty-coming-from" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p>Generally speaking:
-1. uncertainty in <span class="math inline">\(f\)</span> comes from us not having enough data to uniquely determine a function <span class="math inline">\(f\)</span>, this could be because of a combination of the below
-- <span class="math inline">\(f\)</span> is a complex model (e.g. lots of parameters) compared to the number of training data points (the model is under determined)
-- the data is very noisy and there are very few observations (so that the trend isn’t clear)
-2. uncertainty in our prediction <span class="math inline">\(\hat{y}\)</span> comes from a combination of the above:
-- uncertainty in <span class="math inline">\(f\)</span> – if we aren’t sure about <span class="math inline">\(f\)</span> we can’t be sure about <span class="math inline">\(\hat{y}\)</span>
-- noise in data – even if we are 100% certain that we have the right <span class="math inline">\(f\)</span>, we can still be uncertain about the prediction <span class="math inline">\(\hat{y}\)</span> due to observation noise</p>
-<p><strong>Question:</strong> Why do we care about what’s causing uncertainty?</p>
-</div>
-<div id="how-do-we-compute-uncertainty" class="section level2 hasAnchor" number="5.4">
-<h2><span class="header-section-number">5.4</span> How Do We Compute Uncertainty?<a href="what-matters-in-ml-besides-prediction.html#how-do-we-compute-uncertainty" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p>If we make some strong assumptions about <span class="math inline">\(f\)</span>, as well as the distribution of the data, we can analytically compute the uncertainty in <span class="math inline">\(f\)</span> as well as the uncertainty in <span class="math inline">\(\hat{y}\)</span>.</p>
-<p>Realistically, we often empirically estimate the uncertainty in <span class="math inline">\(f\)</span> and <span class="math inline">\(\hat{y}\)</span> through simulating drawing new training data sets by resampling our existing data – this is called <em>bootstrapping</em>.</p>
-<p>For the different bootstrap training data sets, we learn different functions <span class="math inline">\(f\)</span> and make different predictions <span class="math inline">\(\hat{y}\)</span>. The empirical variance of learnt parameters <span class="math inline">\(\mathbf{w}\)</span> of <span class="math inline">\(f\)</span> gives us an estimate of the <em>confidence interval</em> of our estimate of <span class="math inline">\(\mathbf{w}\)</span>.
-The empirical variance of our prediction <span class="math inline">\(\hat{y}\)</span> gives us an estimate of the <em>predictive interval</em>.</p>
-</div>
-<div id="mathematizing-uncertainty-starting-with-bias-and-variance" class="section level2 hasAnchor" number="5.5">
-<h2><span class="header-section-number">5.5</span> Mathematizing Uncertainty: Starting with Bias and Variance<a href="what-matters-in-ml-besides-prediction.html#mathematizing-uncertainty-starting-with-bias-and-variance" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p>So far we’ve been describing uncertainty purely in intuitive terms. In order to quantify and analyze uncertainty, we need mathematical formalism!</p>
-<p>One way to formalize our uncertainty over our prediction is to reason about why our prediction might be wrong. We do so by defining and decomposing the <em>generalization error</em> of our model.</p>
+<div id="review-modeling-sequential-data" class="section level2 hasAnchor" number="23.1">
+<h2><span class="header-section-number">23.1</span> Review: Modeling Sequential Data<a href="the-intuition-of-markov-decision-processes.html#review-modeling-sequential-data" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>Up to this point, we’ve always assumed that our data points are independently generated. For example, in pPCA, we have <span class="math inline">\(N\)</span> identically and independently distributed latent variables, each generating an observed variable.</p>
+<p><img src="https://i.imgur.com/XEEoJK3.jpg" /></p>
+<p>This assumption of independence of <span class="math inline">\(Z_i\)</span> and <span class="math inline">\(Z_j\)</span> allow us to factorize the <em>joint</em> complete data likelihood as:
+<span class="math display">\[
+p(Z_1, \ldots, Z_n, Y_1, \ldots, Y_N|\theta) = \prod_{n=1}^N p(Y_n, Z_n|\theta) = \prod_{n=1}^N p(Y_n | Z_n, \theta)p(Z_n)
+\]</span></p>
+<p>In Markov Models (i.e. Markov Chains, Markov Processes)and Hidden Markov Models, we assume that the order in which the data is generated matters. That is, the data is a sequence and not a set. In particular, we make the <em>Markov assumption</em>, that each variable depends only on it’s parent in the graphical model.</p>
+<p><img src="https://i.imgur.com/2lcfq67.jpg" /></p>
+<p>For example, in HMM, the Markov assumption means that
+<span class="math display">\[p(Z_n|Z_{n-1}, \ldots, Z_1, T) = p(Z_n|Z_{n-1}, T),\]</span>
+i.e. knowing <span class="math inline">\(Z_{n-1}\)</span> is sufficient to infer everything about <span class="math inline">\(Z_n\)</span>. Similarly, the Markov assumption gives us
+<span class="math display">\[p(Y_n|Z_n, O) = p(Y_n|Z_n, Z_{n-1}, \ldots, Z_1, T, O),\]</span>
+i.e. knowing <span class="math inline">\(Z_n\)</span> is sufficient to infer everything about <span class="math inline">\(Y_n\)</span>.</p>
+The Markov assumption of dependence allow us to factorize the <em>joint</em> complete data likelihood as:
 <span class="math display">\[\begin{aligned}
-\underbrace{\mathbb{E}_{(\mathbf{x}, y), \mathcal{D}}\left[ (y- f_\mathbf{w}(\mathbf{x}))^2\right]}_{\text{Generalization Error}} =&amp; \mathbb{E}_{\mathbf{x}}\underbrace{\mathrm{Var}[y|\mathbf{x}]}_{\text{Observation Noise}}\\
-&amp; + \mathbb{E}_{\mathbf{x}}[(\underbrace{\mathbb{E}_{y|\mathbf{x}}[y|\mathbf{x}]}_{\text{Average true $y$}\\ \text{over noisy observations}} - \underbrace{\mathbb{E}_\mathcal{D}[f_\mathbf{w}(\mathbf{x})]}_{\text{Average prediction}\\\text{over all possible training sets}})^2]\\
-&amp;+\mathbb{E}_{\mathbf{x}} \underbrace{\mathrm{Var}[f_\mathbf{w}(\mathbf{x})]}_{\text{Variance of Model}}\\
-&amp;= \text{Observation Noise} + \text{Model Bias} + \text{Model Variance}
+p(Z_1, \ldots, Z_n, Y_1, \ldots, Y_N|O, T) &amp;= p(Y_1, Z_1|O)\prod_{n=2}^N p(Y_n, Z_n|Z_{n-1}, O, T)\\
+&amp;= p(Y_1| Z_1, O)p(Z_1)\prod_{n=2}^N p(Y_n| Z_n, O) p(Z_n|Z_{n-1}, T)
 \end{aligned}\]</span>
-<p>From the math, we see that we have three reasons to be uncertain about our model predictions:
-1. <strong>the observation noise</strong> – even if we are 100% certain that we have the right model, our prediction can still be wrong due to noise
-2. <strong>model bias</strong> – we could have been wildly wrong in our guess of the form of the model (e.g. assuming linear function when modeling quadratic data)
-3. <strong>model variance</strong> – the number of data points is insufficient to uniquely determine the model</p>
+<p><strong>Check Your Understanding:</strong> Compare the factorization of the joint complete data likelihood of HMM to the factorization of the joint complete data likelihood of pPCA above.</p>
+<p>What is the difference between these two factorizations? Where do you see the Markov assumption coming into play?</p>
+<div id="why-model-sequential-data-dynamics" class="section level3 hasAnchor" number="23.1.1">
+<h3><span class="header-section-number">23.1.1</span> Why Model Sequential Data (Dynamics)?<a href="the-intuition-of-markov-decision-processes.html#why-model-sequential-data-dynamics" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+What is the point of modeling data as a sequence rather than a set? Often, you’ll hear the argument that data <span class="math inline">\(Y_t\)</span> observed over time <span class="math inline">\(t\)</span> (i.e. time series) naturally follow a sequential order and this ordering by time is important. Thus, we must model the dynamics of how this data changes over time:
+<span class="math display">\[\begin{aligned}
+Z_{n+1} &amp;= f_v(Z_{n}, \epsilon),\; \epsilon \sim p(\epsilon)\quad \textbf{(State Model)}\\
+Y_{n+1} &amp;= g_w(Z_{n+1}, \eta),\; \eta \sim p(\eta) \quad \textbf{(Observation Model)}
+\end{aligned}\]</span>
+<p>But why not directly model the relationship between time <span class="math inline">\(n\)</span> and the observation <span class="math inline">\(Y_n\)</span>? That is, why not learn a function to directly predict <span class="math inline">\(Y_n\)</span> given <span class="math inline">\(n\)</span>?
+<span class="math display">\[
+Y_n = h_u(n) + \xi,\; \xi \sim p(\xi)
+\]</span></p>
+<p>In the following example, the observed data is generated from a Linear Gaussian Model (a type of HMM with continuous state space and linear state and observation models with additive Gaussian noise). The observed data (grey dots) are noisy measurements of the latent data (red trend line). In blue, we visualize the latent data we inferred from the HMM; in yellow, we visualize a regression model fitted directly on the observed data.</p>
+<p><img src="https://i.imgur.com/pI5ALLJ.jpg" /></p>
+<p>We see that the regression model captures the general trend in the data – using this model to predict observations into the future would does not seem like a terrible idea.</p>
+<p>Certainly fitting the regression model is easier, in terms of the math that we need to understand, than inferring the latent states in an HMM.</p>
+<p>On the other hand, modeling the data using an HMM, gives us not only a way to forcast into the future, we also get an explicit description of how the system evolves – how the future depends on the past. The dynamics of an HMM can provide domain specific insights into the data generating process.</p>
+<p><img src="https://i.imgur.com/Tn3NrF6.jpg" /></p>
+<p>Furthermore, the relationship between the observed data <span class="math inline">\(Y_n\)</span> and the time index <span class="math inline">\(n\)</span> is often much more complex than the dynamics – the relationship between <span class="math inline">\(Y_n\)</span> and <span class="math inline">\(Z_n\)</span>, the relationship between <span class="math inline">\(Z_{n+1}\)</span> and <span class="math inline">\(Z_n\)</span>. Thus, we may do better modeling the simple dynamics rather than the complex function of <span class="math inline">\(Y_n\)</span> versus <span class="math inline">\(n\)</span>.</p>
 </div>
-<div id="the-bias-variance-trade-off-in-machine-learning" class="section level2 hasAnchor" number="5.6">
-<h2><span class="header-section-number">5.6</span> The Bias-Variance Trade-off in Machine Learning<a href="what-matters-in-ml-besides-prediction.html#the-bias-variance-trade-off-in-machine-learning" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p>One reason we want to work with the formalism of the generalization error is that by decomposing the generalization error, we see how we can reduce our uncertainty in our predictions.</p>
-<p>Immediately, we see that there is nothing we can do to reduce generalization error arising from observation noise – this error is <strong><em>irreducible</em></strong>.</p>
-<p>We can, however, choose our model so we have some control over model bias and model variance – these errors are <strong><em>reducible</em></strong>.</p>
-<p>Unfortunately, generally speaking, when we reduce model bias by making our models more complex, the complexity increases model variance (and vice versa):</p>
-<p><img src="https://i.imgur.com/lUDZq5r.jpg" /></p>
-<div id="examples-of-the-bias-variance-trade-off" class="section level3 hasAnchor" number="5.6.1">
-<h3><span class="header-section-number">5.6.1</span> Examples of the Bias-Variance Trade-off<a href="what-matters-in-ml-besides-prediction.html#examples-of-the-bias-variance-trade-off" class="anchor-section" aria-label="Anchor link to header"></a></h3>
-<p>Many modification we perform on machine models are frequently just ways to manage the Bias-Variance Trade-off.</p>
-<ol style="list-style-type: decimal">
-<li><strong>Regularization:</strong> adding a penalty term to the MSE loss introduces bias (reduces the ability of the model to fit the data), in order to reduce variance (by biasing the optimization towards simpler models)</li>
-<li><strong>Ensembling:</strong> creating a large set of very different complex models (low bias but high variance), and then reducing the variance by average the model predictions</li>
-<li><strong>Boosting:</strong> iteratively making a simple base model (high bias but low variance) more complex and thereby reducing the bias without significantly increasing the variance</li>
-</ol>
+</div>
+<div id="modeling-sequential-data-and-sequential-actions" class="section level2 hasAnchor" number="23.2">
+<h2><span class="header-section-number">23.2</span> Modeling Sequential Data and Sequential Actions<a href="the-intuition-of-markov-decision-processes.html#modeling-sequential-data-and-sequential-actions" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<div id="describing-a-dynamic-world" class="section level3 hasAnchor" number="23.2.1">
+<h3><span class="header-section-number">23.2.1</span> Describing a Dynamic World<a href="the-intuition-of-markov-decision-processes.html#describing-a-dynamic-world" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>With Markov Models (or Markov Chains, Markov Processes) and HMMs, we can describe a wide range of real-life phenomena that evolve through time. The key machine learning skill here is to be able to translate between the real-world and the model formalisms. That is, you must become fluent in:
+1. Designing state spaces, <span class="math inline">\(S\)</span>, that capture important aspects of the real-life phenomena
+2. Designing, learning and interpreting the dynamics.</p>
+<p><img src="https://i.imgur.com/B8Qih8E.jpg" /></p>
+<p>In the following example, we translate a medical study of personal fitness into a Markov Process. In this study, we are investigate the evolution of fitness in participants enrolled in a personal training program.</p>
+<p>We observe the participants’ performance on a number of physical activities and divide them into two categories: fit and unfit.</p>
+<p>Over 11 weeks, we observe how the number of fit and unfit participants change from week to week. In particular, we find that from week <span class="math inline">\(n\)</span> to week <span class="math inline">\(n+1\)</span>:
+1. 80% of participants who started the week as unfit, stayed unfit
+2. 60% of participants who started the week as fit, became unfit.</p>
+<p>We formalize our observation in the following Markov process:</p>
+<p><img src="https://i.imgur.com/iO1A9Er.jpg" /></p>
+<p><strong>Check your understanding:</strong> What design choices did we make in constructing our model? What are the pro’s and con’s of these choices? If we want to make different design choices, what additional data do we need to collect (e.g. what if we wanted a state space that had three different fitness levels)?</p>
+</div>
+<div id="acting-in-a-dynamic-world" class="section level3 hasAnchor" number="23.2.2">
+<h3><span class="header-section-number">23.2.2</span> Acting in a Dynamic World<a href="the-intuition-of-markov-decision-processes.html#acting-in-a-dynamic-world" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>While our Markov process for the fitness study captures how participant fitness level evolve, this model does not tell us why fitness evolves this way. That is, we are treating our participants as passive vessels for fitness rather than agents that actively make choices to change their worlds.</p>
+<p>If we want a more complete picture of participant behavior in our fitness study, we also need to model participant <em>actions</em>.</p>
+<p>One model for sequential data resulting from sequential decision making (action) in the real-world is a <strong><em>Markov Decision Process (MDP)</em></strong>. An MDP is defined by a set of 5 parameters, <span class="math inline">\(\{S, A, T, R, \gamma\}\)</span>:
+1. The state space, <span class="math inline">\(S\)</span>, describing properties of the real-life phenomenon under our study (e.g. fitness)
+2. The action space, <span class="math inline">\(A\)</span>, describing posible actions that agents with free will can perform.
+3. The dynamics or <em>transition</em>, <span class="math inline">\(T\)</span>, which describes the probability of transitioning to state <span class="math inline">\(s&#39;\)</span> given that the agent starts at state <span class="math inline">\(s\)</span> and performs action <span class="math inline">\(a\)</span>. That is, the transition is a function, <span class="math inline">\(T: S\times A \times S \to [0,1]\)</span>, where <span class="math inline">\(T^a(s, s&#39;) = \mathbb{P}[s&#39; | s, a]\)</span>.</p>
+<p>When the state space <span class="math inline">\(S\)</span> is finite, we often represent <span class="math inline">\(T\)</span> as a set of matrices, <span class="math inline">\(T^a \in \mathbb{R}^{|S| \times |S|}\)</span>, where <span class="math inline">\(T^a_{ij} = \mathbb{P}[s_i | s_j, a]\)</span>, for <span class="math inline">\(a\in A\)</span>.
+4. The reward function, <span class="math inline">\(R: S\times A \times S \to \mathbb{R}\)</span>, which defines the reward received by the agent by transitioning to state <span class="math inline">\(s&#39;\)</span> given that the agent starts at state <span class="math inline">\(s\)</span> and performs action <span class="math inline">\(a\)</span>. The reward function encapsulates the agent’s goals and motivations for acting.</p>
+<p><strong>Note:</strong> in some texts, the reward function is defined only in terms of the current state and the action, i.e. <span class="math inline">\(R: S\times A \to \mathbb{R}\)</span>. We can always translate a model using <span class="math inline">\(R: S\times A \times S \to \mathbb{R}\)</span> into a model using <span class="math inline">\(R: S\times A \to \mathbb{R}\)</span>. You’ll see that defining the reward as <span class="math inline">\(R: S\times A \times S \to \mathbb{R}\)</span>, gives us an intuitive advantage in the Grid World Example.
+5. The discount factor, <span class="math inline">\(\gamma\in [0,1]\)</span>, which describes how the agent prioritizes immediate versus future rewards.</p>
+<p><img src="https://i.imgur.com/Wmr732H.jpg" /></p>
+<p>In other words, a Markov Decision Process (MDP) is a Markov Process in which the agent is not simply evolving through time, but actively guiding this evolution via actions.</p>
+<p><img src="https://i.imgur.com/545lLDp.jpg" /></p>
+<p>Let’s revisit our fitness study. This time, rather than just modeling the week to week changes in the fitness levels of participants, we also model what the participants are doing to affect their own fitness levels. That is, each week, we observe if the participant is working out or not.</p>
+<p><img src="https://i.imgur.com/GszK9YM.jpg" /></p>
+<p><strong>Check your understanding:</strong> Translate the MDP formalism above into statements about our fitness study. What design choices did we make in defining this model? What are the pro’s and con’s of these choices? If we wanted to make different choices, what additional data do we need to collect, and how would these design choices affect the rest of the model?</p>
+</div>
+<div id="describing-worlds-as-mdps" class="section level3 hasAnchor" number="23.2.3">
+<h3><span class="header-section-number">23.2.3</span> Describing Worlds as MDP’s<a href="the-intuition-of-markov-decision-processes.html#describing-worlds-as-mdps" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>Note that in the fitness example, we used a graphical representation, a <em>finite state diagram</em>, for both the state space as well as the dynamics (how one state transitions to others via different actions). These diagrams are useful in designing MDP’s, since they allow us to reason easily and intuitively about the logic underlying our model.</p>
+<p>For more complex worlds, with a large number of states or actions, it becomes impractical to represent our MDP using finite state diagrams – diagrams that have a large number of nodes for states and large number of arrows for actions would be difficult to read and interpret.</p>
+<p>Here, we introduce another useful tool for graphically (and intuitively) representing changing environments – the <strong><em>grid world</em></strong>. A grid world is a bounded 2-dimensional (often discretized) environment in which the states are positions (grid-coordinates) and actions represent intended movement between positions (e.g. left, right, up, down).</p>
+<p>We can reason about the dynamics of grid worlds using analogies with physical movement. For example, if we wanted to study dynamics in which it’s impossible to move from one position to another, we can imagine this is because there is a physical barrier between the two positions. That is, grid worlds can be represented as a 2-D map, where the actions are physical movements and the dynamics are barriers to or conduits for movements.</p>
+<p>Moreover, reward functions can be graphically represented in grid worlds as goal states (states where we want to direct movement) and hazard states (states into which we want to avoid moving).</p>
+<p>In the following example grid world, we have a 2-D map with 2 rows by 3 columns of grids. We have three different types of grids: river, parking lot and forest. The different types of grids represents different types of barriers to movement and different motivations for movement.</p>
+<p><img src="https://i.imgur.com/Jo29mVW.jpg" /></p>
+<p>We use this grid world to model an example where an agent is lost in the woods and must navigate to the parking lot – our goal state. Movement through forest grids is unimpeded; moving through river grids, however, is difficult. The river has a strong north-west current – there is always some chance that you will be swept in some unwanted direction when moving through a river grid.</p>
+<p>We can formalize the dynamics of this environment as an MDP:</p>
+<p><img src="https://i.imgur.com/S0M9UqP.jpg" /></p>
+<p><strong>Check your understanding:</strong> Translate the MDP formalism above into statements about our grid world. What design choices did we make in defining this model? What are the pro’s and con’s of these choices? If we wanted to make different choices, what additional data do we need to collect, and how would these design choices affect the rest of the model?</p>
+<p>If we wanted to formalize our grid world as an MDP using <span class="math inline">\(R: S\times A \to \mathbb{R}\)</span>, how would we need to change our MDP definition?</p>
+</div>
+</div>
+<div id="modeling-sequential-decisions-planning" class="section level2 hasAnchor" number="23.3">
+<h2><span class="header-section-number">23.3</span> Modeling Sequential Decisions: Planning<a href="the-intuition-of-markov-decision-processes.html#modeling-sequential-decisions-planning" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>Now that we have choices over actions in a changing world, what actions should we take – what makes some actions better than others?</p>
+<p>In <strong><em>reinforcement learning</em></strong>, our goal is to choose actions that maximizes the cumulative reward we expect to collect over time. A entity that is interacting with our world and choosing actions according to this goal is called an <strong><em>RL agent</em></strong>.</p>
+<p>To formalize this goal, we need to formalize two notions:
+1. a formal way to “choose” actions
+2. a formal way to quantify the cumulative reward we expect to collect over time</p>
+<div id="modeling-action-choice" class="section level3 hasAnchor" number="23.3.1">
+<h3><span class="header-section-number">23.3.1</span> Modeling Action Choice<a href="the-intuition-of-markov-decision-processes.html#modeling-action-choice" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>In real-life, we choose our actions based on our position in the world. Thus, it’s natural to formalize action choice as a function <span class="math inline">\(\pi\)</span> that depends on the value of current state, <span class="math inline">\(Z_n\)</span>.</p>
+<p><strong>Check your understanding:</strong> In an MDP setting, why can’t <span class="math inline">\(\pi\)</span> depend also on the values of previous states (i.e. the history)? Can you think of a real-life scenario where the independence of <span class="math inline">\(\pi\)</span> and the history is reasonable; can you think of a real-life scenario where the independence of <span class="math inline">\(\pi\)</span> and the history is inappropriate?</p>
+<p>Given the current state <span class="math inline">\(Z_n = s\)</span>, we have two types of action choice:
+1. Deterministic - given <span class="math inline">\(s\)</span>, you always choose action <span class="math inline">\(\pi(s)\)</span>; that is, <span class="math inline">\(\pi: S \to A\)</span>.
+2. Stochastic - given <span class="math inline">\(s\)</span>, you randomly choose sample an action from some distribution <span class="math inline">\(\pi(s)\)</span>; that is, <span class="math inline">\(\pi: S \to [0,1]^{|A|}\)</span>, where <span class="math inline">\(\pi(s)\)</span> is a distribution over actions.</p>
+<p>A function <span class="math inline">\(\pi\)</span> is called a <strong><em>policy</em></strong> if
+<span class="math display">\[
+\pi: S \to A
+\]</span>
+or
+<span class="math display">\[
+\pi: S \to [0,1]^{|A|},
+\]</span>
+where <span class="math inline">\(\pi(s)\)</span> is a distribution over actions.</p>
+<p><strong>Check your understanding:</strong> Formalize the following strategy for navigating the grid world above as a policy (i.e. a function <span class="math inline">\(\pi\)</span>):</p>
+<p><em>“If I’m in the forest on the north-west side of the river, I go east; if I’m in the forest on the south-west side of the river, I go north. If I’m in the south part of the river, I swim north; if I’m in the north part of the river, I swim east. If I’m in the south-east side of the river, I go north.”</em></p>
+<p>If I start at the south-west side of the river and follow this policy, what would my trajectory (as a sequence of states and actions) look like?</p>
+</div>
+<div id="modeling-cumulative-reward" class="section level3 hasAnchor" number="23.3.2">
+<h3><span class="header-section-number">23.3.2</span> Modeling Cumulative Reward<a href="the-intuition-of-markov-decision-processes.html#modeling-cumulative-reward" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>Now that we have formalized action choice as a <em>policy</em>, we want to distinguish good policies from bad ones. Given a trajectory as a sequence of states and actions, <span class="math inline">\(\{(Z_0, A_0), (Z_1, A_1), (Z_2, A_2),\dots\}\)</span>, we quantify the <strong><em>return</em></strong> for that trajectory as:
+<span class="math display">\[
+G = R_{0} + \gamma R_{1} + \gamma^2R_{2} + \ldots = \sum_{n=0} \gamma^n R_{n }
+\]</span>
+where <span class="math inline">\(R_{n}\)</span> is the reward collected at time <span class="math inline">\(n\)</span>. Essentially, the return is the (discounted) sum of all the rewards we collected over time. Note that <span class="math inline">\(\gamma\)</span>, the discount factor of the MDP, is used in computing the return - if <span class="math inline">\(\gamma\)</span> is small, rewards collected later in time will count for less that rewards collected earlier in the trajectory.</p>
+<p><strong>Check your understanding:</strong> Why do we discount? Often we argue that discounting is needed if we allow infinite trajectories. Show that if <span class="math inline">\(\gamma = 1\)</span>, then <span class="math inline">\(G\)</span> can be undefined.</p>
+<p>Another important reason to discount is to model the tendency of natural intelligence (e.g. animals) to prioritize immediate rewards vs rewards far in the future. If <span class="math inline">\(\gamma \approx 0\)</span> what does this imply about the way an <em>RL agent</em> might choose their actions?</p>
+<p>Can you think of other reasons why discounting can be important in RL – i.e. in what other real-life applications of RL might we wish to choose <span class="math inline">\(\gamma &lt; 1\)</span>?</p>
+<div id="value-functions" class="section level4 hasAnchor" number="23.3.2.1">
+<h4><span class="header-section-number">23.3.2.1</span> Value Functions<a href="the-intuition-of-markov-decision-processes.html#value-functions" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<p>Now, we can quantify the value of a policy, starting at a particular state – the <strong><em>value function</em></strong> <span class="math inline">\(V^\pi: S\to \mathbb{R}\)</span> of an MDP is the expected return
+starting from state <span class="math inline">\(s\)</span>, and then following policy <span class="math inline">\(\pi\)</span>:
+<span class="math display">\[
+V^\pi(s) = \mathbb{E}_{\pi}[G|Z_0 = s]
+\]</span>
+The expectation above is taken over all randomnly varying quantities in <span class="math inline">\(G\)</span>.</p>
+<p><strong>Check your understanding:</strong> In a general MDP, which quantities that <span class="math inline">\(G\)</span> depends on are randomly varying? <em>Hint:</em> think about where is the randomness in your reward, transition and policy.</p>
+<p>For our grid world and the policy <span class="math inline">\(\pi\)</span> we described, explicitly write out the value function for a few states – that is, explicitly compute some expectations.</p>
+</div>
+<div id="action-value-functions" class="section level4 hasAnchor" number="23.3.2.2">
+<h4><span class="header-section-number">23.3.2.2</span> Action-Value Functions<a href="the-intuition-of-markov-decision-processes.html#action-value-functions" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<p>Rather than asking for the value of our policy starting at some state <span class="math inline">\(s\)</span>, we can also ask for the value of taking a particular action at a particular state.</p>
+<p>The <strong><em>action-value function</em></strong>, or the <span class="math inline">\(Q\)</span>-function, <span class="math inline">\(Q^\pi: S \times A \to \mathbb{R}\)</span> , quantifies the value of a policy, starting at a state <span class="math inline">\(s\)</span> and taking the action <span class="math inline">\(a\)</span>, and then following policy <span class="math inline">\(\pi\)</span>:
+<span class="math display">\[
+Q^\pi(s, a) = \mathbb{E}_\pi[G|Z_0=s, A_0 = a]
+\]</span>
+Again, the expectation above is taken over all randomnly varying quantities in <span class="math inline">\(G\)</span>.</p>
+<p><strong>Check your understanding:</strong> For our grid world and the policy <span class="math inline">\(\pi\)</span> we described, explicitly write out the <span class="math inline">\(Q\)</span>-function for a few state-action pairs – that is, explicitly compute some expectations.</p>
+</div>
+</div>
+<div id="planning-optimizing-action-choice-for-cumulative-reward" class="section level3 hasAnchor" number="23.3.3">
+<h3><span class="header-section-number">23.3.3</span> Planning: Optimizing Action Choice for Cumulative Reward<a href="the-intuition-of-markov-decision-processes.html#planning-optimizing-action-choice-for-cumulative-reward" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>In reinforcement learning, our goal is to find the policy <span class="math inline">\(\pi^*\)</span> that achieves the maximum value over all possible policies. That is, we call <span class="math inline">\(\pi^*\)</span> the <strong><em>optimal policy</em></strong> if
+<span class="math display">\[
+V^{\pi^*}(s) = \max_\pi V^{\pi}(s),\; \text{for all } s\in S.
+\]</span>
+We call <span class="math inline">\(V^{\pi^*}\)</span>, or <span class="math inline">\(V^*\)</span>, the <strong><em>optimal value function</em></strong>. We call an MDP <strong><em>solved</em></strong> when we know the optimal value function. The task of finding the optimal policy or the optimal value function is called <strong><em>planning</em></strong>.</p>
+<p><strong>Check your understanding:</strong> Right now, we don’t have any way of solving MDP’s (i.e. systemmatically finding optimal policies), but in many cases, we can reason intuitively about properties of our optimal policy. In our grid world example, write out a couple of possible policies; for each policy, simulate some trajectories (start at a fixed grid and execute a policy). Based on your simulations, what properties should an optimal policy have?</p>
+<p><em>Hint:</em> think about length of trajectory, passage through certain grids or avoidance of certain grids.</p>
 
 </div>
 </div>
@@ -407,8 +489,8 @@ The empirical variance of our prediction <span class="math inline">\(\hat{y}\)</
           </div>
         </div>
       </div>
-<a href="what-are-probablistic-and-non-probablistic-regression.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
-<a href="what-is-logistic-regression.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+<a href="math-and-intuition-of-hidden-markov-models.html" class="navigation navigation-prev navigation-unique" aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>
@@ -439,7 +521,7 @@ gitbook.start({
 "size": 2
 },
 "edit": {
-"link": "https://github.com/rstudio/bookdown-demo/edit/master/04-What-Matters-in_ML.Rmd",
+"link": "https://github.com/rstudio/bookdown-demo/edit/master/21-Intuition-of-MDP.Rmd",
 "text": "Edit"
 },
 "history": {

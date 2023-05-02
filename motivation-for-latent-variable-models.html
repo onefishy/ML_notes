@@ -4,18 +4,18 @@
 
   <meta charset="utf-8" />
   <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-  <title>Chapter 5 What Matters in ML Besides Prediction? | Notes for CS181: Machine Learning</title>
+  <title>Chapter 19 Motivation for Latent Variable Models | Notes for CS181: Machine Learning</title>
   <meta name="description" content="This is a set of note for CS181: Machine Learning (Spring 2023)" />
   <meta name="generator" content="bookdown 0.33 and GitBook 2.6.7" />
 
-  <meta property="og:title" content="Chapter 5 What Matters in ML Besides Prediction? | Notes for CS181: Machine Learning" />
+  <meta property="og:title" content="Chapter 19 Motivation for Latent Variable Models | Notes for CS181: Machine Learning" />
   <meta property="og:type" content="book" />
   
   <meta property="og:description" content="This is a set of note for CS181: Machine Learning (Spring 2023)" />
   <meta name="github-repo" content="rstudio/bookdown-demo" />
 
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="Chapter 5 What Matters in ML Besides Prediction? | Notes for CS181: Machine Learning" />
+  <meta name="twitter:title" content="Chapter 19 Motivation for Latent Variable Models | Notes for CS181: Machine Learning" />
   
   <meta name="twitter:description" content="This is a set of note for CS181: Machine Learning (Spring 2023)" />
   
@@ -30,8 +30,8 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black" />
   
   
-<link rel="prev" href="what-are-probablistic-and-non-probablistic-regression.html"/>
-<link rel="next" href="what-is-logistic-regression.html"/>
+<link rel="prev" href="the-math-of-expectation-maximization.html"/>
+<link rel="next" href="review-of-latent-variables-compression-and-clustering.html"/>
 <script src="libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.4.6/dist/fuse.min.js"></script>
 <link href="libs/gitbook-2.6.7/css/style.css" rel="stylesheet" />
@@ -315,91 +315,301 @@
           <div class="page-inner">
 
             <section class="normal" id="section-">
-<div id="what-matters-in-ml-besides-prediction" class="section level1 hasAnchor" number="5">
-<h1><span class="header-section-number">Chapter 5</span> What Matters in ML Besides Prediction?<a href="what-matters-in-ml-besides-prediction.html#what-matters-in-ml-besides-prediction" class="anchor-section" aria-label="Anchor link to header"></a></h1>
-<p><img src="https://i.imgur.com/xDR9VQd.png" /></p>
-<div id="what-is-machine-learning-revisited" class="section level2 hasAnchor" number="5.1">
-<h2><span class="header-section-number">5.1</span> What is Machine Learning? Revisited<a href="what-matters-in-ml-besides-prediction.html#what-is-machine-learning-revisited" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p>In Lecture #2 we defined machine learning as learning the parameters of function (or of a distribution, if we are being probabilistic) that best fits with observed data. This definition needs refinement! In reality, finding parameters is just sub-goal of a much more complex goal:</p>
-<p><img src="https://i.imgur.com/ecU0DQS.png" /></p>
-<p><strong>What does “doing Machine Learning” look like?</strong> The short answer: it looks like making and justifying a sequence of <strong><em>choices</em></strong>, while making our assumptions and biases as explicit as possible:</p>
-<ol style="list-style-type: decimal">
-<li><p><em>Choosing</em> a training data set <span class="math inline">\(\mathcal{D}\)</span>.
-<strong>Question:</strong> What assumptions do we make when we make this choice?</p></li>
-<li><p><em>Choosing</em> a model for the trend in the data <span class="math inline">\(f\)</span> or for the distribution of the data (trend and noise), i.e. the likelihood, <span class="math inline">\(p(y \vert f, \theta)\)</span>
-<strong>Question:</strong> What assumptions do we make when we make this choice?</p></li>
-<li><p><em>Choosing</em> a loss function – i.e. a way to measure the fit of <span class="math inline">\(f\)</span> (and potentially <span class="math inline">\(\theta\)</span>)
-<strong>Question:</strong> What assumptions do we make when we make this choice?</p></li>
-<li><p><em>Choosing</em> a way to optimize the loss function
-<strong>Question:</strong> What assumptions do we make when we make this choice?</p></li>
-<li><p><em>Choosing</em> a way to evaluate the model we learned – we may choose to evaluate the model using a different metric than the loss function!
-<strong>Question:</strong> What assumptions do we make when we make this choice?</p></li>
-</ol>
-<p><strong>What does a Machine Learning product look like?</strong> The short answer: it looks like a technical artifact as well as a recommended policy to guide the appropriate, ethical and responsible usage of it (and potentially much more!).</p>
-<p><img src="https://i.imgur.com/Wa7xvGm.png" /></p>
-<p>For example, see <a href="https://arxiv.org/pdf/1810.03993.pdf">Model Cards for Model Reporting</a></p>
+<div id="motivation-for-latent-variable-models" class="section level1 hasAnchor" number="19">
+<h1><span class="header-section-number">Chapter 19</span> Motivation for Latent Variable Models<a href="motivation-for-latent-variable-models.html#motivation-for-latent-variable-models" class="anchor-section" aria-label="Anchor link to header"></a></h1>
+<div id="a-model-for-birth-weights" class="section level4 hasAnchor" number="19.0.0.1">
+<h4><span class="header-section-number">19.0.0.1</span> A Model for Birth Weights<a href="motivation-for-latent-variable-models.html#a-model-for-birth-weights" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<p>Recall our model for birth weigths, <span class="math inline">\(Y_1,\ldots, Y_N\)</span>. We <em>posited</em> that the birth weights are iid normally distributed with known <span class="math inline">\(\sigma^2\)</span>, <span class="math inline">\(Y_n \sim \mathcal{N}(\mu, 1)\)</span>.</p>
+<p>Compare the maximum likelihood model and the Bayesian model for bith weight. Which model would you use to make clinical decisions? What’s hard about this comparison?</p>
+<p><img src="https://i.imgur.com/Wb9PDR6.jpg" /></p>
 </div>
-<div id="what-are-we-uncertain-about" class="section level2 hasAnchor" number="5.2">
-<h2><span class="header-section-number">5.2</span> What Are We Uncertain About?<a href="what-matters-in-ml-besides-prediction.html#what-are-we-uncertain-about" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p>If we really work with the idea that everything in machine learning is a choice, including the training data, this means that we could have chosen a different training data set. For example: if we collected our training data from patients in one hospital, we can ask what would have happened if we collected data from a different hospital?</p>
-<p>Generally speaking, data sets collected at different times, from different locations or from different populations will be slightly (or significantly) different. Thus, the functions <span class="math inline">\(f\)</span> we learn on these datasets will differ and these different functions will produce different predictions for the same test point!</p>
-<p>So, we should be uncertain about:
-1. <strong>(Math)</strong> the function <span class="math inline">\(f\)</span> we learned (e.g. the parameters <span class="math inline">\(\mathbf{w}\)</span> for <span class="math inline">\(f\)</span> or the function <span class="math inline">\(f\)</span> itself when our model is non-parametric)
-2. <strong>(Application)</strong> our interpretation of <span class="math inline">\(f\)</span>
-3. <strong>(Math)</strong> our prediction <span class="math inline">\(\hat{y}\)</span> for a new point <span class="math inline">\(\mathbf{x}\)</span>
-4. <strong>(Application)</strong> our recommendation for how to make decisions based on our model</p>
-<p><strong>Question:</strong> Why do we care about uncertainty?</p>
+<div id="a-similarity-measure-for-distributions-kullbackleibler-divergence" class="section level4 hasAnchor" number="19.0.0.2">
+<h4><span class="header-section-number">19.0.0.2</span> A Similarity Measure for Distributions: Kullback–Leibler Divergence<a href="motivation-for-latent-variable-models.html#a-similarity-measure-for-distributions-kullbackleibler-divergence" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<p>Visually comparing models to the <strong><em>empirical distribution</em></strong> of the data is impractical. Fortunately, there are a large number of quantitative measures for comparing two distributions, these are called <strong><em>divergence measures</em></strong>. For example, the <strong><em>Kullback–Leibler (KL) Divergence</em></strong> is defined for two distributions <span class="math inline">\(p(\theta)\)</span> and <span class="math inline">\(q(\theta)\)</span> supported on <span class="math inline">\(\Theta\)</span> as:</p>
+<p><span class="math display">\[
+D_{\text{KL}}[q \,\|\, p] = \int_{\Theta} \log\left[\frac{q(\theta)}{p(\theta)} \right] q(\theta)d\theta
+\]</span></p>
+<p>The KL-divergence <span class="math inline">\(D_{\text{KL}}[q \,\|\, p]\)</span> is bounded below by 0, which happens if and only if <span class="math inline">\(q=p\)</span>.
+The KL-divergence has information theoretic interpretations that we will explore later in the course.</p>
+<p><strong>Note:</strong> The KL-divergence is defined in terms of the pdf’s of <span class="math inline">\(p\)</span> and <span class="math inline">\(q\)</span>. If <span class="math inline">\(p\)</span> is a distribution from which we only have samples and not the pdf (like the empirical distribution), we can nontheless estimate <span class="math inline">\(D_{\text{KL}}[q \,\|\, p]\)</span>. Techniques that estimate the KL-divergence from samples are called <strong><em>non-parametric</em></strong>. We will use them later in the course.</p>
+<blockquote>
+<h3 id="optional-why-is-the-kl-bounded-below-by-0" class="hasAnchor">(OPTIONAL!!!) Why is the KL bounded below by 0?<a href="motivation-for-latent-variable-models.html#optional-why-is-the-kl-bounded-below-by-0" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>First let’s see why the answer isn’t obvious. Recall that the <strong><em>KL divergence is the expected log ratio between two distribution</em></strong>:</p>
+<p><span class="math display">\[
+D_{\text{KL}} [q\| p] = \mathbb{E}_{q}\left[ \log &gt; \frac{q}{p}\right]
+\]</span></p>
+<p>Now, we know that when <span class="math inline">\(q\)</span> is less than <span class="math inline">\(p\)</span> (i.e. <span class="math inline">\(q/p &lt; 1\)</span>) then the log can be an arbitrarily negative number. So it’s not immediately obvious that the expected value of this fraction should always be non-negative!</p>
+<h4 id="an-intuitive-explanation" class="hasAnchor">An Intuitive Explanation<a href="motivation-for-latent-variable-models.html#an-intuitive-explanation" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<p>Let the blue curve be q and the red be p. We have <span class="math inline">\(q &lt; p\)</span> from <span class="math inline">\((-\infty, 55)\)</span>, on this part of the domain <span class="math inline">\(\log(q/p)\)</span> is negative. On <span class="math inline">\([55, \infty)\)</span>, <span class="math inline">\(\log(q/p)\)</span> is nonnegative.</p>
+<p>However, since we are sampling from <span class="math inline">\(q\)</span>, and <span class="math inline">\(q\)</span>’s mass is largely over <span class="math inline">\([55, \infty)\)</span>, the log fraction <span class="math inline">\(\log(q/p\)</span>) will tend to be nonnegative.</p>
+<p><img src="https://i.imgur.com/VxWVeok.png" /></p>
+<h4 id="a-formal-argument" class="hasAnchor">A Formal Argument<a href="motivation-for-latent-variable-models.html#a-formal-argument" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<p>There are many proofs of the non-negativity of the KL. Ranging from the very complex to the very simple. Here is one that just involves a bit of algebra:</p>
+<p>We want to show that <span class="math inline">\(D_{\text{KL}}[q\|p] \geq 0\)</span>. Instead we’ll show, equivalently, that <span class="math inline">\(-D_{\text{KL}}[q\|p] \leq 0\)</span> (we’re choosing show the statement about the negative KL, just so we can flip the fraction on the inside of the log and cancel terms):</p>
+<p><img src="https://i.imgur.com/BeJGHg3.png" />
+<img src="https://i.imgur.com/vJ4f25W.png" /></p>
+</blockquote>
 </div>
-<div id="where-is-uncertainty-coming-from" class="section level2 hasAnchor" number="5.3">
-<h2><span class="header-section-number">5.3</span> Where is Uncertainty Coming From?<a href="what-matters-in-ml-besides-prediction.html#where-is-uncertainty-coming-from" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p>Generally speaking:
-1. uncertainty in <span class="math inline">\(f\)</span> comes from us not having enough data to uniquely determine a function <span class="math inline">\(f\)</span>, this could be because of a combination of the below
-- <span class="math inline">\(f\)</span> is a complex model (e.g. lots of parameters) compared to the number of training data points (the model is under determined)
-- the data is very noisy and there are very few observations (so that the trend isn’t clear)
-2. uncertainty in our prediction <span class="math inline">\(\hat{y}\)</span> comes from a combination of the above:
-- uncertainty in <span class="math inline">\(f\)</span> – if we aren’t sure about <span class="math inline">\(f\)</span> we can’t be sure about <span class="math inline">\(\hat{y}\)</span>
-- noise in data – even if we are 100% certain that we have the right <span class="math inline">\(f\)</span>, we can still be uncertain about the prediction <span class="math inline">\(\hat{y}\)</span> due to observation noise</p>
-<p><strong>Question:</strong> Why do we care about what’s causing uncertainty?</p>
-</div>
-<div id="how-do-we-compute-uncertainty" class="section level2 hasAnchor" number="5.4">
-<h2><span class="header-section-number">5.4</span> How Do We Compute Uncertainty?<a href="what-matters-in-ml-besides-prediction.html#how-do-we-compute-uncertainty" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p>If we make some strong assumptions about <span class="math inline">\(f\)</span>, as well as the distribution of the data, we can analytically compute the uncertainty in <span class="math inline">\(f\)</span> as well as the uncertainty in <span class="math inline">\(\hat{y}\)</span>.</p>
-<p>Realistically, we often empirically estimate the uncertainty in <span class="math inline">\(f\)</span> and <span class="math inline">\(\hat{y}\)</span> through simulating drawing new training data sets by resampling our existing data – this is called <em>bootstrapping</em>.</p>
-<p>For the different bootstrap training data sets, we learn different functions <span class="math inline">\(f\)</span> and make different predictions <span class="math inline">\(\hat{y}\)</span>. The empirical variance of learnt parameters <span class="math inline">\(\mathbf{w}\)</span> of <span class="math inline">\(f\)</span> gives us an estimate of the <em>confidence interval</em> of our estimate of <span class="math inline">\(\mathbf{w}\)</span>.
-The empirical variance of our prediction <span class="math inline">\(\hat{y}\)</span> gives us an estimate of the <em>predictive interval</em>.</p>
-</div>
-<div id="mathematizing-uncertainty-starting-with-bias-and-variance" class="section level2 hasAnchor" number="5.5">
-<h2><span class="header-section-number">5.5</span> Mathematizing Uncertainty: Starting with Bias and Variance<a href="what-matters-in-ml-besides-prediction.html#mathematizing-uncertainty-starting-with-bias-and-variance" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p>So far we’ve been describing uncertainty purely in intuitive terms. In order to quantify and analyze uncertainty, we need mathematical formalism!</p>
-<p>One way to formalize our uncertainty over our prediction is to reason about why our prediction might be wrong. We do so by defining and decomposing the <em>generalization error</em> of our model.</p>
+<div id="latent-variable-models" class="section level2 hasAnchor" number="19.1">
+<h2><span class="header-section-number">19.1</span> Latent Variable Models<a href="motivation-for-latent-variable-models.html#latent-variable-models" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>Models that include an observed variable <span class="math inline">\(Y\)</span> and at least one unobserved variable <span class="math inline">\(Z\)</span> are called <strong><em>latent variable models</em></strong>. In general, our model can allow <span class="math inline">\(Y\)</span> and <span class="math inline">\(Z\)</span> to interact in many different ways. Today, we will study models with one type of interaction:
+<img src="https://i.imgur.com/8oPsqd3.jpg" /></p>
+<div id="example-gaussian-mixture-models-gmms" class="section level3 hasAnchor" number="19.1.1">
+<h3><span class="header-section-number">19.1.1</span> Example: Gaussian Mixture Models (GMMs)<a href="motivation-for-latent-variable-models.html#example-gaussian-mixture-models-gmms" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>In a <strong><em>Gaussian Mixture Model (GMM)</em></strong>, we posit that the observed data <span class="math inline">\(Y\)</span> is generated by a mixture, <span class="math inline">\(\pi=[\pi_1, \ldots, \pi_K]\)</span>, of <span class="math inline">\(K\)</span> number of Gaussians with means <span class="math inline">\(\mu = [\mu_1, \ldots, \mu_K]\)</span> and covariances <span class="math inline">\(\Sigma = [\Sigma_1, \ldots, \Sigma_K]\)</span>. For each observation <span class="math inline">\(Y_n\)</span> the class of the observation <span class="math inline">\(Z_n\)</span> is a latent variable that indicates which of the <span class="math inline">\(K\)</span> Gaussian is responsible for generating <span class="math inline">\(Y_n\)</span>:</p>
 <span class="math display">\[\begin{aligned}
-\underbrace{\mathbb{E}_{(\mathbf{x}, y), \mathcal{D}}\left[ (y- f_\mathbf{w}(\mathbf{x}))^2\right]}_{\text{Generalization Error}} =&amp; \mathbb{E}_{\mathbf{x}}\underbrace{\mathrm{Var}[y|\mathbf{x}]}_{\text{Observation Noise}}\\
-&amp; + \mathbb{E}_{\mathbf{x}}[(\underbrace{\mathbb{E}_{y|\mathbf{x}}[y|\mathbf{x}]}_{\text{Average true $y$}\\ \text{over noisy observations}} - \underbrace{\mathbb{E}_\mathcal{D}[f_\mathbf{w}(\mathbf{x})]}_{\text{Average prediction}\\\text{over all possible training sets}})^2]\\
-&amp;+\mathbb{E}_{\mathbf{x}} \underbrace{\mathrm{Var}[f_\mathbf{w}(\mathbf{x})]}_{\text{Variance of Model}}\\
-&amp;= \text{Observation Noise} + \text{Model Bias} + \text{Model Variance}
+Z_n &amp;\sim Cat(\pi),\\
+Y_n | Z_n&amp;\sim \mathcal{N}(\mu_{Z_n}, \Sigma_{Z_n}),
 \end{aligned}\]</span>
-<p>From the math, we see that we have three reasons to be uncertain about our model predictions:
-1. <strong>the observation noise</strong> – even if we are 100% certain that we have the right model, our prediction can still be wrong due to noise
-2. <strong>model bias</strong> – we could have been wildly wrong in our guess of the form of the model (e.g. assuming linear function when modeling quadratic data)
-3. <strong>model variance</strong> – the number of data points is insufficient to uniquely determine the model</p>
+<p>where <span class="math inline">\(n=1, \ldots, N\)</span> and <span class="math inline">\(\sum_{k=1}^K \pi_k = 1\)</span>.</p>
+<p>GMMs are examples of <strong><em>model based clustering</em></strong> - breaking up a data set into natural clusters based on a statistical model fitted to the data.</p>
 </div>
-<div id="the-bias-variance-trade-off-in-machine-learning" class="section level2 hasAnchor" number="5.6">
-<h2><span class="header-section-number">5.6</span> The Bias-Variance Trade-off in Machine Learning<a href="what-matters-in-ml-besides-prediction.html#the-bias-variance-trade-off-in-machine-learning" class="anchor-section" aria-label="Anchor link to header"></a></h2>
-<p>One reason we want to work with the formalism of the generalization error is that by decomposing the generalization error, we see how we can reduce our uncertainty in our predictions.</p>
-<p>Immediately, we see that there is nothing we can do to reduce generalization error arising from observation noise – this error is <strong><em>irreducible</em></strong>.</p>
-<p>We can, however, choose our model so we have some control over model bias and model variance – these errors are <strong><em>reducible</em></strong>.</p>
-<p>Unfortunately, generally speaking, when we reduce model bias by making our models more complex, the complexity increases model variance (and vice versa):</p>
-<p><img src="https://i.imgur.com/lUDZq5r.jpg" /></p>
-<div id="examples-of-the-bias-variance-trade-off" class="section level3 hasAnchor" number="5.6.1">
-<h3><span class="header-section-number">5.6.1</span> Examples of the Bias-Variance Trade-off<a href="what-matters-in-ml-besides-prediction.html#examples-of-the-bias-variance-trade-off" class="anchor-section" aria-label="Anchor link to header"></a></h3>
-<p>Many modification we perform on machine models are frequently just ways to manage the Bias-Variance Trade-off.</p>
-<ol style="list-style-type: decimal">
-<li><strong>Regularization:</strong> adding a penalty term to the MSE loss introduces bias (reduces the ability of the model to fit the data), in order to reduce variance (by biasing the optimization towards simpler models)</li>
-<li><strong>Ensembling:</strong> creating a large set of very different complex models (low bias but high variance), and then reducing the variance by average the model predictions</li>
-<li><strong>Boosting:</strong> iteratively making a simple base model (high bias but low variance) more complex and thereby reducing the bias without significantly increasing the variance</li>
+<div id="item-response-models" class="section level3 hasAnchor" number="19.1.2">
+<h3><span class="header-section-number">19.1.2</span> Item-Response Models<a href="motivation-for-latent-variable-models.html#item-response-models" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>In <strong><em>item-response models</em></strong>, we measure an real-valued unobserved trait <span class="math inline">\(Z\)</span> of a subject by performing a series of experiments with binary observable outcomes, <span class="math inline">\(Y\)</span>:</p>
+<span class="math display">\[\begin{aligned}
+Z_n &amp;\sim \mathcal{N}(\mu, \sigma^2),\\
+\theta_n &amp;= g(Z_n)\\
+Y_n|Z_n &amp;\sim Ber(\theta_n),
+\end{aligned}\]</span>
+<p>where <span class="math inline">\(n=1, \ldots, N\)</span> and <span class="math inline">\(g\)</span> is some fixed function of <span class="math inline">\(Z_n\)</span>.</p>
+<div id="applications" class="section level4 hasAnchor" number="19.1.2.1">
+<h4><span class="header-section-number">19.1.2.1</span> Applications<a href="motivation-for-latent-variable-models.html#applications" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<p>Item response models are used to model the way “underlying intelligence” <span class="math inline">\(Z\)</span> relates to scores <span class="math inline">\(Y\)</span> on IQ tests.</p>
+<p>Item response models can also be used to model the way “suicidality” <span class="math inline">\(Z\)</span> relates to answers on mental health surveys. Building a good model may help to infer when a patient is at psychiatric risk based on in-take surveys at points of care through out the health-care system.</p>
+</div>
+</div>
+<div id="example-factor-analysis-models" class="section level3 hasAnchor" number="19.1.3">
+<h3><span class="header-section-number">19.1.3</span> Example: Factor Analysis Models<a href="motivation-for-latent-variable-models.html#example-factor-analysis-models" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>In <strong><em>factor analysis models</em></strong>, we posit that the observed data <span class="math inline">\(Y\)</span> with many measurements is generated by a small set of unobserved factors <span class="math inline">\(Z\)</span>:</p>
+<span class="math display">\[\begin{aligned}
+Z_n &amp;\sim \mathcal{N}(0, I),\\
+Y_n|Z_n &amp;\sim \mathcal{N}(\mu + \Lambda Z_n, \Phi),
+\end{aligned}\]</span>
+<p>where <span class="math inline">\(n=1, \ldots, N\)</span>, <span class="math inline">\(Z_n\in \mathbb{R}^{D&#39;}\)</span> and <span class="math inline">\(Y_n\in \mathbb{R}^{D}\)</span>. We typically assume that <span class="math inline">\(D&#39;\)</span> is much smaller than <span class="math inline">\(D\)</span>.</p>
+<div id="applications-1" class="section level4 hasAnchor" number="19.1.3.1">
+<h4><span class="header-section-number">19.1.3.1</span> Applications<a href="motivation-for-latent-variable-models.html#applications-1" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<p>Factor analysis models are useful for biomedical data, where we typically measure a large number of characteristics of a patient (e.g. blood pressure, heart rate, etc), but these characteristics are all generated by a small list of health factors (e.g. diabetes, cancer, hypertension etc). Building a good model means we may be able to infer the list of health factors of a patient from their observed measurements.</p>
+<hr />
+</div>
+</div>
+</div>
+<div id="maximum-likelihood-estimation-for-latent-variable-models-expectation-maximization" class="section level2 hasAnchor" number="19.2">
+<h2><span class="header-section-number">19.2</span> Maximum Likelihood Estimation for Latent Variable Models: Expectation Maximization<a href="motivation-for-latent-variable-models.html#maximum-likelihood-estimation-for-latent-variable-models-expectation-maximization" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>Given a latent variable model <span class="math inline">\(p(Y, Z| \phi, \theta) = p(Y | Z, \phi) p(Z|\theta)\)</span>, we are interested computing the MLE of parameters <span class="math inline">\(\phi\)</span> and <span class="math inline">\(\theta\)</span>:</p>
+<span class="math display">\[\begin{aligned}
+\theta_{\text{MLE}}, \phi_{\text{MLE}} &amp;= \underset{\theta, \phi}{\mathrm{argmax}}\; \ell(\theta, \phi)\\
+&amp;= \underset{\theta, \phi}{\mathrm{argmax}}\; \log \prod_{n=1}^N \int_{\Omega_Z}  p(y_n, z_n | \theta, \phi) dz\\
+&amp;= \underset{\theta, \phi}{\mathrm{argmax}}\; \log \prod_{n=1}^N \int_{\Omega_Z}  p(y_n| z_n, \phi)p(z_n| \theta) dz
+\end{aligned}\]</span>
+<p>where <span class="math inline">\(\Omega_Z\)</span> is the domain of <span class="math inline">\(Z\)</span>.
+Why is this an hard optimization problem?</p>
+<p>There are two major problems:
+1. the product in the integrand
+2. gradients cannot be past the integral (i.e. we cannot easily compute the gradient to solve the optimization problem).</p>
+<p>We solve these two problems by:
+1. pushing the log past the integral so that it can be applied to the integrand (Jensen’s Inequality)
+2. introducing an auxiliary variables <span class="math inline">\(q(Z_n)\)</span> to allow the gradient to be pushed past the integral.</p>
+<span class="math display">\[\begin{aligned}
+\underset{\theta, \phi}{\mathrm{max}}\; \ell(\theta, \phi) &amp;= \underset{\theta, \phi, q}{\mathrm{max}}\; \log \prod_{n=1}^N\int_{\Omega_Z} \left(\frac{p(y_n, z_n|\theta, \phi)}{q(z_n)}q(z_n)\right) dz\\
+&amp;= \underset{\theta, \phi, q}{\mathrm{max}}\; \log\,\prod_{n=1}^N\mathbb{E}_{Z\sim q(Z)} \left[  \frac{p(y_n, Z|\theta, \phi)}{q(Z)}\right]\\
+&amp;= \underset{\theta, \phi, q}{\mathrm{max}}\; \sum_{n=1}^N \log \mathbb{E}_{Z\sim q(Z)} \left[\,\left( \frac{p(y_n, Z|\theta, \phi)}{q(Z)}\right)\right]\\
+&amp;\geq \underset{\theta, \phi, q}{\mathrm{max}}\; \underbrace{\sum_{n=1}^N\mathbb{E}_{Z_n\sim q(Z)} \left[  \log\,\left(\frac{p(y_n, Z_n|\theta, \phi)}{q(Z_n)}\right)\right]}_{ELBO(\theta, \phi)}, \quad (\text{Jensen&#39;s Inequality})\\
+\end{aligned}\]</span>
+<p>We call <span class="math inline">\(\sum_{n=1}^N\mathbb{E}_{Z_n\sim q(Z)} \left[ \log\,\left(\frac{p(y_n, Z_n|\theta, \phi)}{q(Z)}\right)\right]\)</span> the Evidence Lower Bound (ELBO). Note that maximizing the ELBO will yield a lower bound of the maximum value of the log likelihood. Although <strong>the optimal point of the ELBO may not be the optimal point of the log likelihood</strong>, we nontheless prefer to optimize the ELBO because the gradients, with respect to <span class="math inline">\(\theta, \phi\)</span>, of the ELBO are easier to compute:</p>
+<span class="math display">\[\begin{aligned}
+\nabla_{\theta, \phi} ELBO(\theta, \phi) &amp;= \nabla_{\theta, \phi}\left[ \sum_{n=1}^N\mathbb{E}_{Z_n\sim q(Z)} \left[  \log\,\left(\frac{p(y_n, Z_n|\theta, \phi)}{q(Z_n)}\right)\right]\right] \\
+&amp;=  \sum_{n=1}^N\mathbb{E}_{Z_n\sim q(Z)} \left[  \nabla_{\theta, \phi} \left( \log\,\left(\frac{p(y_n, Z_n|\theta, \phi)}{q(Z_n)}\right)\right)\right]
+\end{aligned}\]</span>
+<p>Note that we can push the gradient <span class="math inline">\(\nabla_{\theta, \phi}\)</span> past the expectation <span class="math inline">\(\mathbb{E}_{Z_n\sim q(Z)}\)</span> since the expectation is not computed with respect to our optimization variables!</p>
+<p>Rather than optimizing the ELBO over all variables <span class="math inline">\(\theta, \phi, q\)</span> (this would be hard), we optimize one set of variables at a time:</p>
+<div id="step-i-the-m-step" class="section level4 hasAnchor" number="19.2.0.1">
+<h4><span class="header-section-number">19.2.0.1</span> Step I: the M-step<a href="motivation-for-latent-variable-models.html#step-i-the-m-step" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<p>Optimize the ELBO with respect to <span class="math inline">\(\theta, \phi\)</span>:</p>
+<span class="math display">\[\begin{aligned}
+\theta^*, \phi^* = \underset{\theta, \phi}{\mathrm{max}}\; ELBO(\theta, \phi, q) &amp;= \underset{\theta, \phi}{\mathrm{max}}\; \sum_{n=1}^N\mathbb{E}_{Z_n\sim q(Z)} \left[  \log\,\left(\frac{p(y_n, Z_n|\theta, \phi)}{q(Z_n)}\right)\right]\\
+&amp;= \underset{\theta, \phi}{\mathrm{max}}\;  \sum_{n=1}^N \int_{\Omega_Z} \log\,\left(\frac{p(y_n, z_n|\theta, \phi)}{q(z_n)}\right)q(z_n) dz_n\\
+&amp;= \underset{\theta, \phi}{\mathrm{max}}\; \sum_{n=1}^N \int_{\Omega_Z} \log\,\left(p(y_n, z_n|\theta, \phi)\right) q(z_n)dz_n - \underbrace{\int_{\Omega_Z} \log \left(q(z_n)\right)q(z_n) dz_n}_{\text{constant with respect to }\theta, \phi}\\
+&amp;\equiv \underset{\theta, \phi}{\mathrm{max}}\;\sum_{n=1}^N \int_{\Omega_Z} \log\,\left(p(y_n, z_n|\theta, \phi)\right) q(z_n)dz_n\\
+&amp;= \underset{\theta, \phi}{\mathrm{max}}\;\sum_{n=1}^N \mathbb{E}_{Z_n\sim q(Z)} \left[ \log\left(p(y_n, z_n|\theta, \phi)\right)\right]
+\end{aligned}\]</span>
+</div>
+<div id="step-ii-the-e-step" class="section level4 hasAnchor" number="19.2.0.2">
+<h4><span class="header-section-number">19.2.0.2</span> Step II: the E-step<a href="motivation-for-latent-variable-models.html#step-ii-the-e-step" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<p>Optimize the ELBO with respect to <span class="math inline">\(q\)</span>:</p>
+<span class="math display">\[\begin{aligned}
+q^*(Z_n) = \underset{q}{\mathrm{argmax}}\;\left(\underset{\theta, \phi}{\mathrm{argmax}}\; ELBO(\theta, \phi, q) \right) = \underset{q}{\mathrm{argmax}}\; ELBO(\theta^*, \phi^*, q)
+\end{aligned}\]</span>
+<p>Rather than optimizing the ELBO with respect to <span class="math inline">\(q\)</span>, which seems hard, we will argue that optimizing the ELBO is equivalent to optimizing another function of <span class="math inline">\(q\)</span>, one whose optimum is easy for us to compute.</p>
+<p><strong>Note:</strong> We can recognize the difference between the log likelihood and the ELBO as a function we’ve seen:</p>
+<span class="math display">\[\begin{aligned}
+\ell(\theta, \phi) - ELBO(\theta, \phi, q) &amp;= \sum_{n=1}^N \log p(y_n| \theta, \phi) - \sum_{n=1}^N \int_{\Omega_Z} \log\left(\frac{p(y_n, z_n|\theta, \phi)}{q(z_n)}\right)q(z_n) dz_n\\
+&amp;=  \sum_{n=1}^N \int_{\Omega_Z} \log\left(p(y_n| \theta, \phi)\right) q(z_n) dz_n - \sum_{n=1}^N \int_{\Omega_Z} \log\left(\frac{p(y_n, z_n|\theta, \phi)}{q(z_n)}\right)q(z_n) dz_n\\
+&amp;=  \sum_{n=1}^N \int_{\Omega_Z}  \left(\log\left(p(y_n| \theta, \phi)\right) - \log\left(\frac{p(y_n, z_n|\theta, \phi)}{q(z_n)}\right) \right)q(z_n) dz_n\\
+&amp;= \sum_{n=1}^N \int_{\Omega_Z}  \log\left(\frac{p(y_n| \theta, \phi)q(z_n)}{p(y_n, z_n|\theta, \phi)} \right)q(z_n) dz_n\\
+&amp;= \sum_{n=1}^N \int_{\Omega_Z}  \log\left(\frac{q(z_n)}{p(z_n| y_n, \theta, \phi)} \right)q(z_n) dz_n, \\
+&amp;\quad\left(\text{Baye&#39;s Rule: } \frac{p(y_n, z_n|\theta, \phi)}{p(y_n| \theta, \phi)} = p(z_n| y_n, \theta, \phi)\right)\\
+&amp;= \sum_{n=1}^N D_{\text{KL}} \left[ q(Z_n) \| p(Z_n| Y_n, \theta, \phi)\right].
+\end{aligned}\]</span>
+<p>Since <span class="math inline">\(\ell(\theta, \phi)\)</span> is a constant, the difference
+<span class="math display">\[\sum_{n=1}^N D_{\text{KL}} \left[ q(Z_n) \| p(Z_n| Y_n, \theta, \phi)\right] = \ell(\theta, \phi) - ELBO(\theta, \phi, q)\]</span>
+descreases when <span class="math inline">\(ELBO(\theta, \phi, q)\)</span> increases (and vice versa). Thus, maximizing the ELBO is equivalent to minimizing <span class="math inline">\(D_{\text{KL}} \left[ q(Z_n) \| p(Y_n| Z_n, \theta, \phi)\right]\)</span>:</p>
+<p><span class="math display">\[
+\underset{q}{\mathrm{argmax}}\, ELBO(\theta, \phi, q) = \underset{q}{\mathrm{argmin}}\sum_{n=1}^N D_{\text{KL}} \left[ q(Z_n) \| p(Z_n| Y_n, \theta, \phi)\right].
+\]</span></p>
+Thus, we see that
+<span class="math display">\[\begin{aligned}
+q^*(Z_n) &amp;= \underset{q}{\mathrm{argmax}}\; ELBO(\theta^*, \phi^*, q) \\
+&amp;= \underset{q}{\mathrm{argmin}}\sum_{n=1}^N D_{\text{KL}} \left[ q(Z_n) \| p(Z_n| Y_n, \theta, \phi)\right] = p(Z_n| Y_n, \theta, \phi)
+\end{aligned}\]</span>
+<p>That is, we should set the optimal distribution <span class="math inline">\(q\)</span> to be the posterior <span class="math inline">\(p(Z_n| Y_n, \theta, \phi)\)</span>.</p>
+</div>
+<div id="iteration" class="section level4 hasAnchor" number="19.2.0.3">
+<h4><span class="header-section-number">19.2.0.3</span> Iteration<a href="motivation-for-latent-variable-models.html#iteration" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<p>Of course, we know that optimizing a function with respect to each variable is not sufficient for finding the global optimum over all the variables, considered together! Thus, performing one E-step and one M-step is not enough to maximize the ELBO. We need to repeat the two steps over and over.</p>
+<blockquote>
+<h3 id="optional-why-dont-gradients-commute-with-expectation" class="hasAnchor">(OPTIONAL!!!!) Why don’t gradients commute with expectation?<a href="motivation-for-latent-variable-models.html#optional-why-dont-gradients-commute-with-expectation" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>We have the following property of expectations:</p>
+<p><span class="math display">\[
+\nabla_z \mathbb{E}_{x\sim p(x)}[f(x, z)] = \mathbb{E}_{x\sim p(x)}[ \nabla_z f(x, z)]
+\]</span></p>
+<p>That is, when the gradient is with respect to a variable that does not appear in the distribution with respect to which you are taking the expectation, then you can push the gradient past the expectation.</p>
+<p><strong>The intuition:</strong> the gradient with respect to <span class="math inline">\(z\)</span> is computing the changes in a function by making infinitesimally small changes to <span class="math inline">\(z\)</span>, the expectation is computing the average value of a function by sampling <span class="math inline">\(x\)</span> from a distribution that does not depend on <span class="math inline">\(z\)</span>. Each operation is making an independent change to two different variables and hence can be done in any order.</p>
+<p>Why can’t you do this in general? I.e. why is it that,</p>
+<p><span class="math display">\[ \nabla_z\mathbb{E}_{x\sim p(x|z)}[f(x, z)] \neq \mathbb{E}_{x\sim p(x|z)}[ \nabla_z f(x, z)]?\]</span></p>
+<p><strong>The intuition:</strong> the gradient with respect to z is computing the changes in a function by making infinitesimally small changes to z, which in turn affects the samples produced by p(x|z), these samples finally affect the output of f. This is a chain of effects and the order matters.</p>
+<p><strong>The formal proof:</strong> Consider the following case,</p>
+<p><span class="math display">\[
+p(x\vert z) = (z+1)x^z,\; x\in [0, 1]
+\]</span></p>
+<p>and</p>
+<p><span class="math display">\[
+f(x, z) = xzf ( x , z ) = x z.
+\]</span></p>
+<p>Then, we have</p>
+<span class="math display">\[\begin{aligned}
+\nabla_z \mathbb{E}_{x\sim p(x|z)} [f(x, z)] &amp;= \nabla_z \int_0^1 f(x, z) p(x|z) dx \\
+&amp;= \nabla_z\int_0^1 xz \cdot (z+1)x^z dx \\
+&amp;= \nabla_z z (z+1)\int_0^1x^{z+1} dx \\
+&amp;= \nabla_z \frac{z (z+1)}{z+2} [x^{z+2} ]_0^1 \\
+&amp;=  \nabla_z \frac{z (z+1)}{z+2} \\
+&amp;= \frac{z^2 + 4z + 2}{(z+2)^2}
+\end{aligned}\]</span>
+<p>On the other hand, we have</p>
+<p><span class="math display">\[
+\mathbb{E}_{x\sim p(x|z)}\left[ \nabla_z f(x, z) \right] = \int_0^1 \nabla_z[ xz] (z+1)x^zdx = \int_0^1(z+1)x^{z+1}dx = \frac{z+1}{z+2} [x^{z+2}]_0^1 = \frac{z+1}{z+2}.
+\]</span></p>
+<p>Note that:</p>
+<p><span class="math display">\[
+\nabla_z \mathbb{E}_{x\sim p(x|z)} [f(x, z)] =  \frac{z^2 + 4z+ 2}{(z+2)^2} \neq \frac{z+1}{z+2} = \mathbb{E}_{x\sim p(x|z)}\left[ \nabla_z f(x, z) \right].
+\]</span></p>
+</blockquote>
+<blockquote>
+<h3 id="optional-why-do-we-need-to-maximize-the-elbo-with-respect-to-q" class="hasAnchor">(Optional!!!) Why do we need to maximize the ELBO with respect to q?<a href="motivation-for-latent-variable-models.html#optional-why-do-we-need-to-maximize-the-elbo-with-respect-to-q" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>Recall that in the derivation of the ELBO, we first introduced an auxiliary variable q to rewrite the observed log-likelihood:</p>
+<p><span class="math display">\[
+\log p(y|\theta, \phi) = \log \int_\Omega p(y, z| \theta, \phi) dz = \log \int_\Omega \frac{p(y, z| \theta, \phi}{q(z)}q(z) dz = \log \mathbb{E}_{q(z)} \left[ \frac{p(y, z|\theta, \phi)}{q(z)} \right]
+\]</span></p>
+<p>Again, the reason why we do this is because: when we eventually take the gradient wrt to <span class="math inline">\(\theta, \phi\)</span> during optimization we can use the identity</p>
+<p><span class="math display">\[
+\nabla_{\theta, \phi} \mathbb{E}_{q(z)}\left[\frac{p(y, z|\theta, \phi)}{q(z)}\right] = \mathbb{E}_{q(z)}\left[\nabla_{\theta, \phi}  \frac{p(y, z|\theta, \phi)}{q(z)}\right]
+\]</span></p>
+<p><strong><em>At this point, there is no need to maximize over q</em></strong>, that is:</p>
+<p><span class="math display">\[
+\max_{\theta, \phi, q}\log \mathbb{E}_{q(z)}\left[\frac{p(y, z|\theta, \phi)}{q(z)}\right] = \max_{\theta, \phi}\log \mathbb{E}_{q(z)}\left[\frac{p(y, z|\theta, \phi)}{q(z)}\right]
+\]</span></p>
+<p>The <span class="math inline">\(q\)</span> cancels and has no effect on the outcome or process of the optimization (but you can’t just choose any <span class="math inline">\(q\)</span> you want - can you see what are the constraints on <span class="math inline">\(q\)</span>?).</p>
+<p>Now, the problem is that the log is on the outside of the expectation. This isn’t a problem in the sense that we don’t know how to take the derivative of a logarithm of a complex function (this is just the chain rule ), the problem is that</p>
+<p><span class="math display">\[
+\nabla_{\phi, \theta} \frac{p(y, z|\theta, \phi)}{q(z)}
+\]</span></p>
+<p>can be very complex (since p and q are pdf’s) and so over all the gradient of the log expectation is not something you can compute roots for. Here is where we push the log inside the expectation using Jensen’s inequality:</p>
+<p><span class="math display">\[
+\log \mathbb{E}_{q(z)}\left[\frac{p(y, z|\theta, \phi)}{q(z)}\right]  \geq \mathbb{E}_{q(z)}\left[\log \left(\frac{p(y, z|\theta, \phi)}{q(z)}\right)\right] \overset{\text{def}}{=} ELBO(\phi, \theta, q)
+\]</span></p>
+<p>When we push the log inside the expectation, we obtain the <strong>E</strong>vidence <strong>L</strong>ower <strong>Bo</strong>und (ELBO).</p>
+<p>Now, for any choice of <span class="math inline">\(q\)</span>, we always have:</p>
+<p><span class="math display">\[
+\max_{\theta, \phi}\log \mathbb{E}_{q(z)}\left[\frac{p(y, z|\theta, \phi)}{q(z)}\right]  \geq \max_{\theta, \phi}ELBO(\phi, \theta, q)
+\]</span></p>
+<p>But the ELBO is not necessarily a tight bound (i.e. maximizing the ELBO can be very far from maximizing the log-likelihood!)! In particular, some choices of <span class="math inline">\(q\)</span> might give you a tighter bound on the log-likelihood than others. Thus, we want to select the <span class="math inline">\(q\)</span> that give us the tightest bound:</p>
+<p><span class="math display">\[
+\max_{\theta, \phi}\log \mathbb{E}_{q(z)}\left[\frac{p(y, z|\theta, \phi)}{q(z)}\right]  \geq \max_{\theta, \phi, q}ELBO(\phi, \theta, q).
+\]</span></p>
+</blockquote>
+</div>
+</div>
+<div id="the-expectation-maximization-algorithm" class="section level2 hasAnchor" number="19.3">
+<h2><span class="header-section-number">19.3</span> The Expectation Maximization Algorithm<a href="motivation-for-latent-variable-models.html#the-expectation-maximization-algorithm" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>The <strong><em>exepectation maximization (EM) algorithm</em></strong> maximize the ELBO of the model,
+<img src="https://i.imgur.com/tFOgbdR.jpg" /></p>
+<ol start="0" style="list-style-type: decimal">
+<li><strong>Initialization:</strong> Pick <span class="math inline">\(\theta_0\)</span>, <span class="math inline">\(\phi_0\)</span>.</li>
+<li>Repeat <span class="math inline">\(i=1, \ldots, I\)</span> times:</li>
 </ol>
-
+<p><strong>E-Step:</strong>
+<span class="math display">\[q_{\text{new}}(Z_n) = \underset{q}{\mathrm{argmax}}\; ELBO(\theta_{\text{old}}, \phi_{\text{old}}, q) = p(Z_n|Y_n, \theta_{\text{old}}, \phi_{\text{old}})\]</span></p>
+<strong>M-Step:</strong>
+<span class="math display">\[\begin{aligned}
+  \theta_{\text{new}}, \phi_{\text{new}} &amp;= \underset{\theta, \phi}{\mathrm{argmax}}\; ELBO(\theta, \phi, q_{\text{new}})\\
+  &amp;= \underset{\theta, \phi}{\mathrm{argmax}}\; \sum_{n=1}^N\mathbb{E}_{Z_n\sim p(Z_n|Y_n, \theta_{\text{old}}, \phi_{\text{old}})}\left[\log \left( p(y_n, Z_n | \phi, \theta\right) \right].
+\end{aligned}\]</span>
+<blockquote>
+<h3 id="optional-another-view-of-expectation-maximization-the-auxiliary-function" class="hasAnchor">(Optional!!!) Another View of Expectation Maximization: The Auxiliary Function<a href="motivation-for-latent-variable-models.html#optional-another-view-of-expectation-maximization-the-auxiliary-function" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>We often denote the expectation in the M-step by <span class="math inline">\(Q\left(\theta, \phi| \theta^{\text{old}}, \phi^{\text{old}}\right)\)</span>
+<span class="math display">\[
+Q\left(\theta, \phi| \theta^{\text{old}}, \phi^{\text{old}}\right) = \sum_{n=1}^N\mathbb{E}_{Z_n\sim p(Z_n|Y_n, \theta_{\text{old}}, \phi_{\text{old}})}\left[\log \left( p(y_n, Z_n | \phi, \theta\right) \right]
+\]</span>
+and call <span class="math inline">\(Q\)</span> the auxiliary function.</p>
+<p>Frequently, the EM algorithm is equivalently presented as
+- <strong>E-step:</strong> compute the auxiliary function: <span class="math inline">\(Q\left(\theta, \phi| \theta^{\text{old}}, \phi^{\text{old}}\right)\)</span>
+- <strong>M-step:</strong> maximize the auxiliary function: <span class="math inline">\(\theta^{\text{new}}, \phi^{\text{new}} = \underset{\theta, \phi}{\mathrm{argmax}}\,Q\left(\theta, \phi| \theta^{\text{old}}, \phi^{\text{old}}\right)\)</span>.</p>
+<p>The log of the joint distribution <span class="math inline">\(\prod_{n=1}^N p(Z_n, Y_n, \theta, \phi)\)</span> is called the <strong><em>complete data log-likelihood</em></strong> (since it is the likelihood of both observed and latent variables), whereas <span class="math inline">\(\log \prod_{n=1}^N p(Y_n| \theta, \phi)\)</span> is called the <strong><em>observed data log-likelihood</em></strong> (since it is the likelihood of only the observed variable).</p>
+<p>The auxiliary function presentation of EM is easy to interpret:
+- In the E-step, you fill in the latent variables in the complete data log-likelihood using “average” values, this leaves just an estimate of the observed log-likelihood.
+- In the M-step, you find parameters <span class="math inline">\(\phi\)</span> and <span class="math inline">\(\theta\)</span> that maximizes your estimate of the observed log-likelihood.</p>
+<p>We chose to derive EM via the ELBO in this lecture because it makes an explicit connection between the EM algorithm for estimating MLE and variational inference method for approximating the posterior of Bayesian models. It is, however, worthwhile to derive EM using the auxiliary function <span class="math inline">\(Q\)</span>, as <span class="math inline">\(Q\)</span> makes it convient for us to prove properties of the EM algorithm.</p>
+</blockquote>
 </div>
+<div id="monotonicity-and-convergence-of-em" class="section level2 hasAnchor" number="19.4">
+<h2><span class="header-section-number">19.4</span> Monotonicity and Convergence of EM<a href="motivation-for-latent-variable-models.html#monotonicity-and-convergence-of-em" class="anchor-section" aria-label="Anchor link to header"></a></h2>
+<p>Before we run off estimating MLE parameters of latent variable models with EM, we need to sanity check two points:</p>
+<ol style="list-style-type: decimal">
+<li><strong>(Monotonicity)</strong> we need to know that repeating the E, M-steps will never decrease the ELBO!</li>
+<li><strong>(Convergence)</strong> we need to know that at some point the EM algorithm will naturally terminate (the algorithm will cease to update the parameters).</li>
+</ol>
+<blockquote>
+<h3 id="optional-proof-of-properties-of-em" class="hasAnchor">(Optional!!!) Proof of Properties of EM<a href="motivation-for-latent-variable-models.html#optional-proof-of-properties-of-em" class="anchor-section" aria-label="Anchor link to header"></a></h3>
+<p>We first prove the monotonicity of EM. Consider the difference between <span class="math inline">\(\ell(\theta, \phi) - \ell(\theta^{\text{old}}, \phi^{\text{old}})\)</span>, i.e. the amount by which the log-likelihood can increase or decrease by going from <span class="math inline">\(\theta^{\text{old}}, \phi^{\text{old}}\)</span> to <span class="math inline">\(\theta, \phi\)</span>:</p>
+<span class="math display">\[\begin{aligned}
+\ell(\theta, \phi) - \ell(\theta^{\text{old}}, \phi^{\text{old}}) &amp;= \sum_{n=1}^N\log \left[ \frac{p(y_n|\theta, \phi)}{p(y_n| \theta^{\text{old}}, \phi^{\text{old}})}\right]\\
+&amp;= \sum_{n=1}^N \log\int \frac{p(y_n, z_n|\theta, \phi)}{p(y_n| \theta^{\text{old}}, \phi^{\text{old}})} dz_n\\
+&amp;= \sum_{n=1}^N \log\int \frac{p(y_n, z_n|\theta, \phi)}{p(y_n| \theta^{\text{old}}, \phi^{\text{old}}) p(z_n|y_n, \theta^{\text{old}}, \phi^{\text{old}})}p(z_n|y_n, \theta^{\text{old}}, \phi^{\text{old}}) dz_n\\
+&amp;= \sum_{n=1}^N \log\int \frac{p(y_n, z_n|\theta, \phi)}{p(y_n, z_n| \theta^{\text{old}}, \phi^{\text{old}})}p(z_n|y_n, \theta^{\text{old}}, \phi^{\text{old}}) dz_n\\
+&amp;= \sum_{n=1}^N \log \mathbb{E}_{p(z_n|y_n, \theta^{\text{old}}, \phi^{\text{old}})} \left[\frac{p(y_n, z_n|\theta, \phi)}{p(y_n, z_n| \theta^{\text{old}}, \phi^{\text{old}})}\right]\\
+&amp;\geq \sum_{n=1}^N  \mathbb{E}_{p(z_n|y_n, \theta^{\text{old}}, \phi^{\text{old}})} \log\left[\frac{p(y_n, z_n|\theta, \phi)}{p(y_n, z_n| \theta^{\text{old}}, \phi^{\text{old}})}\right]\\
+&amp;= \sum_{n=1}^N  \mathbb{E}_{p(z_n|y_n, \theta^{\text{old}}, \phi^{\text{old}})} \left[\log  p(y_n, z_n|\theta, \phi) - \log p(y_n, z_n| \theta^{\text{old}}, \phi^{\text{old}})\right]\\
+&amp;= \sum_{n=1}^N  \mathbb{E}_{p(z_n|y_n, \theta^{\text{old}}, \phi^{\text{old}})} \left[\log  p(y_n, z_n|\theta, \phi)\right] - \sum_{n=1}^N  \mathbb{E}_{p(z_n|y_n, \theta^{\text{old}}, \phi^{\text{old}})}\left[ \log  p(y_n, z_n| \theta^{\text{old}}, \phi^{\text{old}})\right]\\
+&amp;= Q\left(\theta, \phi| \theta^{\text{old}}, \phi^{\text{old}}\right) - Q\left(\theta^{\text{old}}, \phi^{\text{old}}| \theta^{\text{old}}, \phi^{\text{old}}\right)
+\end{aligned}\]</span>
+<p>Thus, when we maximize the gain in log-likelihood going from <span class="math inline">\(\theta^{\text{old}}, \phi^{\text{old}}\)</span> to <span class="math inline">\(\theta, \phi\)</span>, we get:</p>
+<span class="math display">\[\begin{aligned}
+\underset{\theta, \phi}{\max} \left[\ell(\theta, \phi) - \ell(\theta^{\text{old}}, \phi^{\text{old}})\right] \geq \underset{\theta, \phi}{\max} \left[Q\left(\theta, \phi| \theta^{\text{old}}, \phi^{\text{old}}\right) - Q\left(\theta^{\text{old}}, \phi^{\text{old}}| \theta^{\text{old}}, \phi^{\text{old}}\right)\right]
+\end{aligned}\]</span>
+<p>or equivalently,</p>
+<span class="math display">\[\begin{aligned}
+\underset{\theta, \phi}{\max} \left[\ell(\theta, \phi)\right] - \ell(\theta^{\text{old}}, \phi^{\text{old}}) \geq \underset{\theta, \phi}{\max} \left[Q\left(\theta, \phi| \theta^{\text{old}}, \phi^{\text{old}}\right)\right] - Q\left(\theta^{\text{old}}, \phi^{\text{old}}| \theta^{\text{old}}, \phi^{\text{old}}\right).
+\end{aligned}\]</span>
+<p>Note that the above max is always greater than or equal to zero:</p>
+<p><span class="math display">\[\underset{\theta, \phi}{\max} \left[Q\left(\theta, \phi| \theta^{\text{old}}, \phi^{\text{old}}\right)\right] - Q\left(\theta^{\text{old}}, \phi^{\text{old}}| \theta^{\text{old}}, \phi^{\text{old}}\right) \geq 0\]</span></p>
+<p>since we can always maintain the status quo by choosing <span class="math inline">\(theta = \theta^{\text{old}}\)</span> <span class="math inline">\(\phi = \phi^{\text{old}}\)</span>:</p>
+<p><span class="math display">\[ Q\left(\theta^{\text{old}}, \phi^{\text{old}}| \theta^{\text{old}}, \phi^{\text{old}}\right) - Q\left(\theta^{\text{old}}, \phi^{\text{old}}| \theta^{\text{old}}, \phi^{\text{old}}\right) = 0.\]</span></p>
+<p>Thus, we have that by maximizing <span class="math inline">\(Q\left(\theta, \phi| \theta^{\text{old}}, \phi^{\text{old}}\right)\)</span>, we ensure that <span class="math inline">\(\ell(\theta, \phi) - \ell(\theta^{\text{old}}, \phi^{\text{old}})\geq 0\)</span> in each iteration of EM.</p>
+<p>If the likelihood of the model is bounded above (i.e. <span class="math inline">\(\ell(\theta, \phi) \leq M\)</span> for some constant <span class="math inline">\(M\)</span>), then EM is guaranteed to convergence. This is because we’ve proved that EM increases (or maintains) log-likelihood in each iteration, therefore, if <span class="math inline">\(\ell(\theta, \phi)\)</span> is bounded, the process must converge.</p>
+<h4 id="disclaimer" class="hasAnchor">Disclaimer:<a href="motivation-for-latent-variable-models.html#disclaimer" class="anchor-section" aria-label="Anchor link to header"></a></h4>
+<p>Although EM converges for bounded likelihoods, it is not guaranteed to converge to the global max of the log-likelihood! By formalizing an analogy between EM and gradient descent, you can show that EM converges to a stationary point of the likelihood. Often times, EM converges only to local optima of the likelihood function and the point to which it converges may be very sensitive to initialization.</p>
+</blockquote>
+
 </div>
 </div>
             </section>
@@ -407,8 +617,8 @@ The empirical variance of our prediction <span class="math inline">\(\hat{y}\)</
           </div>
         </div>
       </div>
-<a href="what-are-probablistic-and-non-probablistic-regression.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
-<a href="what-is-logistic-regression.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
+<a href="the-math-of-expectation-maximization.html" class="navigation navigation-prev " aria-label="Previous page"><i class="fa fa-angle-left"></i></a>
+<a href="review-of-latent-variables-compression-and-clustering.html" class="navigation navigation-next " aria-label="Next page"><i class="fa fa-angle-right"></i></a>
     </div>
   </div>
 <script src="libs/gitbook-2.6.7/js/app.min.js"></script>
@@ -439,7 +649,7 @@ gitbook.start({
 "size": 2
 },
 "edit": {
-"link": "https://github.com/rstudio/bookdown-demo/edit/master/04-What-Matters-in_ML.Rmd",
+"link": "https://github.com/rstudio/bookdown-demo/edit/master/17-Math-of-EM.Rmd",
 "text": "Edit"
 },
 "history": {
