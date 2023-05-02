@@ -1,0 +1,173 @@
+# The Math of Posterior Inference
+
+![](https://i.imgur.com/HMKpGFK.png)
+
+## The Bayesian Modeling Process
+
+The key insight about Bayesian modeling is that ***we treat all unknown quantities as random variables***. 
+
+Thus, in order to make statements about the data, $(\mathbf{x}, y)$, and the model parameters $\mathbf{w}$ (as well as potentially parameters of the likelihood $\theta$), we form the *joint distribution* over all variables and use the various marginal and conditional distributions to reason about the data $(\mathbf{x}, y)$ and $\mathbf{w}$.
+
+That is, the steps of Bayesian modeling are as follows:
+
+0. **(Everything Is an RV)** We need to define how the data, as a RV, depends on $\mathbf{w}$ and what kind of RV is $\mathbf{w}$:
+   - **(Likelihood)** $p(y | \mathbf{x}, \mathbf{w})$
+     *Choose whatever distribution you want!!!*
+   - **(Prior)** $p(\mathbf{w})$
+     *Choose whatever distribution you want!!!*
+
+1. **(Make the Joint Distribution)** we form the ***joint distribution*** over all RVs -- this usually involves multiplying all the pdf's together 
+   $$p(y, \mathbf{w} | \mathbf{x}) = p(y | \mathbf{x}, \mathbf{w}) p(\mathbf{w})$$
+
+2. **(Make Inferences About the Unknown Variable)** we can condition on the observed RVs to make inferences about unknown RVs,
+$$
+p(\mathbf{w}| y, \mathbf{x}) = \frac{p(y, \mathbf{w}|\mathbf{x})}{p(y|\mathbf{x})}
+$$
+where $p(\mathbf{w}| y, \mathbf{x})$ is called the ***posterior distribution*** and $p(y|\mathbf{x})$ is called the ***evidence***.
+   ![](https://i.imgur.com/D2RDFh2.jpg)
+ 
+3. **(Make Inferences About New Data, Under Our Prior)**  before any data is observed, we can use our prior and likelihood to reason about unobserved data:
+$$
+p(y^* |\mathbf{x}^*) = \int_\mathbf{w} p(y^*, \mathbf{w} |\mathbf{x}^*) d\mathbf{w} = \int_\mathbf{w} p(y^* | \mathbf{w}, \mathbf{x}^*) p(\mathbf{w}) d\mathbf{w}
+$$
+where $(\mathbf{x}^*, y^*)$ represents new data. In the above $p(y^* |\mathbf{x}^*)$ is called the ***prior predictive***, and tells us how likely any data point is under our prior belief. This is a measure of the appropriateness of the inductive bias (or prior belief) of our model.
+4. **(Make Inferences About New Data, Under Our Posterior)** after observing data $\mathcal{D} = \{(\mathbf{x}, y)\}$, we can use our posterior to reason about unobserved data:
+$$
+p(y^* |\mathbf{x}^*, \mathcal{D}) = \int_\mathbf{w} p(y^*, \mathbf{w}|\mathbf{x}^*, \mathcal{D}) d\mathbf{w} = \int_\mathbf{w} p(y^*|\mathbf{w}, \mathbf{x}^*)p(\mathbf{w} | \mathcal{D}) d\mathbf{w}
+$$
+where $(\mathbf{x}^*, y^*)$ represents new data. In the above $p(y^* |\mathbf{x}^*, \mathcal{D})$ is called the ***posterior predictive***, and tells us how likely any data point is under our posterior belief. This is a measure of the goodness of the learnt model (or posterior belief). 
+
+5. **(Evaluating Bayesian Models)** computing the posterior predictive likelihood of the data is the main way to evaluate how well our model fits the data:
+$$
+\sum_{m=1}^M \log p(y_m |\mathbf{x}_m, \mathcal{D}) = \sum_{m=1}^M \log \int_\mathbf{w} p(y_m|\mathbf{w}, \mathbf{x}_m)p(\mathbf{w} | \mathcal{D}) d\mathbf{w}
+$$
+where $\{ (\mathbf{x}_m, y_m) \}$ is the test data set. This quantity is called the ***test log-likelihood***.
+
+## Point Estimates from the Posterior
+If you absolutely wanted to derive a point estimate for the parameters $\theta$ in the likelihood from your Bayesian model, there are two common ways to do it:
+
+1. ***The Posterior Mean Estimate***: the "average" estimate of $\mathbf{w}$ under the posterior distribution:
+$$
+\mathbf{w}_{\text{post mean}} = \mathbb{E}_{\mathbf{w}\sim p(\mathbf{w}|\mathcal{D})}\left[ \mathbf{w}|\mathcal{D} \right] = \int_\mathbf{w} \mathbf{w} \;p(\mathbf{w}|\mathcal{D}) d\mathbf{w}
+$$
+2. ***The Posterior Mode*** or ***Maximum a Posterior (MAP) Estimate***: the most likely estimate of $\mathbf{w}$ under the posterior distribution:
+$$
+\mathbf{w}_{\text{MAP}} = \mathrm{argmax}_{\mathbf{w}} p(\mathbf{w}|\mathcal{D})
+$$
+
+**Question:** Which point estimate of the posterior do you think is more common to compute in machine learning (*Hint:* which point estimate would you rather compute, if you were forced to compute one)?
+
+**Question:** is it better to summarize the entire posterior using a point estimate? I.e. why should we keep the posterior distribution around?
+
+**Answer:** point estimates can be extremely misleading!
+
+1. The posterior mode can be an atypical point: 
+   ![](https://i.imgur.com/nqnLAhH.jpg)
+2. The posterior mean can be an unlikely point:
+   ![](https://i.imgur.com/k4EZHe8.jpg)
+
+### Comparison of Posterior Point Estimates and MLE
+It turns out that point estimates of Bayesian posteriors can often be interpreted as some kind of regularized MLE! For example, for Bayesian linear regression with Gaussian prior, the posterior mode estimate is $\ell_2$-regularized MLE!
+
+Let's recall the loss function for $\ell_2$-regularized MLE:
+$$
+\ell(\mathbf{w}) = - \left(\underbrace{\sum_{n=1}^N \log p(y_n | \mathbf{x}_n, \mathbf{w})}_{\text{joint log-likelihood}} - \lambda\underbrace{\| \mathbf{w}\|_2^2}_{\text{regularization}}\right)
+$$
+
+Let's also recall the posterior pdf of Bayesian regression with Gaussian prior:
+$$
+p(\mathbf{w}|y, \mathbf{x}) \propto p(y |\mathbf{w}, \mathbf{x}) p(\mathbf{w})
+$$
+Remember that the posterior mode is defined as:
+$$
+\textrm{argmax}_\mathbf{w} p(\mathbf{w}|\mathcal{D}) =  \textrm{argmax}_\mathbf{w} \prod_{n=1}^N p(y_n |\mathbf{w}, \mathbf{x}_n) p(\mathbf{w})
+$$
+In the above equation, we are using that fact that multiplicative constants do not affect the position of global optima.
+
+Remember also that in ML we always prefer to work with the log-likelihood because the log simplifies many pdf expressions. Luckily applying logs to our probabilistic loss function also does not affect the position of the global optima. That is, we have that:
+$$
+\textrm{argmax}_\mathbf{w} \log p(\mathbf{w}|\mathcal{D}) =  \textrm{argmax}_\mathbf{w} \underbrace{\sum_{n=1}^N \log p(y_n | \mathbf{x}_n, \mathbf{w})}_{\text{joint log-likelihood}} + \log p(\mathbf{w}),
+$$
+Now if the prior is Gaussian, let's say:
+$$
+\mathbf{w}\sim \mathcal{N}(\mathbf{m}, \mathbf{S})
+$$
+where $\mathbf{w}\in \mathbb{R}^D$, then the log prior will simplify nicely:
+\begin{aligned}
+\textrm{argmax}_\mathbf{w} \log p(\mathbf{w}|\mathcal{D}) =&  \textrm{argmax}_\mathbf{w} \underbrace{\sum_{n=1}^N \log p(y_n | \mathbf{x}_n, \mathbf{w})}_{\text{joint log-likelihood}} + \log p(\mathbf{w})\\
+=&\textrm{argmax}_\mathbf{w} \underbrace{\sum_{n=1}^N \log p(y_n | \mathbf{x}_n, \mathbf{w})}_{\text{joint log-likelihood}} \\
+&+ \log \frac{1}{\sqrt{(2\pi)^D \mathbf{det}(\Sigma)}} + \log\mathrm{exp}\left\{ - \frac{1}{2}(\mathbf{w} - \mathbf{m})^\top \mathbf{S}^{-1}(\mathbf{w} - \mathbf{m})\right\}\\
+=&\textrm{argmax}_\mathbf{w} \underbrace{\sum_{n=1}^N \log p(y_n | \mathbf{x}_n, \mathbf{w})}_{\text{joint log-likelihood}} + \log C  - \frac{1}{2}(\mathbf{w} - \mathbf{m})^\top \mathbf{S}^{-1}(\mathbf{w} - \mathbf{m})
+\end{aligned}
+
+Now if we further assume that the mean $\mathbf{m}$ is zero and the covariance matrix $\mathbf{S}$ is diagonal, i.e. $\mathbf{S} = \left[\begin{array}{cc} s & 0\\ 0 & s \end{array} \right]$, the the log prior will look even simpler:
+\begin{aligned}
+\textrm{argmax}_\mathbf{w} \log p(\mathbf{w}|\mathcal{D}) &= \textrm{argmax}_\mathbf{w} \underbrace{\sum_{n=1}^N \log p(y_n | \mathbf{x}_n, \mathbf{w})}_{\text{joint log-likelihood}} + \log C  - \frac{1}{2}(\mathbf{w} - \mathbf{m})^\top \mathbf{S}^{-1}(\mathbf{w} - \mathbf{m})\\
+&=\textrm{argmax}_\mathbf{w} \underbrace{\sum_{n=1}^N \log p(y_n | \mathbf{x}_n, \mathbf{w})}_{\text{joint log-likelihood}} + \log C  - \frac{1}{2}(\mathbf{w})^\top\left(\frac{1}{s} I_{2\times 2}\right)(\mathbf{w})\\
+&= \textrm{argmax}_\mathbf{w} \underbrace{\sum_{n=1}^N \log p(y_n | \mathbf{x}_n, \mathbf{w})}_{\text{joint log-likelihood}} + \log C  - \frac{1}{2s}(\mathbf{w})^\top(\mathbf{w})\\
+&= \textrm{argmax}_\mathbf{w} \underbrace{\sum_{n=1}^N \log p(y_n | \mathbf{x}_n, \mathbf{w})}_{\text{joint log-likelihood}} + \log C  - \underbrace{\frac{1}{2s}}_{\lambda}\underbrace{\|\mathbf{w}\|_2^2}_{\text{$\ell_2$ regularization}}\\
+&\equiv \textrm{argmax}_\mathbf{w} \underbrace{\sum_{n=1}^N \log p(y_n | \mathbf{x}_n, \mathbf{w})}_{\text{joint log-likelihood}} - \underbrace{\frac{1}{2s}}_{\lambda}\underbrace{\|\mathbf{w}\|_2^2}_{\text{$\ell_2$ regularization}}\\
+\end{aligned}
+In the last line of our derivation, we dropped the constant $\log C$ since additive constants do not change the location of the optima.
+
+
+
+### Law of Large Numbers for Bayesian Inference
+
+In general, in Bayesian inference we are **less interested asymptotic behavior**. But the properties of the asymptotic distribution of the posterior can be useful.
+
+**Theorem: (Berstein-von Mises**)
+
+"Under some conditions, as $N\to \infty$ the posterior distribution converges to a Gaussian distribution centred at the MLE with covariance matrix given by a function of the Fisher information matrix at the true population parameter value."
+
+**In English: Why Should You Care About This Theorem?**
+1. The posterior point estimates (like MAP) approach the MLE, with large samples sizes. 
+2. It may be valid to approximate an unknown posterior with a Gaussian, with large samples sizes. This will become a very important idea for Bayesian Logistic Regression!
+   
+## Bayesian Logistic Regression
+
+For Bayesian linear regression with Gaussian likelihood and Gaussian prior, we can derive all the marginal and conditional pdfs analytically -- they are all Gaussians! This property -- that the posterior pdf form is known and determined by the likelihood and prior -- is called ***conjugacy***, in particular, we call the pair of compatible likelihood and prior ***conjugate***.
+
+At this point, you might be mislead into thinking that Bayesian modeling involves a bunch of analytic derivations -- working with ***conjugate pairs***. Unfortunately, this is not the case! For most Bayesian models, the marginal and conditional distributions of interest cannot be analytically derived or evey evaluated -- inference in Bayesian modeling is largely ***approximate*** and ***computational***.
+
+In fact, Bayesian versions of very common simple models can already yield intractable inference!
+
+
+Let's recall the likelihood of logistic regression:
+$$
+p(y|\mathbf{w}, \mathbf{x}) = \sigma(\mathbf{w}^\top\mathbf{x})^y (1 - \sigma(\mathbf{w}^\top\mathbf{x}))^{1-y}.
+$$
+Now, let's again choose a Gaussian prior for $\mathbf{w}$:
+$$
+\mathbf{w} \sim \mathcal{N}(\mathbf{m}, \mathbf{S}).
+$$
+
+What would the posterior of Bayesian logistic regression look like?
+\begin{aligned}
+p(\mathbf{w}|y, \mathbf{x}) &\propto p(y|\mathbf{w}, \mathbf{x})p(\mathbf{w})\\
+=& \sigma(\mathbf{w}^\top\mathbf{x})^y (1 - \sigma(\mathbf{w}^\top\mathbf{x}))^{1-y}\frac{1}{\sqrt{(2\pi)^D \mathbf{det}(\Sigma)}} \mathrm{exp}\left\{ - \frac{1}{2}(\mathbf{w} - \mathbf{m})^\top \mathbf{S}^{-1}(\mathbf{w} - \mathbf{m})\right\}\\
+=& \frac{1}{\sqrt{(2\pi)^D \mathbf{det}(\Sigma)}} \left(\frac{1}{1 + \mathrm{exp}\{-\mathbf{w}^\top\mathbf{x}\}}\right)^y\left(1-\frac{1}{1 + \mathrm{exp}\{-\mathbf{w}^\top\mathbf{x}\}}\right)^{1-y}\\
+&* \mathrm{exp}\left\{ - \frac{1}{2}(\mathbf{w} - \mathbf{m})^\top \mathbf{S}^{-1}(\mathbf{w} - \mathbf{m})\right\}
+\end{aligned}
+Does this look like a pdf that you know -- in particular, does this look like a Gaussian pdf?
+
+It turns out, the pdf posterior of Bayesian logistic regression doens't have an easy known form -- that is, is not the pdf of a RV who's moment generating functions we know. In this case, we say that the likelihood and prior in Bayesian Logistic Regression is ***non-conjugate***.
+
+But why do we care that we recognize the posterior as the pdf of a "named" distribution?
+
+
+**What's Hard About Bayesian Inference?**
+In non-Bayesian probabilistic ML, your primary math task is *optimization*, that is, you spend your time writing down objective functions, finding their gradients (using `autograd`) and then making gradient descent converge to a reasonable optimum. 
+
+In Bayesian ML, you have two primary math tasks:
+1. **(Inference)** sampling from priors, posteriors, prior predictives and posterior predictives
+2. **(Evaluation)** computing integrals expressing the log-likelihood of train and test data under the posterior and the log-likelihood of train and test data under the prior
+
+Each task -- sampling and integration -- is incredibly mathematically and computationally difficult! You will see on Tuesday that even sampling from known ("named") distributions is an incredbily complex problem!
+
+**Why Should You Care?** 
+In practice, for every problem you have to choose a modeling paradigm that suits the characteristics and constraints of the problem as well as suits your goals.
+
+When you are choosing between Bayesian and non-Bayesian paradigms, you know that one trade-off you always have to weight is between the relative easy of optimization (`autograd` + gradient descent) and the computational complexity of sampling and the computational intractability of integration!
+
+In short, you need to know what your're getting into when you go Bayesian and what value being Bayesian brings you!
