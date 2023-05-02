@@ -12,9 +12,10 @@ github-repo: rstudio/bookdown-demo
 description: "This is a set of note for CS181: Machine Learning (Spring 2023)"
 ---
 
+![](https://i.imgur.com/xDR9VQd.png)
 
 # Introduction
 This is a set of notes for the Spring 2023 iteration of CS181: Machine Learning. CS 181 provides a broad and rigorous introduction to machine learning, probabilistic reasoning and decision-making in uncertain environments. We discuss the motivations behind common machine learning algorithms, and the properties that determine whether or not they will work well for a particular task. We derive the mathematical underpinnings for many common methods, as well as apply machine learning to challenges with real data. In doing so, students will gain a strong conceptual understanding of machine learning methods that can empower them to pursue future theoretical and practical directions.
 
 
-![](https://i.imgur.com/xDR9VQd.png)
+
