@@ -1,0 +1,127 @@
+# What is Regression?
+
+![](https://i.imgur.com/xDR9VQd.png)
+
+## What is Machine Learning?
+Machine learning is typically the task of *learning* a *function*, $f$, given a set of training data, $\mathcal{D}$. This learnt function $f$ can be used to make predictions on new data in *regression* and *classification*, this function can be used to explain how the observed data is structured in *unsupervised learning*.
+
+In this class, this function $f$ can be linear (linear, polynomial, basis regression models), represented by a neural network (deep learning models), or defined *without* an explicit formula in terms of the input (non-parametric models)!
+
+## What is Regression?
+Thus far in the course, a regression problem is the task of predicting an output value $y \in \mathbb{R}$, given an input $\mathbf{x} \in \mathbb{R}^D$.
+
+We have seen one way to solve a regression problem:
+1. *choose* a training data set of $N$ number of observations, $\mathcal{D} = \{(\mathbf{x}_1, y_1),\ldots,(\mathbf{x}_N, y_N)\}$.
+2. *hypothesize* that the relationship between $\mathbf{x}$ and $y$ is captured by
+  $$
+  y = f_\mathbf{w}(\mathbf{x})
+  $$
+  where $\mathbf{w} \in \mathbb{R}^M$ are the parameters (i.e. unknown coefficients) of the function $f$.
+3. *choose* a math notion for "how well $f_\mathbf{w}$ fits the data", i.e. a *loss function*, $\mathcal{L}(\mathbf{w})$.
+4. *choose* a way to solve for the parameters $\mathbf{w}$ that minimizes the loss function:
+  $$
+  \mathbf{w}^* = \mathrm{argmin}_\mathbf{w}\; \mathcal{L}(\mathbf{w}) 
+  $$
+  
+This framework applies to linear, polynomial and basis regression as well as fancy neural network regression.
+
+*Note:* every step in the above solution is a ***design choice***, which means that you can chose wrongly for your given real-life problem. In your model evaluation step, you must revisit and critique each design choice.
+
+## (Almost) Everything is Linear Regression
+
+In **linear regression**, we assume that our function $f_\mathbf{w}$ as the form
+$$
+  y = f_\mathbf{w}(\mathbf{x}) = \mathbf{w}^\top \mathbf{x}
+$$
+If we choose Mean Square Error as our loss function, then
+    $$
+  \mathcal{L}(\mathbf{w}) = \frac{1}{N}\sum_{n=1}^N(y_n - f_\mathbf{w}(\mathbf{x}))^2.
+  $$
+  
+If we choose to analytically minimize $\mathcal{L}$ over possible values of $\mathbf{w}$ (using calculus), then we get
+$$
+\mathbf{w}^* = (\mathbf{X}^\top\mathbf{X})^{-1}\mathbf{X}^\top\mathbf{y}
+$$
+where $\mathbf{X} \in \mathbb{R}^{N\times D}$ is the matrix of all your training input and $\mathbf{y} \in \mathbb{R}^N$ is the vector of all your training target values.
+
+For each new input $\mathbf{x}$, our model prediction would be
+$$
+\hat{y} = (\mathbf{w}^*)^\top\mathbf{x} = \left[(\mathbf{X}^\top\mathbf{X})^{-1}\mathbf{X}^\top\mathbf{y}\right]^\top\mathbf{x}.
+$$
+
+Once we have solved the linear regression problem, it turns out we have solved the regression problem for a large number of ***non-linear*** regression problems!
+
+**Polynomial Regression:** Polynomial regression of degree $K$ is just linear regression on top of input data that's been augmented with polynomial features:
+$$
+y = \mathbf{w}^\top \phi(\mathbf{x})
+$$
+where $\phi: \mathbb{R}^D \to \mathbb{R}^{D * K + 1}$ is defined by
+$$
+\phi((1\; x_1\; \ldots\; x_D)^\top) = (1\; x_1\; x^2_1\; \ldots\; x^K_1\; x_2\; x^2_2\; \ldots\; x^K_2\; \ldots \; x_D\; x^2_D\; \ldots\; x^K_D)^\top.
+$$
+Thus, the solution to polynomial regression is
+$$
+\mathbf{w}^* = (\phi(\mathbf{X})^\top\phi(\mathbf{X}))^{-1}\phi(\mathbf{X})^\top\mathbf{y}
+$$
+
+For each new input $\mathbf{x}$, our model prediction would be
+$$
+\hat{y} = (\mathbf{w}^*)^\top\mathbf{x} = \left[(\mathbf{\Phi}^\top\mathbf{\Phi})^{-1}\mathbf{\Phi}^\top\mathbf{y}\right]^\top\mathbf{x},
+$$
+where we write $\mathbf{\Phi}$ for $\phi(\mathbf{X})$.
+
+**Regression on Arbitrary Bases:** We can choose *any* non-linear feature map $\phi: \mathbb{R}^{D} \to \mathbb{R}^{D'}$ and capture non-linear trends in the data by performing linear regression on $\phi(\mathbf{x})$.
+
+**Neural Network Regression:** Later, we will view neural network regression as:
+1. first *learning*, rather than choosing, a feature map $\phi$
+2. then performing linear regression on $\phi(\mathbf{x})$.
+
+---
+
+## What is Model Evaluation?
+
+So, we've solved (linear) regression, i.e. we found $\mathbf{w}^*$ that minimizes the Mean Square Error on $\mathcal{D}$. Are we done?
+
+**No!** The machine learning has only just started!
+
+We still need to evaluate our model:
+
+1. what is the Mean Square Error of our model on the test data? Why do we need to check this?
+   > What if train MSE is 0.9 and test MSE is 10?
+2. can we visually inspect our model on training and test data (i.e. plot the model against the data)? Why visually inspect if we've computed MSE?
+3. we need to interpret the model. Why interpret when we have the MSE?
+   > What if we saw that selling price was related to square footage and number of rooms by $y = -5 * \mathrm{Sqft} + \mathrm{Rooms}$?
+4. does the model help us solve the problem? That is, who is making the final decision on the problem? How are they going to be using the model? What information do they need from the model to make good decisions?
+   > What we found the literal model that generated the data, but the MSE will always be around 10 mg (why MSE not be zero)? Say our task is to prescribe a new seizure medication for epileptic patients, where the safe dosage range is between 20 mg and 30 mg. Is this a helpful model?
+5. what are the limitations of our models -- what are the assumptions we made when building/testing our model? How will our model behave when those assumptions are violated? When our model fails or succeeds, what will be the negative or positive real-life consequences and how will those consequences be distributed amongst the population?
+   > If our model causes physicians in a clinical trial to make poor decisions or draw incorrect conclusions, which patient groups will be the most impacted? How will they be impacted?
+   
+
+## What is Model Critique?
+
+If the model fails any of the above four evaluation steps, we need to revisit and potentially re-do each design decision:
+
+1. Is our training data the "right" data set?
+2. Is the functional form (linear or polynomial of degree 2) we assumed correct?
+3. Does our loss function capture what we really want to happen in real-life?
+4. Did we optimize well?
+5. Did we provide the right information about the model to the human decision maker?
+
+## Limitations and Connections
+
+Our current approach to regression is limited in a number of ways:
+1. We need to guess the "right" functional form of the data trend. *(Non-parametric regression and Neural Network Regression will help.)*
+2. Our choice to always minimize MSE seem arbitrary. *(Probabilistic Regression will help.)*
+3. We needed to do lots of fancy calculus to minimize our loss function -- what if we can't solve for the stationary points?! (*Gradient Descent will help*)
+3. Minimizing the loss function seems to involve differentiation -- what if it's too hard to write out the gradient of my loss function?! (*Automatic differentiation will help*)
+3. We can't explain why observed $y$'s don't agree with the predictions of a perfect model $f_\mathbf{w}$. *(Probabilistic Regression will help.)*
+4. We have important domain knowledge (i.e. higher square footage should not negatively impact sales price) that we are not incorporating into our model. *(Bayesian Regression will help)*
+5. We have no uncertainty, just predictions! *(Confidence and predictive intervals will help, so will Bayesian models)*
+6. Is printing out the model parameters the best way to interpret the model? *(Different XAI techniques will help)*
+   > Say we find that selling price is related to square footage and number of rooms by
+     $$
+     y = 5\; * \mathrm{SqFt} + 0.1\; * \mathrm{Rooms}
+     $$
+     What would you say is the most important factor in determining selling price?
+     If you realized that $\mathrm{SqFt} = 15 * \mathrm{Rooms}$, would this change your interpretation of the model?
+7. Our discussion of model evaluation and critique have been in the abstract -- we have not considered any real-life evaluations of or constraints on our models. *(Working with domain experts will help)*
