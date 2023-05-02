@@ -1,0 +1,102 @@
+# Bayesian Modeling Framework 
+
+![](https://i.imgur.com/HMKpGFK.png)
+
+## Components of Machine Learning Reasoning
+There are three important components of machine learning reasoning, regardless of whether you are a theoretician, practioner or student:
+
+1. **Low level reasoning:** you need to be technically fluent in a specific set of mathematical notation, manipulations, coding paradigms and frameworks to reason about the low level details of models.
+   - *Dervivation:* are the math formulae correctly derived?
+   - *Implementation:* is your code logical and bug free?
+   - *Computation:* is your computation numerically stable, efficient and correct (e.g. did you optimize your model)?
+
+   ***Examples:*** 
+     - you need to be able to verify the correctness of the gradient formula for logistic regression instead of just copying it from somewhere.
+     - you need to be able to do backprop or reverse mode autodiff by hand (and implement it from scratch), so you debug issue that arise in `pytorch` autodifferentiation of computational graphs (they will arise!!).
+     - you need to be able to verify the correctness of the formula for the posterior distribution in Bayesian linear regression (with Gaussian noise and Gaussian likelihood) instead of copying it from somewhere.
+
+   ***Why you care:*** You need low level reasoning to make models that work *correctly* and to fix your models when they break!
+   
+2. **High level reasoning:** you need to be able to chain a complex sequence of concepts and facts together to deductively reason about the emergent properties of models.
+   - *Inductive bias of models:* what types of properties are inherent or more likely in your learnt models given your model assumptions?
+   - *Model comparison:* in what ways do the inductive biases of models differ?
+   - *Model evaluation:* in what ways can we measure the inductive biases of models (e.g. what do our metrics really measure)?
+
+    ***Examples:*** 
+	- you need to be able to reason about how your design choices affect emergent properties of your model (bias, variance, uncertainty, overfitting, underfitting, interpretability).
+	- you need to be able to reasons about the relative strengths and weweaknesses of model in comparison.
+	- you need to be able to choose the right metric to measure the right aspects of model inductive bias
+
+    ***Why you care:*** You need high level reasoning to design new models and discover understand model behaviors.
+	
+3. **Task level reasoning:** you need to be able to reason about model properties in the context of a task or an end goal.
+   - *Task performance:* what does the inductive bias of your model imply about its task performance?
+   - *Task-based evaluation:* do our metrics capture important aspects of task performance?
+
+    ***Why you care:*** You need task level reasoning to make tech that people care about and won't get you sued.
+	
+	
+It's hard to practice all three -- reflect frequently on what you feel like you need to work on and we are here to help!
+
+## Bayesian Modeling Paradigm
+
+**Modeling noise:** We start with modeling both the data trend and the observation noise:
+$$y = f_\mathbf{w}(\mathbf{x}) + \epsilon,\; \epsilon \sim p(\epsilon),$$
+giving us a likelihood $p(y | \mathbf{x}, \mathbf{w})$.
+
+> *Example:* Let's pick a Gaussian likelihood (i.e. additive Gaussian noise) for linear regression:
+> $$ y | \mathbf{x}, \mathbf{w} \sim \mathcal{N}(\mathbf{w}^\top \mathbf{x}, 0.5)$$
+> where $\mathbf{w} = [w_0\;\; w_1]^\top$ is the vector consisting of the slope $w_1$ and y-intercept $w_0$.
+
+
+**Modeling belief:** We then encode our beliefs about $\mathbf{w}$ as well as our uncertainty in a distribution, the *prior over $\mathbf{w}$*: $p(\mathbf{w})$.
+
+> *Example:* Let's pick Gaussian piors for $w_0, w_1$. 
+> $$w_0 \sim \mathcal{N}(0, 0.5),\;\;\; w_1 \sim \mathcal{N}(0, 1)$$
+> Since the $p(w_0), p(w_1)$ are both univariate Gaussians and we've assumed in our prior that they are independent, the joint distribution over $w_0$ and $w_1$ is a bivariate Gaussian with mean $m = [0\;\; 0]^\top$ and covariance matrix $S = \left[\begin{array}{cc} 0.5 & 0\\ 0 & 1 \end{array} \right]$:
+$$
+w\sim \mathcal{N}\left([0\;\; 0]^\top, \left[\begin{array}{cc} 0.5 & 0\\ 0 & 1 \end{array} \right] \right).
+$$
+>
+>**Question:** What beliefs do our priors translate into?
+
+**Update belief using data:** We use Baye's rule to derive the *posterior* over $\mathbf{w}$, $p(\mathbf{w}| y, \mathbf{x})$, which gives us the likelihood of a model $\mathbf{w}$ given the observed data:
+$$
+p(\mathbf{w}| y, \mathbf{x}) \propto p(y| \mathbf{w}, \mathbf{x}) p(\mathbf{w})
+$$
+
+![](https://i.imgur.com/D2RDFh2.jpg)
+
+
+> *Example:* Given a training set, we can show that the posterior $p(\mathbf{w} | \mathbf{y}, \mathbf{X})$ is a bivariate Gaussian with mean $\mu$ and covariance $\Sigma$ defined as below:
+>
+> \begin{aligned}
+\mu &= \left(S^{-1} + 2\mathbf{X}^\top\mathbf{X}\right)^{-1} \left(2\mathbf{X}^\top\mathbf{y} \right)\\
+\Sigma &= \left(S^{-1} + 2\mathbf{X}^\top\mathbf{X}\right)^{-1}\\
+\end{aligned}
+>where $\mathbf{y}$ is the vector of target values, $\mathbf{X}$ is the augmented input matrix for the training data set and $S = \left[\begin{array}{cc} 0.5 & 0\\ 0 & 1 \end{array} \right]$.
+>
+> Remember that the MLE solution is $\mathbf{w}^\mathrm{MLE} = (\mathbf{X}^\top \mathbf{X})^{-1}\mathbf{X}^\top \mathbf{y}$.
+>
+> **Question:** how does our prior (mean or variance) affect our posterior (mean or variance)? How does the number of data observations affect our posterior (mean or variance)? How does the observation noise level affect our posterior (mean or variance)?
+> *Hint:* Note that $S^{-1} = \left[\begin{array}{cc} \frac{1}{0.5} & 0\\ 0 & \frac{1}{1} \end{array} \right]$.
+
+
+**Make Predictions Under Uncertain Belief** 
+
+We can use models in our posterior to make predictions and quantify uncertainty:
+
+*Posterior Predictive Sampling:*
+1. Sample $\mathbf{w}^{(s)}$ from posterior $p(\mathbf{w})$
+2. Sample prediction $y$ from likelihood $p(y | \mathbf{w}^{(s)}, \mathbf{x})$. That is, we sample a noise $\epsilon^{(s)}$ from $p(\epsilon)$ and generate:
+$$
+\hat{y} = f_{\mathbf{w}^{(s)}}(\mathbf{x}) + \epsilon^{(s)}
+$$
+
+We can use our posterior to reason about new data -- e.g. how likely is this new data given our posterior belief? We can compute the likelihood of a new data point give our training data with the following integral:
+$$
+p(y^* |\mathbf{x}^*, \mathcal{D}) = \int_\mathbf{w} p(y^*, \mathbf{w}|\mathbf{x}^*, \mathcal{D}) d\mathbf{w} = \int_\mathbf{w} p(y^*|\mathbf{w}, \mathbf{x}^*)p(\mathbf{w} | \mathcal{D}) d\mathbf{w}
+$$
+where $(\mathbf{x}^*, y^*)$ represents new data. In the above $p(y^* |\mathbf{x}^*, \mathcal{D})$ is called the ***posterior predictive***.
+
+> **Question:** how does our prior (mean or variance) affect our posterior predictive (mean or variance)? How does the number of data observations affect our posterior predictive (mean or variance)? How does the observation noise level affect our posterior predictive (mean or variance)?
