@@ -1,0 +1,156 @@
+# Math of Markov Decision Processes
+
+![](https://i.imgur.com/xDR9VQd.png)
+
+
+## Ingredients of Reinforcement Learning
+On Tuesday, we've built up a set of mathematical formalisms to describe sequential decision making in a changing world. Today, we will use this set of formalism to derive algorithms for optimizing sequential decision making.
+
+**Definition 1: (Agent's Representation of the World)** An ***Markov Decision Process (MDP)*** is defined by a set of 5 parameters, $\{S, A, T, R, \gamma\}$:
+1. The state space, $S$
+2. The action space, $A$
+3. The dynamics or *transition*, $T$, which is a function, $T: S\times A \times S \to [0,1]$, where $T^a(s, s') = \mathbb{P}[s' | s, a]$, for $a\in A$; we can also write $T[s' | s, a]$ to denote the probability of transitioning to $s'$ by doing $a$ and state $s$.
+
+   When the state space $S$ is finite, we often represent $T$ as a set of matrices, $T^a \in \mathbb{R}^{|S| \times |S|}$, where $T^a_{ij} = \mathbb{P}[s_i | s_j, a]$.
+4. The reward function, $R: S\times A \times S \to \mathbb{R}$, which defines the reward received by the agent by transitioning to state $s'$ given that the agent starts at state $s$ and performs action $a$. 
+
+   **Note:** in some texts, the reward function is defined only in terms of the current state and the action, i.e. $R: S\times A \to \mathbb{R}$. 
+5. The discount factor, $\gamma\in [0,1]$, which describes how the agent prioritizes immediate versus future rewards.
+
+**Definition 2: (Agent's Strategy for Action Selection)** A function $\pi$ is called a ***policy*** if 
+$$
+\pi: S \to A
+$$
+or 
+$$
+\pi: S \to [0,1]^{|A|},
+$$
+where $\pi(s)$ is a distribution over actions. When we want to reference the *probability of selecting action $a$ at state $s$ under the policy $\pi$*, we write $\pi(a|s)$.
+
+**Definition 3: (Cumulative Reward)** Given a trajectory as a sequence of states and actions, $\{(Z_0, A_0), (Z_1, A_1), (Z_2, A_2),\dots\}$, we quantify the ***return*** for that trajectory as:
+$$
+G = R_{0} + \gamma R_{1} + \gamma^2R_{2} + \ldots = \sum_{n=0} \gamma^n R_{n }
+$$
+where $R_{n}$ is the reward collected at time $n$. 
+
+**Definition: (Value of a Policy)** The ***value function*** $V^\pi: S\to \mathbb{R}$ of an MDP is the expected return
+starting from state $s$, and then following policy $\pi$:
+$$
+V^\pi(s) = \mathbb{E}_{\pi}[G|Z_0 = s]
+$$
+The expectation above is taken over all randomnly varying quantities in $G$.
+
+**Definition 4: (Value of a Policy)** The ***action-value function***, or the $Q$-function, $Q^\pi: S \times A \to \mathbb{R}$ , quantifies the value of a policy, starting at a state $s$ and taking the action $a$, and then following policy $\pi$:
+$$
+Q^\pi(s, a) = \mathbb{E}_\pi[G|Z_0=s, A_0 = a]
+$$
+The expectation above is taken over all randomnly varying quantities in $G$.
+
+**Definition 5: (Planning)** We call $\pi^*$ the ***optimal policy*** if 
+$$
+V^{\pi^*}(s) = \max_\pi V^{\pi}(s),\; \text{for all } s\in S. 
+$$
+We call $V^{\pi^*}$ or $V^*$ the ***optimal value function***. We call an MDP ***solved*** when we know the optimal value function. The task of finding the optimal policy or the optimal value function is called ***planning***.
+
+### What is Reinforcement Learning?
+
+Generally speaking, reinforcement learning is a subfield of ML that considers the task of how to find an optimal policy $\pi^*$, given a formalization of the world in which sequential decision making is taking place. 
+
+Reinforcement learning is a huge field and it isn't always about solving an MDP! The following are some interesting tasks in RL:
+1. **Solving MDP's**: Given that we know the reward and the transition, can we algorithmically solve for the optimal policy?
+2. **Learning Dynamics**: In real-life, even if we know the state space, the action space and the reward, we may not know the dynamics of the world (i.e. we don't know $T$). Given some observations (trajectories), can we learn the dynamics of the world?
+3. **Learning Rewards**: In real-life, we often observe agents acting without knowing their explicit reward function. Given some observations (trajectories) of some unknown agent, can we learn the agent's reward function (i.e. what's motivating them)?
+4. **Working with Partial Information**: In real-life, the set of variables that we want to track are not all observed (nor are all observable). Given that our states consists of observed and unobserved variables, how can we solve for the optimal policy?
+5. **Planning without Dynamics:** We will see later that if we know the parameters of the MDP, solving for the optimal policy is tractable. In cases where we don't know the dynamics, for example, we could choose to learn the dynamics and then solve the MDP; or, alternatively, *we can directly solve for the optimal policy without first inferring the dynamics*.
+
+
+## Solving Markov Decision Processes
+
+
+Suppose we have the parameters of an MDP, $\{S, A, T, R, \gamma \}$ and a policy $\pi$. Let's assume that $S$ and $A$ are finit; then we can rewrite the definition for $Q^\pi$ and $V^\pi$ so that the computational process for these quantities looks more explicit:
+\begin{aligned}
+V^\pi(s) &= \mathbb{E}_{\pi}[G|Z_0 = s]\\
+&= \mathbb{E}_{\pi}[R_{0} + \gamma R_{1} + \gamma^2R_{2} + \ldots | Z_0 = s]\\
+&= \mathbb{E}_{\pi}[R_{0} |Z_0 = s] + \mathbb{E}_{\pi}[\gamma R_{1} + \gamma^2R_{2} + \ldots | Z_0 = s]\\
+&= \mathbb{E}_{\pi}[R_{0} |Z_0 = s] + \mathbb{E}_{\pi}[\gamma (R_{1} + \gamma R_{2} + \ldots) | Z_0 = s]\\
+&= \underbrace{\mathbb{E}_{\pi}[R_{0} |Z_0 = s]}_{\text{Immediate Reward}} + \underbrace{\mathbb{E}_{\pi}[\gamma V^\pi(Z_1) | Z_0 = s]}_{\text{Value of Next State}}
+\end{aligned}
+Similarly, we can write
+\begin{aligned}
+Q^\pi(s, a) &= \mathbb{E}_{\pi}[G|Z_0 = s, A_0 = a]\\
+&= {\mathbb{E}_{\pi}[R_{0} |Z_0 = s, A_0 = a]} + {\mathbb{E}_{\pi}[\gamma V^\pi(Z_1) | Z_0 = s, A_0 = a]}\\
+&= \underbrace{\mathbb{E}_{Z_1\sim T(s, a)}[R(s, a, Z_1)]}_{\text{Immediate Reward}} + \underbrace{\mathbb{E}_{\pi}[\gamma \mathbb{E}_{A_1\sim \pi(Z_1)}Q^\pi(Z_1,A_1) | Z_0 = s, A_0 = a]}_{\text{Value of Next State}}
+\end{aligned}
+
+In the above, we see that the computation of $Q^\pi$ and $V^\pi$ can be decomposed as (1) computing the expected immediate reward, and (2) computing the value of the next state. These equations are called the ***Bellman Equations***, and they are provide algorithmic ways for evaluating policies.
+
+We can explicitly rewrite out the expectations in the Bellman Equations:
+\begin{aligned}
+V^\pi(s) &= \sum_{a\in A}\sum_{s'\in S}\pi(a|s)T(s'|s, a)r(s, a, s') + \gamma \sum_{a\in A} \sum_{s'\in S} \pi(a|s)T(s'|s, a) V^\pi(s')\\
+Q^\pi(s, a) &= \sum_{s'\in S}T(s'|s, a)r(s, a, s') + \gamma \sum_{s'\in S} T(s'|s, a) \sum_{a'\in A}\pi(a'|s')Q^\pi(s', a')
+\end{aligned}
+
+
+#### Bellman Optimality Equations
+The optimal value functions and optimal $Q$ functions can be similarly defined via a set of recursive equations.
+\begin{aligned}
+V^*(s) &= \max_{a\in A}\left(\sum_{s'\in S}T(s'|s, a)r(s, a, s') + \gamma \sum_{s'\in S} T(s'|s, a) V^*(s')\right)\\
+Q^*(s, a) &= \sum_{s'\in S}T(s'|s, a)r(s, a, s') + \gamma \sum_{s'\in S} T(s'|s, a) \max_{a'\in A}Q^*(s', a')
+\end{aligned}
+
+
+### Policy Evaluation
+We can algorithmatize the Bellman Equations to help us compute $V^\pi$. That is, we can start with a random guess for the value function, denoted $V_0^\pi$. Then we iteratively apply the Bellman equation to update our value function $V^\pi$. That is, given our current estimate of the value function, $\widehat{V}_k^\pi$, we update our estimate by:
+$$
+\widehat{V}_{k+1}^\pi(s) = \sum_{a\in A}\sum_{s'\in S}\pi(a|s)T(s'|s, a)r(s, a, s') + \gamma \sum_{a\in A} \sum_{s'\in S} \pi(a|s)T(s'|s, a) \widehat{V}_k^\pi(s'),
+$$
+for all $s\in S$. We stop the iteration when the maximum difference between $\widehat{V}_{k+1}^\pi$ and $\widehat{V}_{k}^\pi$ is smaller than some small positive constant.
+
+**What Makes This Work:** we need a theoretical guarantee that this algorithm will converge to the true value function $V^\pi$.
+
+### Policy Iteration
+
+Ultimately, our goal is to plan, i.e. find the optimal policy. Since we have a way to evaluate the policy, i.e. compute $V^\pi(s)$, we can use our value function to iteratively improve a naive policy:
+
+1. Start with a random policy $\pi: S \to A$ (i.e. we have a deterministic policy)
+2. Repeat until previous policy and current policy are the same:
+   - Compute $V^\pi$ (and hence $Q$) by policy evaluation
+   - For each state $s\in S$, set
+     \begin{aligned}
+	 \pi(s) &= \mathrm{argmax}_{a\in A} Q(s, a) \\
+	 &= \mathrm{argmax}_{a\in A} \left( \sum_{s'\in S}T(s'|s, a)r(s, a, s') + \gamma  \sum_{s'\in S} T(s'|s, a) {V}^\pi(s')\right)
+	 \end{aligned}
+
+
+**What Makes This Work:** we need a theoretical guarantee that this algorithm will converge to the optimal policy $\pi^*$. For this, we need to know:
+1. an optimal policy exists for our MDP
+2. each step of policy iteration improves our current policy
+3. the algorithm converges (and hence, by 1 and 2 converges to the optimal policy)
+
+### Value Iteration
+Alternatively, we can also iteratively compute the optimal value function:
+1. For each state $s\in S$, initialize $\widehat{V}_0^*(s) = 0$
+2. Repeat until the maximum difference between value function at the current step and that at
+the previous step is smaller than some small positive constant:
+   - For each states $s\in S$, set
+     $$
+	 \widehat{V}_{k+1}^*(s) = \mathrm{argmax}_{a\in A} \left( \sum_{s'\in S}T(s'|s, a)r(s, a, s') + \gamma  \sum_{s'\in S} T(s'|s, a) \widehat{V}^*_k(s')\right)
+	 $$
+
+**What Makes This Work:** we need a theoretical guarantee that this algorithm will converge to the optimal value function $V^*$. For this, we need to know:
+1. an optimal value function exists for our MDP
+2. each step of value iteration increases our current value function
+3. the algorithm converges (and hence, by 1 and 2 converges to the optimal value function)
+
+### Policy Iteration or Value Iteration?
+In policy iteration, we start with a fixed policy. In value iteration, we start with a fixed value function. In both algorithms, we iteratively improve until we reach convergence.
+
+The policy iteration algorithm updates the policy while the value iteration algorithm iterates over the value function. Both algorithms implicitly update the policy and state value function in each iteration.
+
+In each iteration, the policy iteration function goes through two phases. One phase evaluates the policy, and the other one improves it. The value iteration function covers these two phases by taking a maximum over the utility function for all possible actions.
+
+The value iteration algorithm combines two phases of the policy iteration into a single update operation. However, the value iteration function runs through all possible actions at once to find the maximum action value. Thus, the value iteration algorithm is computationally heavier.
+
+Both algorithms are guaranteed to converge to an optimal policy in the end. But policy iteration converges within fewer iterations. 
+
+![](https://i.imgur.com/aUI25qC.png)
