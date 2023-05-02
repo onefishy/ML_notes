@@ -1,0 +1,211 @@
+# What are Neural Networks?
+
+![](https://i.imgur.com/xDR9VQd.png)
+
+## Neural Network as Universal Function Approximators
+
+Neural networks are not exotic or that interesting -- they are just a way to ***approximate a complex function by adding and composing a bunch of super simple non-linear functions***. 
+
+This composition of simple functions is represented ***graphically***.
+
+Neural network training is done by gradient descent, where the gradient is computed by ***iteratively applying the chain rule***.
+
+We can show that *feedforward* networks can approximate any continuous function on a bounded domain! This is why we like to use neural networks for a wide range of ML tasks where ***we don't know the right functional form for the trend in the data***.
+
+See [More on the Universal Approximation Theorem for Feedforward Neural Networks](https://mcneela.github.io/machine_learning/2017/03/21/Universal-Approximation-Theorem.html).
+
+![](https://i.imgur.com/9Sj94F5.jpg)
+
+
+
+
+## Neural Networks as Regression on Learned Feature Map
+
+In fact, you've see neural network models in this class already -- linear or logistic regression on top of a fixed *feature map* $\phi$ is a type of neural nework model! 
+
+Conversely, neural nework regression or classification is just linear or logistic regression on top of a learned *feature map* $\phi$ (the hidden layers of the network learns the feature map and the output node, assuming a linear activation, combines the features linearly)!
+
+![](https://i.imgur.com/hWAVae8.png)
+
+But actually, neural networks are pretty interesting! Because learning the feature map $\phi$ for a task (regression or classification) rather than fixing $\phi$ can show us which aspects of the data is helpful for this task! 
+
+Extracting aspects of the data that are task-relevant is called *feature learning* or *representation learning*. The feature maps learnt by neural networks are called *representations* or *embeddings*.
+
+![](https://i.imgur.com/utuY1Pm.jpg)
+
+
+## Everything is a Neural Network
+Many of the ML models you're hearing about in the news are neural network based models. However, note that outside of the tech industry, it is still ***not*** common practice to use neural network based models (because these models pose a number of new challenges for practitioners, see discussion later in this document).
+
+Generative AI is all the rage now, for a list of current popular generative models see [ChatGPT is not all you need. A State of the Art Review of large Generative AI models](https://arxiv.org/pdf/2301.04655.pdf). We will study *generative models* after Midterm #1.
+
+### Architecture Zoo
+One does not design or reason about neural networks one node or one weight at a time! Design of neural networks are done at the global level by playing around with different *architectures* -- i.e. different graphical representations and different activations -- and different objective functions.
+
+![](https://i.imgur.com/8D8NJDc.png)
+
+
+### ChatGPT
+*"We’ve trained a model called ChatGPT which interacts in a conversational way. The dialogue format makes it possible for ChatGPT to answer followup questions, admit its mistakes, challenge incorrect premises, and reject inappropriate requests."* -- OpenAI
+
+ChatGPT is based on a large language model, Generative Pre-trained Transformer (GPT), built from *[transformers](https://jalammar.github.io/illustrated-transformer/)* -- a type of neural network, recurrent neural network with a fancy architecture called "attention"-- that takes an input and predicts likely words (or tokens) that should follow the input.
+
+**Just so you know:** the highly technical part of transformers involves the architecture (the different types of layers we stack together) and our intuitive as well as empirical understanding of what each part of the architecture does. I.e. it's not math based.
+
+![](https://i.imgur.com/ecNHdka.png)
+
+The language model, GPT, is then tuned to output appropriate responses during "chat", by using *Reinforcement Learning* and human input. See [Training language models to follow instructions with human feedback](https://arxiv.org/pdf/2203.02155.pdf).
+
+So what can large language models like ChatGPT3 do? We are just beginning to explore the potential of these models:
+1. [Is Learning `python` for ML Obsolete? ChatGPT Can Write Code!](https://medium.com/geekculture/chatgpt-the-end-of-programming-as-we-know-it-ac7e3619e706)
+2. [The End of Programming Is the Beginning of Something Cool: Programming for All](https://medium.com/eni-digitalks/prompt-and-predict-what-can-you-do-with-large-language-models-7290153b9e7b)
+3. [An Easy and Visual Way to Program Using Large Language Models](https://www.cs.cmu.edu/~sherryw/assets/pubs/2022-promptchainer.pdf)
+4. [It's Also the End of Essay Assignments](https://www.businessinsider.com/chatgpt-essays-college-cheating-professors-caught-students-ai-plagiarism-2023-1)
+5. [How to Hack Large Language Models (and Is It Ethical to Torture and Threaten AI?)](https://securitytoday.com/articles/2023/02/08/see-how-reddit-users-have-unlocked-the-dark-side-of-chatgpt.aspx)
+6. [Now You Can Generate Hate Speech and Misinforamtion at Scale](https://www.rollingstone.com/culture/culture-features/ai-chat-bots-misinformation-hate-speech-1234677574/)
+7. [Are We Making Ethical Choices When Making AI Ethical?](https://www.rollingstone.com/culture/culture-news/chatgtp-moderators-labeling-violent-content-ptsd-1234662975/)
+
+
+### Stable Diffusion
+Apps like Lensa are built on the backs of the [Stable Diffusion model](https://jalammar.github.io/illustrated-stable-diffusion/). Stable Diffusion is a type of [diffusion models](https://lilianweng.github.io/posts/2021-07-11-diffusion-models/), which are a type of neural network model that have bi-directional connections. The network is trained by adding noise to the input and then requiring the network to denoise it, with the goal of teaching the network to model the distribution of realistic data.
+
+**Just so you know:** The hard part of diffusion models is the math! We will see a simple instantiation of this type of math when we study latent variable models after Midterm #1.
+
+![](https://i.imgur.com/xz1mWcG.png)
+
+![](https://i.imgur.com/LwLpC0x.png)
+
+
+
+## Neural Network Optimization
+
+Training neural network models (or any modern ML models) means spending 80% of your time diagnosing issues with gradient descent and tuning the hyperparameters: learning rate, stopping condition.
+
+It's a necessary skill to be able to read a plot of the loss function during training and extract insight about how to improve optimization.
+
+![](https://i.imgur.com/Ua7YW5F.png)
+
+You need to learn to recognize common signs of gradient descent failure: (1) divergence (above graph) (2) slow/non convergence (below).
+![](https://i.imgur.com/1pnECKC.png)
+
+You also need to know intuitively the "right" shape of a training loss plot.
+![](https://i.imgur.com/Qadi4gg.png)
+
+Neural network optimization is non-convex for ***any*** loss function that only depends on the output of the network. There is a simple proof of this (*Hint:* what happens when you flip the hidden layers of a neural network horizontally?), it's worth memorizing!
+
+In fact, neural network optimization is as non-convex as optimization can get! For most networks, there are so many different settings of weights that parametrize the SAME function on a finite data set!
+
+![](https://i.imgur.com/oiMmc3n.png)
+
+Often times, careful architecture design can make NN optimization more "convex-like".
+
+![](https://i.imgur.com/mUbbCYo.png)
+
+In practice, we find a ***set*** of different weights through training and choose amongst them the best model:
+1. Random restart
+2. Cyclic learning rates
+3. More fancy techniques...
+
+![](https://i.imgur.com/AhpgnYo.png)
+
+
+## Bias-Variance Trade-off for Neural Networks
+
+
+#### Overparametrization is Bad
+Complex models like NNs have ***low bias*** -- they can model a wide range of functions, given enough samples.
+
+But complex models have ***high variance*** -- they are very sensitive to small changes in the data distribution, leading to drastic performance decrease from train to test settings.
+
+
+
+| Polynomial Model with Modest Degree | Neural Network Model |
+| -------- | -------- |
+| ![](https://i.imgur.com/xM4mYAR.png)   | ![](https://i.imgur.com/lfFrxDa.png)     | 
+
+Just as in the case of linear and polynomial models, we can prevent nerual networks from overfitting (i.e. poor generalization due to high variance) by:
+1. Regularization
+   - $\ell_1, \ell_2$ on weights
+   - $\ell_1, \ell_2$ on layer outputs
+   - [early-stopping](https://machinelearningmastery.com/early-stopping-to-avoid-overtraining-neural-network-models/)
+3. Ensembling
+   - ensembling by random restart (and potentially bootstrapping)
+   - [dropout ensembling](https://prvnk10.medium.com/ensemble-methods-and-the-dropout-technique-95f36e4ae9be)
+
+
+#### Overparametrization Can be Good
+
+However, a new body of work like [Implicit Regularization in Over-parameterized Neural Networks](https://arxiv.org/abs/1903.01997) show that very wide neural networks (with far more parameters than there are data observations) actually ceases to overfit as the width surpasses a certain threshold. In fact, as the width of a neural network approaches infinity, training the neural network becomes kernel regression (this kernel is called the ***neural tangent kernel***)!
+
+![](https://i.imgur.com/NgYAbBl.png)
+
+#### Overparametrization is Complicated
+
+In [Deep Double Descent: Where Bigger Models and More Data Hurt](https://mltheory.org/deep.pdf) 
+
+![](https://i.imgur.com/zSfddTo.png)
+
+
+For more works on comparing the behaviors of NNs with different sizes, see [An Empirical Analysis of the Advantages of Finite- v.s. Infinite-Width Bayesian Neural Networks](https://arxiv.org/abs/2211.09184) and [Wide Mean-Field Bayesian Neural Networks Ignore the Data](https://proceedings.mlr.press/v151/coker22a/coker22a.pdf).
+
+
+## Interpretation of Neural Networks
+
+In [The Mythos of Model Interpretability](https://arxiv.org/abs/1606.03490), the authors survey a large number of methods for interpreting deep models. 
+
+![](https://i.imgur.com/Y54ONVL.jpg)
+
+In fact, interpretable machine learning is a growing and extremely interesting subfield of ML. For example, see works like [Towards A Rigorous Science of Interpretable Machine Learning](https://arxiv.org/abs/1702.08608). There's even a textbook for interpretable ML now -- [Interpretable Machine Learning: A Guide for Making Black Box Models Explainable](https://christophm.github.io/interpretable-ml-book/)!
+
+### Example 1: Can Neural Network Models Make Use of Human Concepts?
+***(with Anita Mahinpei, Justin Clark, Ike Lage, Finale Doshi-Velez)***
+
+What if instead building complex non-linear models based on raw inputs, we instead build simple linear models based on human interpretable **concepts**? We use a neural network to predict concepts from inputs and then use a linear model to predict the outcome from the concepts. We interpret the relationship between the outcome and the concepts via the linear model. These models are called **concept bottleneck models**.
+
+In [The Promises and Pitfalls of Black-box Concept Learning Models](https://arxiv.org/abs/2106.13314), we examine the advantages and drawbacks of these models.
+
+![](https://i.imgur.com/CAfjxo8.jpg)
+
+
+### Example 2: Can Neural Network Models Learn to Explore Hypothetical Scenarios?
+***(with Michael Downs, Jonathan Chu, Wisoo Song, Yaniv Yacoby, Finale Doshi-Velez)***
+
+Rather than explaining why the model made a decision, it's often more helpful to explain how to change the data in order to change the model's decision. This modified input is a **counter-factual**. In [CRUDS: Counterfactual Recourse Using Disentangled Subspaces](https://finale.seas.harvard.edu/files/finale/files/cruds-_counterfactual_recourse_using_disentangled_subspaces.pdf), we study how to automatically generate counter-factual explanations that can help users achieve a favorable outcome from a decision system.
+
+![](https://i.imgur.com/HHDoieL.jpg)
+
+### Example 3: A Powerful Generalization of Feature Importance for Neural Network Models
+In [*An explainable deep-learning algorithm for the detection of acute intracranial haemorrhage from small datasets*](), the authors build a neural network model to detect acute intracranial haemorrhage (ICH) and classifies five ICH subtypes. 
+
+Model classifications are explained by highlighting the pixels that contributed the most to the decision. The highligthed regions tends to overlapped with ‘bleeding points’ annotated by neuroradiologists on the images.
+
+![](https://i.imgur.com/WIq7FT3.png)
+
+
+## The Difficulty with Interpretable Machine Learning
+
+The sheer number of methods for interpreting neural network (and other ML) models is overwhelming and poses a significant challenge for model selection: which explanation method should I choose for my model and how do I know if the explanation is good?
+
+### Example 4: Not All Explanations are Created Equal
+***(with Zixi Chen, Varshini Subhash, Marton Havasi, Finale Doshi-Velez)***
+
+Not only is there an overwhelming number of ways to explain ML models, there is also an overwhelming number of ways to formalize whether or not an explanation is "good". In [What Makes a Good Explanation?: A Harmonized View of Properties of Explanations](https://arxiv.org/pdf/2211.05667.pdf), we attempt to provide a much needed taxonomy of existing metrics to quantify the "goodness" of ML explanations. We use the taxonomy to differentiate between metrics and provide guidance for how to choose a metric that's task-appropriate.
+
+![](https://i.imgur.com/m7vtdvs.png)
+
+
+### Example 5: Explanations Can Lie
+Just as not accounting for confounding, causal relationships and colinearity can make our interpretations of linear and logistic regression misleading, intrepretations of neural networks are prone to lie to us!
+
+In works like [Interpretation of Neural Networks is Fragile](https://openreview.net/pdf?id=H1xJjlbAZ), we see that *saliency maps* (i.e. visualizations of feature importance based on gradients) can be unreliable indicators of how the model is really making decisions.
+
+![](https://i.imgur.com/hcKKRoP.jpg)
+
+
+### Example 6: The Perils of Explanations in Socio-Technical Systems
+In [*How machine-learning recommendations influence clinician treatment selections: the example of antidepressant selection*](), the authors found that clinicians interacting with incorrect recommendations paired with simple explanations experienced significant reduction in treatment selection accuracy.
+
+![](https://i.imgur.com/HsoNGDe.png)
+
+
+**Take-away:** Incorrect ML recommendations may adversely impact clinician treatment selections and that explanations are insufficient for addressing overreliance on imperfect ML algorithms.
