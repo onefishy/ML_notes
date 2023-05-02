@@ -1,0 +1,101 @@
+# What Matters in ML Besides Prediction?
+
+![](https://i.imgur.com/xDR9VQd.png)
+
+## What is Machine Learning? Revisited
+
+In Lecture #2 we defined machine learning as learning the parameters of function (or of a distribution, if we are being probabilistic) that best fits with observed data. This definition needs refinement! In reality, finding parameters is just sub-goal of a much more complex goal:
+
+![](https://i.imgur.com/ecU0DQS.png)
+
+**What does "doing Machine Learning" look like?** The short answer: it looks like making and justifying a sequence of ***choices***, while making our assumptions and biases as explicit as possible:
+
+1. *Choosing* a training data set $\mathcal{D}$.
+   **Question:** What assumptions do we make when we make this choice?
+2. *Choosing* a model for the trend in the data $f$ or for the distribution of the data (trend and noise), i.e. the likelihood, $p(y \vert f, \theta)$
+   **Question:** What assumptions do we make when we make this choice?
+3. *Choosing* a loss function -- i.e. a way to measure the fit of $f$ (and potentially $\theta$)
+   **Question:** What assumptions do we make when we make this choice?
+4. *Choosing* a way to optimize the loss function
+   **Question:** What assumptions do we make when we make this choice?
+   
+5. *Choosing* a way to evaluate the model we learned -- we may choose to evaluate the model using a different metric than the loss function!
+   **Question:** What assumptions do we make when we make this choice?
+   
+**What does a Machine Learning product look like?** The short answer: it looks like a technical artifact as well as a recommended policy to guide the appropriate, ethical and responsible usage of it (and potentially much more!).
+
+![](https://i.imgur.com/Wa7xvGm.png)
+
+For example, see [Model Cards for Model Reporting](https://arxiv.org/pdf/1810.03993.pdf)
+
+## What Are We Uncertain About?
+
+If we really work with the idea that everything in machine learning is a choice, including the training data, this means that we could have chosen a different training data set. For example: if we collected our training data from patients in one hospital, we can ask what would have happened if we collected data from a different hospital?
+
+Generally speaking, data sets collected at different times, from different locations or from different populations will be slightly (or significantly) different. Thus, the functions $f$ we learn on these datasets will differ and these different functions will produce different predictions for the same test point!
+
+So, we should be uncertain about:
+1. **(Math)** the function $f$ we learned (e.g. the parameters $\mathbf{w}$ for $f$ or the function $f$ itself when our model is non-parametric)
+2. **(Application)** our interpretation of $f$
+3. **(Math)** our prediction $\hat{y}$ for a new point $\mathbf{x}$
+4. **(Application)** our recommendation for how to make decisions based on our model
+
+**Question:** Why do we care about uncertainty?
+
+## Where is Uncertainty Coming From?
+Generally speaking:
+1. uncertainty in $f$ comes from us not having enough data to uniquely determine a function $f$, this could be because of a combination of the below
+    - $f$ is a complex model (e.g. lots of parameters) compared to the number of training data points (the model is under determined)
+    - the data is very noisy and there are very few observations (so that the trend isn't clear)
+2. uncertainty in our prediction $\hat{y}$ comes from a combination of the above:
+    - uncertainty in $f$ -- if we aren't sure about $f$ we can't be sure about $\hat{y}$
+    - noise in data -- even if we are 100% certain that we have the right $f$, we can still be uncertain about the prediction $\hat{y}$ due to observation noise
+
+**Question:** Why do we care about what's causing uncertainty?  
+
+## How Do We Compute Uncertainty?
+If we make some strong assumptions about $f$, as well as the distribution of the data, we can analytically compute the uncertainty in $f$ as well as the uncertainty in $\hat{y}$.
+
+Realistically, we often empirically estimate the uncertainty in $f$ and $\hat{y}$ through simulating drawing new training data sets by resampling our existing data -- this is called *bootstrapping*. 
+
+For the different bootstrap training data sets, we learn different functions $f$ and make different predictions $\hat{y}$. The empirical variance of learnt parameters $\mathbf{w}$ of $f$ gives us an estimate of the *confidence interval* of our estimate of $\mathbf{w}$.
+The empirical variance of our prediction $\hat{y}$ gives us an estimate of the *predictive interval*.
+
+## Mathematizing Uncertainty: Starting with Bias and Variance
+
+So far we've been describing uncertainty purely in intuitive terms. In order to quantify and analyze uncertainty, we need mathematical formalism! 
+
+One way to formalize our uncertainty over our prediction is to reason about why our prediction might be wrong. We do so by defining and decomposing the *generalization error* of our model.
+
+\begin{aligned}
+\underbrace{\mathbb{E}_{(\mathbf{x}, y), \mathcal{D}}\left[ (y- f_\mathbf{w}(\mathbf{x}))^2\right]}_{\text{Generalization Error}} =& \mathbb{E}_{\mathbf{x}}\underbrace{\mathrm{Var}[y|\mathbf{x}]}_{\text{Observation Noise}}\\
+& + \mathbb{E}_{\mathbf{x}}[(\underbrace{\mathbb{E}_{y|\mathbf{x}}[y|\mathbf{x}]}_{\text{Average true $y$}\\ \text{over noisy observations}} - \underbrace{\mathbb{E}_\mathcal{D}[f_\mathbf{w}(\mathbf{x})]}_{\text{Average prediction}\\\text{over all possible training sets}})^2]\\
+&+\mathbb{E}_{\mathbf{x}} \underbrace{\mathrm{Var}[f_\mathbf{w}(\mathbf{x})]}_{\text{Variance of Model}}\\
+&= \text{Observation Noise} + \text{Model Bias} + \text{Model Variance}
+\end{aligned}
+
+From the math, we see that we have three reasons to be uncertain about our model predictions:
+1. **the observation noise** -- even if we are 100% certain that we have the right model, our prediction can still be wrong due to noise
+2. **model bias** -- we could have been wildly wrong in our guess of the form of the model (e.g. assuming linear function when modeling quadratic data)
+3. **model variance** -- the number of data points is insufficient to uniquely determine the model
+
+## The Bias-Variance Trade-off in Machine Learning
+
+One reason we want to work with the formalism of the generalization error is that by decomposing the generalization error, we see how we can reduce our uncertainty in our predictions.
+
+Immediately, we see that there is nothing we can do to reduce generalization error arising from observation noise -- this error is ***irreducible***.
+
+We can, however, choose our model so we have some control over model bias and model variance -- these errors are ***reducible***.
+
+Unfortunately, generally speaking, when we reduce model bias by making our models more complex, the complexity increases model variance (and vice versa):
+
+![](https://i.imgur.com/lUDZq5r.jpg)
+
+
+### Examples of the Bias-Variance Trade-off
+
+Many modification we perform on machine models are frequently just ways to manage the Bias-Variance Trade-off.
+
+1. **Regularization:** adding a penalty term to the MSE loss introduces bias (reduces the ability of the model to fit the data), in order to reduce variance (by biasing the optimization towards simpler models)
+2. **Ensembling:** creating a large set of very different complex models (low bias but high variance), and then reducing the variance by average the model predictions
+3. **Boosting:** iteratively making a simple base model (high bias but low variance) more complex and thereby reducing the bias without significantly increasing the variance
