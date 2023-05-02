@@ -1,0 +1,37 @@
+# What's Hard About Sampling?
+
+![](https://i.imgur.com/HMKpGFK.png)
+
+## Bayesian vs Frequentist Inference
+
+**Frequentist Modeling:** In non-Bayesian probabilistic modeling we typically perform maximum likelihood inference -- that is, solve an ***optimization*** problem.
+
+Relatively speaking, optimization problems are much easier to solve:
+
+  1. **(Differentiation)** we have `autograd` 
+  2. **(Solving for Stationary Points)** we have gradient descent to solve for stationary points
+
+**Bayesian Modeling:** Bayesian modeling is, in comparison, orders of magnitude more mathematically and computationally challenging:
+
+  1. **(Inference)** sampling (from priors, posteriors, prior predictives and posterior predictives) is hard, especially for non-conjugate likelihood, prior pairs!
+  2. **(Evaluation)** computing integrals (for the log-likelihood of train and test data under the posterior) is intractable, when likelihoods and priors are not conjugate!
+
+## What is Sampling and Why do We Care?
+1. We first need to generating truly random iid sequence of numbers.
+   - **(Uniform Distribution)** Linear Congruence 
+2. We use simple distributions (that we know how to sample from) to help us sample from complex target distributions.
+   - **(Inverse CDF)** Requires us to compute integrals (i.e. know the CDF)
+   - **(Rejection Sampling)** Uses simple distributions to "propose samples" and uses the complex target distribution to accept or rejct the samples'
+   - **(MCMC Samplers)** Uses "local rejection sampling".
+3. We need to evaluate samplers.
+   - **(Correctness)** There is no way to verify that a sampling algorithm is correct except through proof
+   - **(Efficiency)** Correctness is useless if it takes too many iterations to produce one valid sample
+4. Everything requires Sampling!
+   - **(Integration Involves Sampling)** In ML, intractable integrals are approximated via sampling, this is called [***Monte Carlo Integration***](https://onefishy.github.io/am207/week4.html).
+   - **(Sampling Can Help Optimization)** In ML, we can sometimes find better optima for non-convex optimization problems by incorporating *sampling* into our gradient descent. This is called [***simulated annealing***](https://onefishy.github.io/am207/week7.html).
+5. Sometimes sampling requires optimization!
+   - **(Variational Inference)** In ML, we often choose to approximate a complex distribution with a simple one (e.g. Gaussian), rather than sample directly from the target. 
+   
+     Finding the best simple approximation of a complex target distribution is called [***variational inference***](https://onefishy.github.io/am207/week9.html) and it's an optimization problem!
+	 
+	- **(Hamiltonian Monte Carlo Sampling)** Sometimes incorporating gradient descent during sampling can help increase the efficiency of our samplers -- i.e. speed up the time we need to wait for a valid sample. These methods are called [***Hamiltonian Monte Carlo Samplers***](https://onefishy.github.io/am207/week8.html).
