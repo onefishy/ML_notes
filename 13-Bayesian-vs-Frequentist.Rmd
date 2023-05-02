@@ -1,0 +1,68 @@
+# Bayesain vs Frequentist Inference?
+
+![](https://i.imgur.com/HMKpGFK.png)
+
+## The Bayesian Modeling Process
+
+The key insight about Bayesian modeling is that ***we treat all unknown quantities as random variables***.
+
+1. **(Everything Is an RV)** 
+   - **(Likelihood)** $p(y | \mathbf{x}, \mathbf{w})$
+     *Choose whatever distribution you want!!!*
+   - **(Prior)** $p(\mathbf{w})$
+     *Choose whatever distribution you want!!!*
+
+2. **(Make the Joint Distribution)** we form the ***joint distribution*** over all RVs 
+   $$p(y, \mathbf{w} | \mathbf{x}) = p(y | \mathbf{x}, \mathbf{w}) p(\mathbf{w})$$
+
+3. **(Make Inferences About the Unknown Variable)** we can condition on the observed RVs to make inferences about unknown RVs,
+$$
+p(\mathbf{w}| y, \mathbf{x}) = \frac{p(y, \mathbf{w}|\mathbf{x})}{p(y|\mathbf{x})}
+$$
+where $p(\mathbf{w}| y, \mathbf{x})$ is called the ***posterior distribution***.
+ 
+4. **(Make Predictions For New Data: Posterior Predictive Sampling)** 
+   1. Sample $\mathbf{w}^{(s)}$ from posterior $p(\mathbf{w})$
+   2. Sample prediction $y$ from likelihood $p(y | \mathbf{w}^{(s)}, \mathbf{x})$. That is, we sample a noise $\epsilon^{(s)}$ from $p(\epsilon)$ and generate:
+$$
+\hat{y} = f_{\mathbf{w}^{(s)}}(\mathbf{x}) + \epsilon^{(s)}
+$$
+
+5. **(Evaluating Bayesian Models)** computing the posterior predictive likelihood of the data is the main way to evaluate how well our model fits the data:
+$$
+\sum_{m=1}^M \log p(y_m |\mathbf{x}_m, \mathcal{D}) = \sum_{m=1}^M \log \int_\mathbf{w} p(y_m|\mathbf{w}, \mathbf{x}_m)p(\mathbf{w} | \mathcal{D}) d\mathbf{w}
+$$
+where $\{ (\mathbf{x}_m, y_m) \}$ is the test data set. This quantity is called the ***test log-likelihood***.
+
+## Bayesian vs Frequentist Inference
+
+Given some data, should we build a Bayesian model or a non-Bayesian probabilistic model? Again, we have to understand the differences and trade-offs.
+
+1. **Point Estimates or Distributions?** To compare MLE and a Bayesian posterior, we can summarize the posterior using point estimates:
+     -  ***The Posterior Mean Estimate***: the "average" estimate of $\mathbf{w}$ under the posterior distribution:
+    $$
+    \mathbf{w}_{\text{post mean}} = \mathbb{E}_{\mathbf{w}\sim p(\mathbf{w}|\mathcal{D})}\left[ \mathbf{w}|\mathcal{D} \right] = \int_\mathbf{w} \mathbf{w} \;p(\mathbf{w}|\mathcal{D}) d\mathbf{w}
+    $$
+     - ***The Posterior Mode*** or ***Maximum a Posterior (MAP) Estimate***: the most likely estimate of $\mathbf{w}$ under the posterior distribution:
+    $$
+    \mathbf{w}_{\text{MAP}} = \mathrm{argmax}_{\mathbf{w}} p(\mathbf{w}|\mathcal{D})
+    $$
+   
+   **Question:** Is it a good idea to reduce a posterior distribution to a point estimate?
+   
+2. **Comparing Posterior Point Estimates and MLE** Point estimates of Bayesian posteriors can often be interpreted as some kind of regularized MLE! For example, with a Gaussian prior (with diagonal covariance matrix), the MAP is $\ell_2$-regularized MLE:
+   $$
+   \textrm{argmax}_\mathbf{w} p(\mathbf{w}|\mathcal{D}) = \underbrace{\sum_{n=1}^N \log p(y_n | \mathbf{x}_n, \mathbf{w})}_{\text{joint log-likelihood}} - \lambda\underbrace{\| \mathbf{w}\|_2^2}_{\text{regularization}}
+   $$
+   
+3. **Comparing Posteriors and MLE** The Berstein-von Mises Theorem tells us that:
+   - The posterior point estimates (like MAP) approach the MLE, with large samples sizes. 
+   - It may be valid to approximate an unknown posterior with a Gaussian, with large samples sizes. This will become a very important idea for Bayesian Logistic Regression!
+
+4. **What's Harder, Computing MLE or Bayesian Inference?** Relatively speaking, optimization problems are much easier to solve -- we have `autograd` for differentiation, gradient descent to solve for stationary points. 
+
+   Bayesian modeling is, in comparison, orders of magnitude more mathematically and computationally challenging:
+     - **(Inference)** sampling (from priors, posteriors, prior predictives and posterior predictives) is hard, especially for non-conjugate likelihood, prior pairs!
+     - **(Evaluation)** computing integrals (for the log-likelihood of train and test data under the posterior) is intractable, when likelihoods and priors are not conjugate!
+
+5. **Why Should You Be Bayesian?** See in-class exercise for today, comparing Bayesian and Frequentist uncertainties. 
