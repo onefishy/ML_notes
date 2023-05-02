@@ -1,0 +1,160 @@
+# The Math of Principal Component Analysis
+
+![](https://i.imgur.com/xDR9VQd.png)
+
+In these notes, we show you how to formalize Principal Component Analysis (PCA) as two equivalent optimization problems.
+
+## PCA as Dimensionality Reduction to Maximize Variance
+
+In the lecture vidoes, we said that PCA is the process of finding a small set of orthogonal (and normal) vectors that indicate the directions of greatest variation in the data. So that when we project the data onto this small set of new features, we capture the most amount of interesting variations in the original data.
+
+How do we formalize PCA mathematically? 
+
+![](https://i.imgur.com/d3ewmbI.png)
+
+### Finding a Single PCA Component
+Let's start by defining what we mean by "variations" in the data when projected onto a single *component*. Remember that in stats, we measure the spread of data with *sample variance*:
+$$
+\text{sample variance} = \frac{1}{N-1}\sum_{n=1}^N (z_n - \overline{z})^2
+$$
+
+Now we can formalize our objective: *find a direction given by $v\in \mathbb{R}^D$ such that the sample variance of the projection of $\mathbf{X}$ onto the line (1D linear subspace) determined by $v$ is maximized*. 
+
+In other words, we want:
+\begin{aligned}
+v^* &= \mathrm{argmax}_v \frac{1}{N-1}\sum_{n=1}^N \left(v^\top \mathbf{x}_n - \frac{1}{N} \sum_{i=1}^N v^\top \mathbf{x}_i\right)^2\\
+&= \mathrm{argmax}_v \frac{1}{N-1}\sum_{n=1}^N \left(v^\top \mathbf{x}_n - v^\top \left(\frac{1}{N} \sum_{i=1}^N \mathbf{x}_i\right)\right)^2\\ 
+&= \mathrm{argmax}_v \frac{1}{N-1}\sum_{n=1}^N (v^\top \mathbf{x}_n - v^\top \overline{\mathbf{x}})^2 
+\end{aligned}
+subject to the *constraint* that $v$ is a normal vector
+$$
+\|v\|_2 = 1
+$$
+
+To summarize the *first principle component*, $v^*$ of PCA is the solution to the following:
+\begin{aligned}
+&\mathrm{argmax}_v \frac{1}{N-1}\sum_{n=1}^N (v^\top \mathbf{x}_n - v^\top \overline{\mathbf{x}})^2 \\
+&\text{such that } \|v\|_2 = 1
+\end{aligned}
+
+
+Optimization problems like the one above are called *constrained optimization problems*, since we want to optimize our objective while satisfying a condition.
+
+#### The Good News
+The good news is that we've seen optimization before, quite a lot, in the first 1/2 of the semester. We know that the general procedure is to:
+1. find the stationary points of the objective function: set the gradient to zero
+2. check for convexity of objective function: make sure the stationary points are actually global optima
+
+#### The Bad News
+The problem is that we've never worked with constrained optimization problems before! It turns out, for constrained problems, there are analogue steps to solving them:
+1. find the stationary points of an "augmented" objective function (the *Lagrangian*)
+2. check for global optimality -- this involves a much more complex set of checks
+
+Generally speaking, solving constrained optimization problems is way harder than solving unconstrained optimization problems!
+
+#### The Solution: Relating PCA and Singular Value Decomposition (SVD)
+
+Luckily, the PCA constrained optimization problem has additional structure/knowledge we can exploit. In particular, we can rewrite the PCA objective function as follows:
+
+\begin{aligned}
+\mathrm{argmax}_v\; \frac{1}{N-1}\sum_{n=1}^N (v^\top \mathbf{x}_n - v^\top \overline{\mathbf{x}})^2 &= \mathrm{argmax}_v\; v^\top \mathbf{S} v
+\end{aligned}
+
+where the matrix $\mathbf{S}$ is the empirical covariance matrix:
+$$
+\mathbf{S} = \frac{1}{N}\sum_{n=1}^N (\mathbf{x}_n - \overline{\mathbf{x}})(\mathbf{x}_n - \overline{\mathbf{x}})^\top.
+$$
+In this case, when we find the stationary points of the *Lagrangian* of the constrained optimization problem,
+$$
+\mathcal{L}(v, \alpha) = v^\top \mathbf{S} v - \alpha (1- v^\top v)
+$$
+we get that stationary points must satisfy
+\begin{aligned}
+\frac{\partial \mathcal{L}}{\partial v} = \mathbf{S}v - \alpha v &=0\\
+\mathbf{S}v &= \alpha v
+\end{aligned}
+for some constant $\alpha\in \mathbf{R}$. That is, a stationary point of the *Lagrangian* must be an *eigenvector* of the matrix $\mathbf{S}$. Moreover, we see that at every stationary point, the PCA objective can be rewritten as:
+\begin{aligned}
+v^\top \mathbf{S} v = \alpha v^\top v = \alpha
+\end{aligned}
+Thus, the stationary point of the Lagrangian that maximizes the PCA objective must be the eigenvector $v$ of $\mathbf{S}$ such that the associated eigenvalue $\alpha$ is the largest. 
+
+That is, finding the top PCA component $v$ reduces to finding the eigenvector with the largest eigenvalue of the empirical covariance matrix $\mathbf{S}$.
+
+Iterating this math analysis $K$ number of times, shows us that finding the top $K$ PCA components is equivalent to finding the $K$ eigenvectors of $\mathbf{S}$ that have the largest eigenvalues. Thus, *singular value decomposition* (SVD) -- a linear algebra method for finding all the eigenvectors and eigenvalues of a given matrix $\mathbf{S}$ -- is often used to identify the top $K$ PCA components.
+
+
+## PCA as Dimensionality Reduction to Minimize Reconstruction Loss
+
+But why do we care about finding low-dimensional projections of our data that preserves as much variance in the data as possible?
+
+One could argue that preserving variations in the data allows us to potentially reconstruct important properties of the original data. But why not formalize *data reconstruction* as our objective in the first place?
+
+That is, we could have formalized our problem as "find $v$ such that the projection of $\mathbf{X}$ onto the line determined by $v$ minimizes reconstruction error":
+\begin{aligned}
+&\mathrm{argmin}_v \frac{1}{N}\sum_{n=1}^N \|\mathbf{x}_n - \widehat{\mathbf{x}}_n \|_2^2\\
+&\text{such that} \|v\|_2 = 1
+\end{aligned}
+where $\widehat{\mathbf{x}}_n$ is related to the projection of $\mathbf{x}_n$ onto the line determined by $v$, interpreted as a "reconstruction" of $\mathbf{x}_n$. 
+
+#### Centered Data
+If the data is centered, i.e. $\overline{\mathbf{x}} = \mathbf{0}$, then we can set $\widehat{\mathbf{x}}_n$ to be directly the projection of $\mathbf{x}_n$ onto $v$, 
+$$
+\widehat{\mathbf{x}}_n = v(v^\top \mathbf{x}_n)
+$$
+then it turns out that minimizing the reconstruction error is equivalent to maximizing the sample variance after projection! That is, minimizing "reconstruction error" is another way to formalize our PCA objective! ***See Chapter 7 of your textbook for the proof (note that in the textbook, we use $w$ for principle components instead of $v$).***
+
+#### What If the Data is Not Centered?
+If the data is centered, i.e. $\overline{\mathbf{x}} \neq \mathbf{0}$, then we set $\widehat{\mathbf{x}}_n = v(v^\top (\mathbf{x}_n - \overline{\mathbf{x}})) + \overline{\mathbf{x}}$, i.e. we "center" the data and add the mean back after projection. The reason we need to center the data is that the vector $v$ determines a line through the origin! So if the data is not centered at the origin, no $v$ can do a good job of reconstructing our data.
+
+For $\widehat{\mathbf{x}}_n = v(v^\top (\mathbf{x}_n - \overline{\mathbf{x}})) + \overline{\mathbf{x}}$, we can again show that minimizing the reconstruction error is equivalent to maximizing the sample variance after projection!
+
+#### So Should I Center My Data???
+If you are implementing your own version of PCA from scratch by doing SVD on the empirical covariance matrix $\mathbf{S}$, then you don't need to do anything extra to pre-process your data. 
+
+If you are using someone else's PCA code (including staff code), check the documentation to see if centering your data is necessary!
+
+
+## A Latent Variable Model for PCA
+
+The main motivation for using PCA is data compression: we think that our data doesn't occupy the entire $D$-number of dimensions of the input space; instead, it occupies a smaller $K$-dimensional linear manifold inside $\mathbb{R}^D$.
+
+### One Principle Component
+When $K=1$, another way to formalize PCA is to suppose the following (non-probabilistic) *model* for our data:
+$$
+\widehat{\mathbf{x}}_n = f_v(z_n) = v z_n
+$$
+where $v\in \mathbb{R}^D$ and $z_n \in \mathbb{R}$, $f_v$ is a function mapping $\mathbb{R}$ to $\mathbb{R}^D$.
+
+The PCA objective can be rederived for this model:
+
+\begin{aligned}
+&\mathrm{argmin}_v \frac{1}{N}\sum_{n=1}^N \|\mathbf{x}_n - f_v(z_n) \|_2^2\\
+&\text{such that } z_n = g_v(\mathbf{x}_n) = v^\top \mathbf{x}_n, \; \|v\|_2=1
+\end{aligned}
+
+Under this model of PCA, we see that PCA is just a special form of **linear regression** where we know the target $\mathbf{x}_n$ but we don't know the covariate $v_n$! Since the covariate $v_n$ is unobserved, we call it a *latent variable*. The PCA objective gets around the fact that we are not given $z_n$, by imposing that we can infer $z_n$ by "reversing" the map $f$ (that is, we find $z_n$ and $f$ simultaneously).
+
+## Autoencoders and Nonlinear PCA
+The above formulation of PCA is extremely important, since if we replace $f$ and $g$ by arbitrary functions represented by neural networks, then we have derived the ***autoencoder model***:
+
+\begin{aligned}
+&\mathrm{argmin}_{\mathbf{V}, \mathbf{W}} \frac{1}{N}\sum_{n=1}^N \|\mathbf{x}_n - f_\mathbf{V}(\mathbf{z}_n) \|_2^2\\
+&\text{such that } \mathbf{z}_n = g_\mathbf{W}(\mathbf{x}_n)
+\end{aligned}
+where $f_\mathbf{V}: \mathbf{R}^K \to \mathbf{R}^D$ is called the *decoder* and $g_\mathbf{W}: \mathbf{R}^D \to \mathbf{R}^K$ is called the *encoder*.
+
+In other words, the autoencoder can be considered to be a nonlinear version of PCA.
+
+![](https://i.imgur.com/S671CWe.png)
+
+
+## A Probabilistic Latent Variable Model for PCA
+Remember for linear regression we created probabilistic models by positing a source of observation noise. We can derive a probabilistic model for PCA in a similar fashion. That is, we suppose that our data started as some distribution in the low-dimensional latent space and was mapped to noisy observations:
+
+\begin{aligned}
+\mathbf{z}_n &\sim \mathcal{N}(\mathbf{0}, I_{K\times K})\\
+\mathbf{x}_n &= f_\mathbf{V}(\mathbf{z}_n) + \epsilon = \mathbf{V} \mathbf{z}_n + \epsilon,\;\; \epsilon \sim \mathcal{N}(\mathbf{0}, \sigma^2 I_{D\times D})
+\end{aligned}
+
+This model is called *probabilistic PCA (pPCA)*.
