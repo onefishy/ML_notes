@@ -1,0 +1,258 @@
+# The Math of Maximum Likelihood and Kernelized Regression 
+
+![](https://i.imgur.com/HMKpGFK.png)
+
+In this set of notes, we show you all the hairy math behind maximum likelihood inference and kernel regression!
+
+## A Probablistic Model for Regression
+
+Suppose we have a data set $\mathcal{D}=\{(\mathbf{x}_1, y_1), \dots, (\mathbf{x}_N, y_N)\}$, where $\mathbf{x}_n\in \mathbb{R}^D$. 
+
+Let's assume that the target variable $y$ is a function of the input variable $\mathbf{x}$ polluted by zero-mean Gaussian observation noise. This assumption gives us a probabilistic model
+$$
+y = f_\mathbf{w}(\mathbf{x}) + \epsilon, \; \epsilon\sim\mathcal{N}(0, \sigma^2),
+$$
+where $\mathbf{w} \in \mathbb{R}^M$ are the unknown coefficients or *parameters* of the function $f$.
+
+*Note:* For the discussion that follows we will assume that $\sigma^2$ is a value you have fixed prior to our process of estimating $\mathbf{w}$. 
+
+> *Example:* Probabilistic linear regression would look like
+> $$ y = f_\mathbf{w}(\mathbf{x}) + \epsilon = \mathbf{w}^\top \mathbf{x} + \epsilon, \;\epsilon\sim\mathcal{N}(0, \sigma^2),$$
+> where $\mathbf{w}, \mathbf{x} \in \mathbb{R}^D$.By assuming zero-mean Gaussian observation noise on $y$, we assume that:
+> 1. the noise is zero on average
+> 2. we are equally likely to observe noise in the positive direction as we are to observe noise in the negative direction
+> 3. it is highly unlikely for us to observe noise of large magnitude (the tail distribution of a Gaussian distribution is slim)
+
+Given our probabilistic model, we see that, conditioning on $\mathbf{x}$ and $\mathbf{w}$, the target $y$ is also a random variable (RV). In fact, $y$ conditioned on $\mathbf{x}$, $\mathbf{w}$, denoted $y \vert \mathbf{x}, \mathbf{w}$ is a Gaussian RV -- since it is a constant, $f_\mathbf{w}(\mathbf{x})$, plus a Gaussian RV, $\epsilon$. By properties of Gaussian RVs, we get that
+$$
+y \vert \mathbf{x}, \mathbf{w} \sim \mathcal{N}(f_\mathbf{w}(\mathbf{x}), \sigma^2).
+$$
+We call the pdf of $y \vert \mathbf{x}, \mathbf{w}$ the *likelihood* of our model, and we denote it $p(y \vert \mathbf{x}, \mathbf{w})$.
+
+*Remark on Notation:* We are abusing notation a bit in the above by writing the target RV as a lower case $y$ instead of a upper case $Y$. This type of short hand often happens in literature and can be confusing. In our notes we will always try to clarify in the context what is a RV rather than an observed value. Please also feel free to let us know when the notation is unclear!
+
+*Remark on Notation:* typically, to define the likelihood, we need to choose a value for $\sigma^2$. Parameters of the model that are set by us prior to inference are called *hyperparameters*. Technically, the RV $y$ is conditioned on all three quantities $\mathbf{x}, \mathbf{w}, \sigma.$ That is, we ought to write $p(y \vert \mathbf{x}, \mathbf{w}, \sigma)$. However, when we are not explicitly learning $\sigma$ from the data we often write the likelihood simply as: $p(y \vert \mathbf{x}, \mathbf{w}).$
+
+If we assume that our observed data is independently and identically distributed (iid) -- that is, each observation $\mathcal{D}$ is created by independently sampling an observation noise and adding it to the corresponding $f_\mathbf{w}(\mathbf{x}_n)$ -- then the $N$ target variables in $\mathcal{D}$ are *independent*, conditioned on $\mathbf{x}$, $\mathbf{w}$.
+
+Thus, the iid assumption allows us to *factorize* the *joint likelihood* of the data set $\mathcal{D}$:
+
+**Joint likelihood of $\mathcal{D}$:** $p(y_1, \ldots, y_n | \mathbf{x}_1, \ldots, \mathbf{x}_n, \mathbf{w}) = \prod_{n=1}^N p(y_n | \mathbf{x}_n, \mathbf{w})$
+
+**Our objective:** We want to find function parameters $\mathbf{w}$ such that the joint likelihood of the data is maximized
+$$
+\mathbf{w}^{\mathrm{MLE}} = \textrm{argmax}_{\mathbf{w}}\; p(y_1, \ldots, y_n | \mathbf{x}_1, \ldots, \mathbf{x}_n, \mathbf{w}).
+$$
+We call $\mathbf{w}^{\mathrm{MLE}}$ the *Maximum Likelihood Estimator* of the true function parameters that generated the data.
+
+### Maximizing the Likelihood is Equivalent to Maximizing the Log Likelihood
+In this section, we will show that maximizing the likelihood is equivalent to maximizing the log of the likelihood. It will turn out that maximizing the log likelihood is easier!
+
+First, recall that the logarithmic functions are monotonic (i.e. order preserving) -- if $z_1 < z_2$ then we have $\log(z_1) < \log(z_2)$.
+
+This means that the values $\mathbf{w}$ that will maximize the likelihood $p(y_1, \ldots, y_n | \mathbf{x}_1, \ldots, \mathbf{x}_n, \mathbf{w})$ are the same ones that will maximize the log-likelihood $\log p(y_1, \ldots, y_n | \mathbf{x}_1, \ldots, \mathbf{x}_n, \mathbf{w})$ (and vice versa). 
+
+*Remark:* You can find a careful proof of the above in the optional readings.
+
+Hence, maximizing the likelihood is equivalent to maximizing the log-likelihood:
+\begin{aligned}
+\mathbf{w}^{\mathrm{MLE}} &= \textrm{argmax}_{\mathbf{w}}\; p(y_1, \ldots, y_n | \mathbf{x}_1, \ldots, \mathbf{x}_n, \mathbf{w}) \\
+&= \textrm{argmax}_{\mathbf{w}}\; \prod_{n=1}^N p(y_n | \mathbf{x}_n, \mathbf{w}) \\
+&= \textrm{argmax}_{\mathbf{w}}\; \log \left[\prod_{n=1}^N p(y_n | \mathbf{x}_n, \mathbf{w})\right]\\
+&= \textrm{argmax}_{\mathbf{w}}\;  \sum_{n=1}^N \log p(y_n | \mathbf{x}_n, \mathbf{w})\\
+\end{aligned}
+
+
+### Maximizing the Log Likelihood is Equivalent to Minimizing the MSE
+In Lecture #2, we'd spent so much time fitting models to minimize the Mean Square Error (MSE), do we need to redo all the work to derive the MLE solution?
+
+Luckily, maximizing the log-likelihood turns out to be equivalent to minimizing the MSE, something we already know how to do!
+
+First, we note that the log-likelihood can be simplified, applying the properties of logarithmic functions, and expanding out the Gaussian pdf form of the likelihood
+\begin{aligned}
+\ell(\mathbf{w}) =\log\left[\prod_{n=1}^N p(y_n | \mathbf{x}_n, \mathbf{w})\right] &= \sum_{n=1}^N \log p(y_n | \mathbf{x}_n, \mathbf{w})\\
+&= \sum_{n=1}^N\log \left[\left(\frac{1}{\sqrt{2\pi \sigma^2}}\right) \exp\left\{-\frac{(y_n - f_\mathbf{w}(\mathbf{x}_n))^2}{2 \sigma^2} \right\}\right]\\
+&= \sum_{n=1}^N \log \left[ \frac{1}{\sqrt{2\pi \sigma^2}} \right] - \sum_{n=1}^N \frac{(y_n - f_\mathbf{w}(\mathbf{x}_n))^2}{2 \sigma^2}.
+\end{aligned}
+
+**Maximizing the Log-Likelihood:** To maximize the log-likelihood $\ell(\mathbf{w})$, we compute the gradient of  $\ell(\mathbf{w})$ and find the stationary points
+\begin{aligned}
+\nabla \ell(\mathbf{w}) &= \nabla \left( \sum_{n=1}^N \log \left[ \frac{1}{\sqrt{2\pi \sigma^2}} \right] - \sum_{n=1}^N \frac{(y_n - f_\mathbf{w}(\mathbf{x}_n))^2}{2 \sigma^2}\right)\\
+&= \nabla \sum_{n=1}^N \log \left[ \frac{1}{\sqrt{2\pi \sigma^2}} \right] - \nabla \sum_{n=1}^N \frac{(y_n - f_\mathbf{w}(\mathbf{x}_n))^2}{2 \sigma^2}\\
+&=  - \frac{1}{2 \sigma^2}\nabla \left(\sum_{n=1}^N (y_n - f_\mathbf{w}(\mathbf{x}_n))^2\right)\\
+&=  - \frac{N}{2 \sigma^2}\nabla \left(\frac{1}{N}\sum_{n=1}^N (y_n - f_\mathbf{w}(\mathbf{x}_n))^2\right)\\
+\end{aligned}
+
+So we see that the gradient of the log-likelihood, $\nabla \ell(\mathbf{w})$, is proportional (differs by a multiplicative constant) to the gradient of the MSE, $\nabla \mathrm{MSE}(\mathbf{w})$! This means that the zero's of $\nabla \ell(\mathbf{w})$ are the same as those of $\nabla \mathrm{MSE}(\mathbf{w})$. Thus, solving for the stationary points of the MSE -- minimizing the MSE -- gives us the stationary points of the log-likelihood -- maximizes the log-likelihood.
+
+### What if the Noise is Non-Gaussian?
+But what if we'd assumed a different distribution for the noise RV, $\epsilon$? Would maximizing the log-likelihood still be equivalent to minimizing the MSE?
+
+The short answer is no! As you can see in the above, when we computed the gradient of $\ell(\mathbf{w})$, we made use of the fact that the logarithmic function plays well with a Gaussian pdf (the exponential function disappears, for example). If $\epsilon$ had a different distribution, the likelihood $p(y | \mathbf{x}, \mathbf{w})$, and hence the log-likelihood, would have a different pdf. 
+
+**Exercise:** Let's assume that $\epsilon \sim \mathrm{Laplace}(\mu, b)$, can you derive the pdf for $y | \mathbf{x}, \mathbf{w}$? Try taking the gradient of the log-likelihood over $\mathcal{D}$, does any part of this gradient look like the MSE?
+
+### Why Choose to Maximize the Likelihood?
+Estimating the function parameters $\mathbf{w}$ of our probabilistic model by maximizing the joint likelihood of the data is a ***design choice***. That is, setting up a probablistic model does not imply any particular method of inference (estimating $\mathbf{w}$), and there are many ways we can estimate the model parameters. Nonetheless, maximum likelihood is an overwhelmingly popular inference method for machine learning. Why? You've already seen one advantage of MLE -- maximizing the likelihood is equivalent to minimizing the MSE!
+
+It turns out that maximum likelihood estimators have a number of other good properties, as well as some not so desirable ones!
+
+#### Desiderata of Estimators
+
+Let $\widehat{\mathbf{w}}$ be an estimator of the parameter $\mathbf{w}$ of a statistical model. We ideally want:
+
+- **(Consistency)** when the sample size $N$ increases, in the limit, $\widehat{\mathbf{w}}$ approaches the true value of $\mathbf{w}$. 
+
+  > *Example:* if our estimate $\widehat{\mathbf{w}}$ of model parameters is consistent, then we know that we can improve our estimate with additional data, and that we can make our estimate arbitrarily close to the true model parameters as long as we can get more data.
+  
+- **(Unbiasedness)** on average, over all possible sets of observations from the distribution, the estimator nails the true value of $\mathbf{w}$.
+
+  > *Example:* if our estimate $\widehat{\mathbf{w}}$ of model parameters is unbiased, then we know that we can improve our estimate by repeating our computation of $\widehat{\mathbf{w}}$ with *different* finite sets of data and then averaging the values of $\widehat{\mathbf{w}}$ we obtain.
+  
+- **(Minimum Variance)** Note that since our estimator $\widehat{\mathbf{w}}$ depends on the random sample of data $\mathcal{D}$, it follows that $\widehat{\mathbf{w}}$ also a random variable. The distribution of $\widehat{\mathbf{w}}$ is called the ***sampling distribution***. Given that our estimator is unbiased, we want it to have minimum variance with respect to the sampling distribution.
+
+  > *Example:* in practice, we want our experimental results to be reproducible. If our estimator $\widehat{\mathbf{w}}$ has high variance, then the value I computed for $\widehat{\mathbf{w}}$ using my data set can be drastically different from the value you computed using your (slightly) different data set. High variance makes each estimate of $\widehat{\mathbf{w}}$ from a single set of data suspect.
+
+#### Properties of MLE
+
+In order for nice properties of the MLE to hold, we need to make some assumptions, including 
+
+(A) the model is **well-specified** -- the observed data is drawn from the same model class as the model being fitted; 
+
+(B) the estimation problem is **well-posed** -- there are not two different set of parameters that generate the same data.
+
+With these assumptions, we have that:
+
+1. **(Consistency)** The MLE of *iid* observations is consistent. The asymptotic sampling distribution of the MLE is a Gaussian.
+2. (Unbiasedness) The MLE can be biased.
+3. (Minimum Variance) The MLE may not be the estimator with the lowest variance. 
+
+*Asympotically*, however, the MLE is unbiased and has the lowest variance (for unbiased estimators). 
+
+In short, besides being easy to optimize (i.e. equivalent to minimizing), the MLE may not be the most desirable estimator for all applications. For example, if you wanted an estimator for $\mathbf{w}$ with the smallest variance, this estimator may ***not*** be the MLE! We will be discussing other shortcomings of the MLE later in the semester as well.
+
+### Setting the Hyperparameter $\sigma$ for Probabilistic Regression with Additive Gaussian Noise
+
+In the above discussion, where we derived the MLE of $\mathbf{w}$, we assumed that we'd fixed a value for the hyperparameter $\sigma$. 
+
+**Question:** does the maximum likelihood inference for $\mathbf{w}$ depend on what we choose for $\sigma$? What is affected by our choice of $\sigma$?
+
+In practice, how should we choose values for model hyperparameters? In general, there are three approaches to choosing hyperparameters:
+1. *Validation*: selecting a value of $\sigma$ that optimizes model performance on a validation set. As an example, in cross-validation we repeatedly split the training set into train and validation sets and choose the $\sigma$ that optimizes the model performance *averaged* across the train-validation splits.
+2. *Prior or Domain Knowledge*: if we have strong beliefs about what values hyperameters should be -- e.g. from prior experiments/data, from domain experts -- we should let our beliefs guide our choice of hyperparameters. When we study Bayesian models, we will see how to incorporate uncertainty into our beliefs.
+3. *Analytically or Algorithmically Optimizing an Objective Function*: we can formalize the properties of $\sigma$ that we desire as an objective function and find the value of $\sigma$ that maximizes this objective function.
+
+Let's look at the math behind approach (3): optimizing an objective function.
+
+**Which Objective Function Should We Choose?** What properties do we want our estimate of $\sigma$ to have? Since we have made an argument for the Maximum Likelihood Principle when we decided to estimate $\mathbf{w}$ using the MLE, it makes sense for us to estimate $\sigma$ by maximizing the joint log-likelihood of the data.
+
+**How Should We Optimize?** Since in the above, we've already computed $\mathbf{w}^{\text{MLE}}$, it'd be convinient for us to optimize $\ell(\mathbf{w}^{\text{MLE}})$ (i.e. the joint log-likelihood evaluated at $\mathbf{w}^{\text{MLE}}$) with respect to $\sigma$:
+
+\begin{aligned}
+\sigma^{\text{MLE}} = \mathrm{argmax}_\sigma\; \ell(\mathbf{w}^{\text{MLE}}, \sigma) &= \mathrm{argmax}_\sigma\; \log\left[\prod_{n=1}^N p(y_n | \mathbf{x}_n, \mathbf{w}^{\text{MLE}}, \sigma)\right] \\
+&= \mathrm{argmax}_\sigma\;\sum_{n=1}^N \log \left[ \frac{1}{\sqrt{2\pi \sigma^2}} \right] - \sum_{n=1}^N \frac{(y_n - f_{\mathbf{w}^{\text{MLE}}}(\mathbf{x}_n))^2}{2 \sigma^2}
+\end{aligned}
+
+We can verify that the objective function $\ell(\mathbf{w}^{\text{MLE}}, \sigma)$ is concave in $\sigma$ (checking properties of the second derivative, see Homework #0); we can then find the global max of the the objective function by finding the stationary point (take the derivative with respect to $\sigma$, $\frac{d }{d\sigma}\ell(\mathbf{w}^{\text{MLE}}, \sigma)$, and set it equal to zero; see Homework #0).
+
+**Details we swepted under the rug:** But is this the right way to find $\sigma^{\text{MLE}}$? That is, the joint log-likelihood $\ell(\mathbf{w}, \sigma)$ is technically a function simultaneously of $\mathbf{w}$ and $\sigma$. If we wanted to maximize $\ell$ over both $\mathbf{w}$ and $\sigma$, is this equivalent to maximizing $\mathbf{w}$ *first* and then maximizing $\sigma$ while fixing $\mathbf{w}$ at $\mathbf{w}^{\text{MLE}}$?
+
+---
+
+## kNN and Kernel Regression 
+
+Here we relate kNN, kernel regression and regression over bases (like linear and polynomial regression) using math!
+
+### Math of kNN
+kNN regression is very intuitive, the algorithm for predicting $\hat{y}$ given an input $\mathbf{x}$ consists of just two steps:
+1. find the $K$ nearest neighbors of $\mathbf{x}$ in the training input, using Euclidean distance $\|\cdot\|_2$, $\{(\mathbf{x}_1, y_1), \ldots, (\mathbf{x}_K, y_K) \}$
+2. average the target value of the $K$ nearest neighbors of $\mathbf{x}$ and output the average as $\hat{y}$. 
+
+More formally, kNN defines a function
+$$f(\mathbf{x}) = \frac{1}{K} \sum_{k=1}^K y_k$$
+where $\{(\mathbf{x}_1, y_1), \ldots, (\mathbf{x}_K, y_K) \}$ is the set of $K$ nearest neighbors of $\mathbf{x}$ within the training data.
+
+The above definition of the function $f$ defined by kNN can potentially become clunky, in that we would have to use different notation to keep track of the nearest neighbor sets for different inputs $\mathbf{x}$. Instead, we can simply think of the kNN regressor $f$ as a weighted average of all the target values $y$ in the training data, where the weight of $y_n$ is zero (i.e. $y_n$ doesn't contribute to the predcition) if $\mathbf{x}_n$ is not in the set of $K$ nearest neighbors of $\mathbf{x}$), and the weight of $y_n$ is one otherwise (i.e. $y_n$ contributes to the prediction if $\mathbf{x}_n$ is in the set of $K$ nearest neighbors of $\mathbf{x}$).
+
+That is, we can formalize the kNN regressor as follows:
+$$f(\mathbf{x}) = \frac{\sum_{n=1}^N k(\mathbf{x}, \mathbf{x}_n) y_n}{\sum_{n=1}^N k(\mathbf{x}, \mathbf{x}_n)},$$
+where $k$ is defined as
+$$
+k(\mathbf{x}, \mathbf{x}_n) = \begin{cases}
+1, & \mathbf{x}_n \text{ is one of the $k$-nearest neighbors of }\mathbf{x}\\
+0, & \text{otherwise}
+\end{cases}
+$$
+
+### Weighted kNN
+The idea that kNN regression can be formalized as taking the weighted average of all target values $y_n$ in the training data can be extended to construct a version of kNN regression where not all $K$ nearest neighbors contribute *equally* to the prediction. After all, why should a training data point that's very far from the input $\mathbf{x}$ contribute as much to the prection for $\mathbf{x}$ as a data point that is very close to $\mathbf{x}$?
+
+It is easy to formalize a weighted version of kNN, we simply replace the binary weights of each $y_n$ in kNN, with weights that are functions of the distance between $\mathbf{x}_n$ and $\mathbf{x}$
+$$f(\mathbf{x}) = \frac{\sum_{n=1}^N k(\mathbf{x}, \mathbf{x}_n) y_n}{\sum_{n=1}^N k(\mathbf{x}, \mathbf{x}_n)},$$
+where $k$ is defined as
+$$
+k(\mathbf{x}, \mathbf{x}_n) = \begin{cases}
+g(\| \mathbf{x} - \mathbf{x}_n\|_2), & \mathbf{x}_n \text{ is one of the $k$-nearest neighbors of }\mathbf{x}\\
+0, & \text{otherwise}
+\end{cases}
+$$
+and where $g$ is a function of the distance between $\mathbf{x}_n$ and $\mathbf{x}$, $\| \mathbf{x} - \mathbf{x}_n\|_2$.
+
+> *Example:* One example of weighted kNN is where each of the $K$ nearest neighbor contributes to the prediction for $\mathbf{x}$ an amount that is proportional to the distance between $\mathbf{x}$ and $\mathbf{x}_n$
+>$$f(\mathbf{x}) = \frac{\sum_{n=1}^N k(\mathbf{x}, \mathbf{x}_n) y_n}{\sum_{n=1}^N k(\mathbf{x}, \mathbf{x}_n)},$$
+> where $k$ is defined as
+> $$
+k(\mathbf{x}, \mathbf{x}_n) = \begin{cases}
+\| \mathbf{x} - \mathbf{x}_n\|_2, & \mathbf{x}_n \text{ is one of the $k$-nearest neighbors of }\mathbf{x}\\
+0, & \text{otherwise}
+\end{cases}
+$$
+
+### Kernel Regression
+A natural extension of weighted kNN is kernel regression. In weighted kNN, the weight for each $y_n$ is determined by some function $g$ of the distance between $\mathbf{x}$ and $\mathbf{x}_n$, if $\mathbf{x}_n$ is in the set of $K$ nearest neighbors of $\mathbf{x}$, and zero otherwise. In kernel regression, we replace $g$ with a function $k: \mathbb{R}^D\times\mathbb{R}^D \to \mathbb{R}$ that captures some notion of "similarity" between $\mathbf{x}$ and $\mathbf{x}_n$. We also allow all training points to contribution to the prediction for $\mathbf{x}$ rather than just the $K$ nearest neighbors.
+
+Formally, kernel regression is defined by
+$$f(\mathbf{x}) = \frac{\sum_{n=1}^N k(\mathbf{x}, \mathbf{x}_n) y_n}{\sum_{n=1}^N k(\mathbf{x}, \mathbf{x}_n)},$$
+where $k:\mathbb{R}^D \times \mathbb{R}^D \to \mathbb{R}$ is any function that satisfies
+
+1. *(Symmetry)* $k(\mathbf{x}, \mathbf{x}') = k(\mathbf{x}', \mathbf{x})$
+2. *(Non-negativity)* $k(\mathbf{x}, \mathbf{x}') \geq 0$
+
+for all $\mathbf{x}, \mathbf{x}'\in \mathbb{R}^D$. We call the function $k$ a *kernel* and we interpret $k$ to be a formalization of some notion of similarity between $\mathbf{x}$ and $\mathbf{x}_n$.
+
+But how does one choose a kernel for kernel regression? Often, complex kernels are obtained by combining simple kernels whose properties we understand well. 
+
+**Some Examples of Simple Kernels:**
+1. *(Linear)* $k(\mathbf{x}, \mathbf{x}') = \mathbf{x}^\top \mathbf{x}'$
+2. *(Polynomial of Degree $D$)* $k(\mathbf{x}, \mathbf{x}') = (1 + \mathbf{x}^\top \mathbf{x}')^D$
+3. *(RBF)* $k(\mathbf{x}, \mathbf{x}') = e^{-\frac{\|\mathbf{x} - \mathbf{x}'\|_2^2}{2\sigma^2}}$, $\sigma \geq 0$.
+
+We can reason about simple kernels by looking at their definitions and  empirically investigating them by plugging in different pairs of inputs $\mathbf{x}, \mathbf{x}'$. Then we can form more complex kernels by combining simple kernels via operations like linear combination.
+
+
+### Kernels and Bases
+
+There is a natrual equivalence between kernel regression and regression on arbitrary bases (from Lecture #2)!
+
+Recall that polynomial regression, or regression on arbitrary bases, is secretely linear regression after first transforming the inputs via a feature map $\phi: \mathbf{R}^D \to \mathbf{R}^{D'}$.
+
+**Regression Model on Arbitrary Basis Determined by $\phi$:** $y = \mathbf{w}^\top \phi(\mathbf{x})$.
+
+**Solution for $\mathbf{w}$:** the MLE solution is equivalent to the minimum MSE solution, which is give by
+$$
+\mathbf{w}^{\text{MLE}} = (\mathbf{\Phi}^\top\mathbf{\Phi})^{-1}\mathbf{\Phi}^\top \mathbf{y}
+$$
+where $\Phi$ is the matrix $\phi(\mathbf{X})$ and $\mathbf{y}$ is the vector of training targets.
+
+**Prediction for an Input $\mathbf{x}$:** for an input $\mathbf{x}$ the prediction of our regression model is given by
+$$
+y = \left( (\mathbf{\Phi}^\top\mathbf{\Phi})^{-1}\mathbf{\Phi}^\top \mathbf{y}\right)^\top \phi(\mathbf{x})
+$$
+
+With some matrix algebra, we can expand out the above and realize that $y$ only depends on inner products of feature vectors, $\phi(\mathbf{x}_n)^T\phi(\mathbf{x}_m)$ and $\phi(\mathbf{x}_n)^T\phi(\mathbf{x})$. That is, if we had a function $k(\mathbf{x}, \mathbf{x}')$ that computed the inner product of $\phi(\mathbf{x})$ and $\phi(\mathbf{x}')$, we never need to explicitly write out the expression of $\phi(\mathbf{x})$ in the computation of $y$. This inner product $k(\mathbf{x}, \mathbf{x}')$ function is in fact a kernel!
+
+Furthermore, we can rewrite linear regression on a basis that is determined by $\phi$ as kernel regression, where the kernel $k$ is determined by an inner product defined for $\phi(\mathbf{x})$ and $\phi(\mathbf{x}')$.
+
+This connection between regression on arbitrary bases and kernel regression does not end here! A theorem from function analysis tells us that there is a one-to-one mapping from kernels $k$ to feature maps $\phi$. That is, for every kernel regression using kernel $k$, we can equivalently express the model as linear regression on the basis given by some feature map $\phi$, where this feature map is uniquely determined by $k$. For every feature map $\phi$, we can rewrite linear regression on the basis given by $\phi$ as kernel regression for a unique $k$.
+
+What is the point of understanding the equivalence between kernel regression and regression on bases? There are applications where inspecting the feature map $\phi$ allows us to interpret the regression function; there are also applications where writing out the feature map $\phi$ is impossible (i.e. if $\phi$ maps $\mathbf{x}$ into an infinite dimensional vector space), but the formula for the corresponding kernel $k$ is simple. In fact, this is precisely the case for the RBF kernel, the RBF kernel has a simple definition, but its correpsonding feature map $\phi$ maps into an infinite dimensional vector space (i.e. writing out $\phi(\mathbf{x})$ explicitly is impossible).
