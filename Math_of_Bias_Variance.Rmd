@@ -1,0 +1,98 @@
+# The Math of the Bias Variance Decomposition of Generalization Error 
+![](https://i.imgur.com/mKMnAGk.png)
+
+In this set of notes, we show you all the hairy math behind the bias variance decomposition of generalization error!
+
+## The Bias Variance Decomposition of Generalization Error
+
+After learning a model, $f_\mathbf{w}$, we want to measure the ability of our model to *generalize* to new data by computing the "average" square error of the model on all possible test data points. This is formalized as the *expected test error, given $f_\mathbf{w}$*,
+$$
+\mathbb{E}_{(\mathbf{x}, y) \sim P_\mathcal{D}}\left[ (y- f_\mathbf{w}(\mathbf{x}))^2\right] = \int_{(\mathbf{x}, y)} (y- f_\mathbf{w}(\mathbf{x}))^2 P_\mathcal{D}(\mathbf{x}, y)d\mathbf{x}, y,
+$$
+where $P_\mathcal{D}$ is the pdf of the joint distribution over test data $\mathbf{x}, y$. By the way, we usually assume that our training data is also sampled iid from $P_\mathcal{D}$. That is, training and test data are identically distributed. Later in the semester, we will study cases where the test data will be sampled from distributions substantially different from the training data, here we call the test data *out-of-distribution*.
+
+But our model $f_\mathbf{w}$ is learned using a specific set of training data (we estimated the parameters $\mathbf{w}$ using the training data). This means that if the training data were slightly different, the model that we learn would be different. In fact, since our data set $\mathcal{D}$ is iid sampled from $P_\mathcal{D}$, $\mathbf{w}$ is a random variable and so is $f_\mathbf{w}(\mathbf{x})$. 
+
+
+Thus, we can ask, what is the "average" error of our learned model over all possible test points and all possible training data sets sampled iid from $P_\mathcal{D}$. This notion of error measures not how well a single learned model does on test data, but how well the *inference algorithm* does on test data. This is formalized as the *expected test error, given the inference algorithm*,
+$$
+\mathbb{E}_{(\mathbf{x}, y) \sim P_\mathcal{D}, \mathcal{D}\overset{\mathrm{iid}}{\sim}P_\mathcal{D}}\left[ (y- f_\mathbf{w}(\mathbf{x}))^2\right] = \int_{(\mathbf{x}, y), \mathcal{D}} (y- f_\mathbf{w}(\mathbf{x}))^2 P_\mathcal{D}(\mathbf{x}, y)d\mathbf{x}, y,\mathcal{D}
+$$
+
+We can now ask, which factors (of the data distribution and the inference algorithm) affect generalization error? We start by rewriting the expression of the generalization error:
+\begin{aligned}
+\mathbb{E}_{(\mathbf{x}, y), \mathcal{D}}\left[ (y- f_\mathbf{w}(\mathbf{x}))^2\right] =& \mathbb{E}_{(\mathbf{x}, y), \mathcal{D}}\left[ \left((y- \mathbb{E}_\mathcal{D}[f_\mathbf{w}(\mathbf{x})]) + (\mathbb{E}_\mathcal{D}[f_\mathbf{w}(\mathbf{x})] - f_\mathbf{w}(\mathbf{x}))\right)^2\right] \\
+=& \underbrace{\mathbb{E}_{(\mathbf{x}, y), \mathcal{D}}[ (y- \mathbb{E}_\mathcal{D}[f_\mathbf{w}(\mathbf{x})])^2]}_{\text{Term 1}} \\
+&+ \underbrace{2\mathbb{E}_{(\mathbf{x}, y), \mathcal{D}}[(y- \mathbb{E}_\mathcal{D}[f_\mathbf{w}(\mathbf{x})])(\mathbb{E}_\mathcal{D}[f_\mathbf{w}(\mathbf{x})] - f_\mathbf{w}(\mathbf{x}))]}_{\text{Term 2}}\\
+&+\underbrace{\mathbb{E}_{(\mathbf{x}, y), \mathcal{D}}[\left(\mathbb{E}_\mathcal{D}[f_\mathbf{w}(\mathbf{x})] - f_\mathbf{w}(\mathbf{x})\right)^2]}_{\text{Term 3}}
+\end{aligned}
+
+We first show that Term 2 in the above expression is zero:
+\begin{aligned}
+\underbrace{2\mathbb{E}_{(\mathbf{x}, y), \mathcal{D}}[(y- \mathbb{E}_\mathcal{D}[f_\mathbf{w}(\mathbf{x})])(\mathbb{E}_\mathcal{D}[f_\mathbf{w}(\mathbf{x})] - f_\mathbf{w}(\mathbf{x}))]}_{\text{Term 2}} &= 2\mathbb{E}_{(\mathbf{x}, y)} \mathbb{E}_{\mathcal{D}}[(y- \mathbb{E}_\mathcal{D}[f_\mathbf{w}(\mathbf{x})])(\mathbb{E}_\mathcal{D}[f_\mathbf{w}(\mathbf{x})] - f_\mathbf{w}(\mathbf{x}))]\\
+&= 2\mathbb{E}_{(\mathbf{x}, y)} [(y- \mathbb{E}_\mathcal{D}[f_\mathbf{w}(\mathbf{x})])\mathbb{E}_{\mathcal{D}}[\mathbb{E}_\mathcal{D}[f_\mathbf{w}(\mathbf{x})] - f_\mathbf{w}(\mathbf{x})]]\\
+&= 2\mathbb{E}_{(\mathbf{x}, y)} [(y- \mathbb{E}_\mathcal{D}[f_\mathbf{w}(\mathbf{x})])\left(\mathbb{E}_\mathcal{D}[f_\mathbf{w}(\mathbf{x})] - \mathbb{E}_{\mathcal{D}}[f_\mathbf{w}(\mathbf{x})]\right)]\\
+&= 2\mathbb{E}_{(\mathbf{x}, y)} [(y- \mathbb{E}_\mathcal{D}[f_\mathbf{w}(\mathbf{x})]) \cdot 0]\\
+&= 0
+\end{aligned}
+In the first equation, we take advantage that $\mathbb{E}_{(\mathbf{x}, y), \mathcal{D}} = \mathbb{E}_{(\mathbf{x}, y)}\mathbb{E}_{\mathcal{D}\vert (\mathbf{x}, y)}$, but since the test data point is sampled independently from the training data, we have that $\mathbb{E}_{(\mathbf{x}, y), \mathcal{D}} = \mathbb{E}_{(\mathbf{x}, y)}\mathbb{E}_{\mathcal{D}}$. In the second equation, we pull out the term $(y- \mathbb{E}_\mathcal{D}[f_\mathbf{w}(\mathbf{x})])$ from $\mathbb{E}_{\mathcal{D}}$ since this term does not depend on $\mathcal{D}$.
+
+We now rewrite the Term 1 in the expansion of the generalization error so that it can be more intuitively interpreted:
+\begin{aligned}
+\underbrace{\mathbb{E}_{(\mathbf{x}, y), \mathcal{D}}[ (y- \mathbb{E}_\mathcal{D}[f_\mathbf{w}(\mathbf{x})])^2]}_{\text{Term 1}} 
+=& \mathbb{E}_{(\mathbf{x}, y), \mathcal{D}}[ ((y- \mathbb{E}_{y|\mathbf{x}}[y]) + (\mathbb{E}_{y|\mathbf{x}}[y] - \mathbb{E}_\mathcal{D}[f_\mathbf{w}(\mathbf{x})]))^2] \\
+=& \underbrace{\mathbb{E}_{(\mathbf{x}, y), \mathcal{D}}[((y- \mathbb{E}_{y|\mathbf{x}}[y])^2]}_{\text{Term 1, Part 1}} \\
+&+ \underbrace{2\mathbb{E}_{(\mathbf{x}, y), \mathcal{D}}[(y- \mathbb{E}_{y|\mathbf{x}}[y])(\mathbb{E}_{y|\mathbf{x}}[y] - \mathbb{E}_\mathcal{D}[f_\mathbf{w}(\mathbf{x})])]}_{\text{Term 1, Part 2}}\\
+&+ \underbrace{\mathbb{E}_{(\mathbf{x}, y), \mathcal{D}}[(\mathbb{E}_{y|\mathbf{x}}[y] - \mathbb{E}_\mathcal{D}[f_\mathbf{w}(\mathbf{x})])^2]}_{\text{Term 1, Part 3}}
+\end{aligned}
+
+Again, we show that Term 1, Part 2 is zero:
+\begin{aligned}
+\underbrace{2\mathbb{E}_{(\mathbf{x}, y), \mathcal{D}}[(y- \mathbb{E}_{y|\mathbf{x}}[y])(\mathbb{E}_{y|\mathbf{x}}[y] - \mathbb{E}_\mathcal{D}[f_\mathbf{w}(\mathbf{x})])]}_{\text{Term 1, Part 2}} 
+&= 2\mathbb{E}_{\mathcal{D}}\mathbb{E}_{\mathbf{x}}\mathbb{E}_{y\vert \mathbf{x}}[(y- \mathbb{E}_{(y|\mathbf{x})}[y])(\mathbb{E}_{(y|\mathbf{x})}[y] - \mathbb{E}_\mathcal{D}[f_\mathbf{w}(\mathbf{x})])]\\
+&= 2\mathbb{E}_{\mathcal{D}}\mathbb{E}_{\mathbf{x}}[(\mathbb{E}_{y|\mathbf{x}}[y] - \mathbb{E}_\mathcal{D}[f_\mathbf{w}(\mathbf{x})])\mathbb{E}_{ y\vert \mathbf{x}}[y- \mathbb{E}_{y|\mathbf{x}}[y]]]\\
+&= 2\mathbb{E}_{\mathcal{D}}\mathbb{E}_{\mathbf{x}}[(\mathbb{E}_{y|\mathbf{x}}[y] - \mathbb{E}_\mathcal{D}[f_\mathbf{w}(\mathbf{x})])(\mathbb{E}_{ y\vert \mathbf{x}}[y]- \mathbb{E}_{y|\mathbf{x}}[y])]\\
+&= 2\mathbb{E}_{\mathcal{D}}\mathbb{E}_{\mathbf{x}}[(\mathbb{E}_{y|\mathbf{x}}[y] - \mathbb{E}_\mathcal{D}[f_\mathbf{w}(\mathbf{x})])(\mathbb{E}_{ y\vert \mathbf{x}}[y]- \mathbb{E}_{y|\mathbf{x}}[y])]\\
+&= 2\mathbb{E}_{\mathcal{D}}\mathbb{E}_{\mathbf{x}}[(\mathbb{E}_{y|\mathbf{x}}[y] - \mathbb{E}_\mathcal{D}[f_\mathbf{w}(\mathbf{x})])\cdot 0]\\
+&= 2\mathbb{E}_{\mathcal{D}}\mathbb{E}_{\mathbf{x}}[ 0]\\
+&=0
+\end{aligned}
+
+Now, we see that the generalization consists of three parts:
+\begin{aligned}
+\mathbb{E}_{(\mathbf{x}, y), \mathcal{D}}\left[ (y- f_\mathbf{w}(\mathbf{x}))^2\right]=&\underbrace{\mathbb{E}_{(\mathbf{x}, y), \mathcal{D}}[((y- \mathbb{E}_{y|\mathbf{x}}[y])^2]}_{\text{Term 1, Part 1}}\\
+&+ \underbrace{\mathbb{E}_{(\mathbf{x}, y), \mathcal{D}}[(\mathbb{E}_{y|\mathbf{x}}[y] - \mathbb{E}_\mathcal{D}[f_\mathbf{w}(\mathbf{x})])^2]}_{\text{Term 1, Part 3}}\\
+&+\underbrace{\mathbb{E}_{(\mathbf{x}, y), \mathcal{D}}[\left(\mathbb{E}_\mathcal{D}[f_\mathbf{w}(\mathbf{x})] - f_\mathbf{w}(\mathbf{x})\right)^2]}_{\text{Term 3}}
+\end{aligned}
+and each of these terms can be given intuitive interpretation.
+
+**Interpretation of Term 1, Part 1:** We first simplify the expression by removing the expectation with respect to $\mathcal{D}$, since neither $y$ nor $\mathbf{x}$ (test data) depend on the training data $\mathcal{D}$:
+\begin{aligned}
+\underbrace{\mathbb{E}_{(\mathbf{x}, y), \mathcal{D}}[((y- \mathbb{E}_{y|\mathbf{x}}[y])^2]}_{\text{Term 1, Part 1}} 
+&= \mathbb{E}_{(\mathbf{x}, y)}[((y- \mathbb{E}_{y|\mathbf{x}}[y])^2]\\
+&=\mathbb{E}_{\mathbf{x}}\mathbb{E}_{y|\mathbf{x}}[((y- \mathbb{E}_{y|\mathbf{x}}[y])^2]\\
+&=\mathbb{E}_{\mathbf{x}}\mathrm{Var}[y|\mathbf{x}]\\
+\end{aligned}
+Recall that for probabilistic linear regression, we'd assumed that $y|\mathbf{x} \sim \mathcal{N}(f_{\mathbf{w}}(\mathbf{x}), \sigma^2)$. In this case, we have $\mathrm{Var}[y|\mathbf{x}] = \sigma^2$; and, since the observation noise does not depend on $\mathbf{x}$, we have that $\mathbb{E}_{\mathbf{x}}\mathrm{Var}[y|\mathbf{x}] = \sigma^2$. So we see that Term 1, Part 1 is the contribution of *observation noise* to the generalization error.
+
+**Interpretation of Term 1, Part 3:** We first rewrite the expression by eliminating the expectation with respect to $\mathcal{D}$ since neither $(\mathbf{x}, y)$ nor $\mathbb{E}_\mathcal{D}[f_\mathbf{w}(\mathbf{x})]$ depend on $\mathcal{D}$ (in the latter, we have explicitly integrated out $\mathcal{D}$):
+\begin{aligned}
+\underbrace{\mathbb{E}_{(\mathbf{x}, y), \mathcal{D}}[(\mathbb{E}_{y|\mathbf{x}}[y|\mathbf{x}] - \mathbb{E}_\mathcal{D}[f_\mathbf{w}(\mathbf{x})])^2]}_{\text{Term 1, Part 3}}
+&= \mathbb{E}_{(\mathbf{x}, y)}[(\mathbb{E}_{y|\mathbf{x}}[y|\mathbf{x}] - \mathbb{E}_\mathcal{D}[f_\mathbf{w}(\mathbf{x})])^2]\\
+&= \mathbb{E}_{\mathbf{x}}\mathbb{E}_{y|\mathbf{x}}[(\mathbb{E}_{y|\mathbf{x}}[y|\mathbf{x}] - \mathbb{E}_\mathcal{D}[f_\mathbf{w}(\mathbf{x})])^2]\\
+&= \mathbb{E}_{\mathbf{x}}[(\underbrace{\mathbb{E}_{y|\mathbf{x}}[y|\mathbf{x}]}_{\text{Average true $y$}\\ \text{over noisy observations}} - \underbrace{\mathbb{E}_\mathcal{D}[f_\mathbf{w}(\mathbf{x})]}_{\text{Average prediction}\\\text{over all possible training sets}})^2]\\
+\end{aligned}
+We see that Term 1, Part 3 is measuring how well our model class and learning algorithm is able to capture the true noiseless trend in the data. We call this measurement the *bias* of our model and learning algorithm.
+
+**Interpretation of Term 3:** We first simplify the expression by removing the expectation with respect to $y|\mathbf{x}$:
+\begin{aligned}
+\underbrace{\mathbb{E}_{(\mathbf{x}, y), \mathcal{D}}[\left(\mathbb{E}_\mathcal{D}[f_\mathbf{w}(\mathbf{x})] - f_\mathbf{w}(\mathbf{x})\right)^2]}_{\text{Term 3}} 
+&= \mathbb{E}_{\mathbf{x}, \mathcal{D}}[\left(\mathbb{E}_\mathcal{D}[f_\mathbf{w}(\mathbf{x})] - f_\mathbf{w}(\mathbf{x})\right)^2]\\
+&= \mathbb{E}_{\mathbf{x}} \mathbb{E}_{\mathcal{D}}[\left(\mathbb{E}_\mathcal{D}[f_\mathbf{w}(\mathbf{x})] - f_\mathbf{w}(\mathbf{x})\right)^2]\\
+&=\mathbb{E}_{\mathbf{x}} \mathrm{Var}[f_\mathbf{w}(\mathbf{x})]
+\end{aligned}
+We see that Term 3 is computing the variance of the model prediction as we vary the training set of the model. We call this the *variance* of the model.
+
+**Putting it all together:** Finally, we see that generalization error depends on three factors: (1) the observation noise in the data, (2) the *bias* of the model and learning algorithm (the capacity of the model to capture the complex trend of the data), (3) the *variance* of the model prediction as we vary the training data. 
+
+Observation noise is inherent in the data generation process and so there is nothing we can do to reduce this noise. Model bias and variance, however, are *reducible* sources of error. You will see us exploring different ways to reduce generalization error by reducing bias and or variance.
