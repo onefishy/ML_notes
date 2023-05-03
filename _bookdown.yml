@@ -1,5 +1,5 @@
 book_filename: "bookdown-demo"
 language:
   ui:
-    chapter_name: "Lecture "
+    chapter_name: "Lecture"
 delete_merged_file: true
